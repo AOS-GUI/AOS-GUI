@@ -24,7 +24,7 @@ an style=\" font-size:8pt; color:#000000;\">created by nanobot567</span></p>\n
 class startupWindow(QWidget):
      def __init__(self):
         super(startupWindow, self).__init__()
-        self.resize(500, 400)
+        self.setFixedSize(500, 400)
         self.setWindowTitle("AOS-GUI")
         self.html = QTextEdit()
         self.html.setGeometry(QRect(0, 0, 500, 400))

@@ -2,6 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from time import sleep
+from os import getcwd
 
 filePath = ""
 currentlyOpenFile = "Untitled"
@@ -10,55 +11,59 @@ class editApp(QWidget):
      def __init__(self):
           super(editApp, self).__init__()
           self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
-          self.resize(600, 400)
+          self.setFixedSize(640, 480)
 
-          self.textEdit = QTextEdit()
-          # self.textEdit.setText(fileText)
-          # self.textEdit.resize(600,100)
-
-          Layout = QVBoxLayout(self)
-          Layout.addWidget(self.textEdit)
-          # self.setLayout(Layout)
-
+          self.textEdit = QTextEdit(self)
+          self.textEdit.setObjectName(u"textEdit")
+          self.textEdit.setGeometry(QRect(10, 40, 621, 431))
           self.open = QPushButton(self)
-          self.open.setObjectName(u"install")
-          self.open.setText("open")
-          self.open.setGeometry(QRect(230, 380, 50, 20))
-          self.open.setAutoFillBackground(False)
-          self.open.setAutoDefault(False)
+          self.open.setObjectName(u"open")
+          self.open.setGeometry(QRect(60, 10, 51, 28))
+          self.open.setText(u"Open")
           self.open.clicked.connect(self.openFile)
-
           self.save = QPushButton(self)
-          self.save.setObjectName(u"install")
-          self.save.setText("save")
-          self.save.setGeometry(QRect(285, 380, 50, 20))
-          self.save.setAutoFillBackground(False)
-          self.save.setAutoDefault(False)
+          self.save.setObjectName(u"save")
+          self.save.setGeometry(QRect(120, 10, 51, 28))
+          self.save.setText(u"Save")
           self.save.clicked.connect(self.saveFile)
-
           self.saveAs = QPushButton(self)
-          self.saveAs.setObjectName(u"install")
-          self.saveAs.setText("save as")
-          self.saveAs.setGeometry(QRect(340, 380, 50, 20))
-          self.saveAs.setAutoFillBackground(False)
-          self.saveAs.setAutoDefault(False)
+          self.saveAs.setObjectName(u"saveAs")
+          self.saveAs.setGeometry(QRect(180, 10, 71, 28))
+          self.saveAs.setText(u"Save As")
           self.saveAs.clicked.connect(self.saveAsFile)
+          self.newFileBtn = QPushButton(self)
+          self.newFileBtn.setObjectName(u"newFile")
+          self.newFileBtn.setGeometry(QRect(10, 10, 41, 28))
+          self.newFileBtn.setText("New")
+          self.newFileBtn.clicked.connect(self.newFile)
+
+     def newFile(self):
+          global currentlyOpenFile
+          file,check = QFileDialog.getSaveFileName(None, "New File", getcwd().replace("\\","/")+"/files/")
+          if check:
+               text = open(file,"w")
+               text.close()
+               currentlyOpenFile = file
+               currentlyOpenFile = currentlyOpenFile.split("/")
+               currentlyOpenFile = currentlyOpenFile[-1]
+               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
+
 
      def openFile(self):
           file,check = QFileDialog.getOpenFileName(None, "Open a file", "", "All Files (*)")
           if check:
-               print(file)
                text = open(file,"r")
                self.textEdit.setText(text.read())
                text.close()
 
                global currentlyOpenFile
                currentlyOpenFile = file
+               currentlyOpenFile = currentlyOpenFile.split("/")
+               currentlyOpenFile = currentlyOpenFile[-1]
                self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
      
      def saveFile(self):
           global currentlyOpenFile
-          print(currentlyOpenFile)
 
           if currentlyOpenFile == "Untitled":
                self.saveAsFile()
@@ -70,12 +75,14 @@ class editApp(QWidget):
      def saveAsFile(self):
           global currentlyOpenFile
 
-          file,check = QFileDialog.getSaveFileName(None, "Save", "")
+          file,check = QFileDialog.getSaveFileName(None, "Save", getcwd().replace("\\","/")+"/files/")
           if check:
                text = open(file,"w")
                text.write(self.textEdit.toPlainText())
                text.close()
                currentlyOpenFile = file
+               currentlyOpenFile = currentlyOpenFile.split("/")
+               currentlyOpenFile = currentlyOpenFile[-1]
                self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
                
 # maybe later :D

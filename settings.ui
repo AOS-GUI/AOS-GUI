@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>settings</class>
+ <widget class="QWidget" name="settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>540</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">AOS-GUI/settings</string>
+  </property>
+  <widget class="QTabWidget" name="tabs">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>431</width>
+     <height>521</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>3</number>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <widget class="QWidget" name="general">
+    <attribute name="title">
+     <string notr="true">General</string>
+    </attribute>
+    <widget class="QGroupBox" name="user">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>251</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">User</string>
+     </property>
+     <widget class="QLabel" name="uLabel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Username:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="uLE">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>20</y>
+        <width>131</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true"/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="pLabel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Password:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="pLE">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>50</y>
+        <width>131</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="eBg">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>460</y>
+       <width>91</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">Ok</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="customization">
+    <attribute name="title">
+     <string notr="true">Customization</string>
+    </attribute>
+    <widget class="QGroupBox" name="colors">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>401</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">Colors (all colors/hex codes valid)</string>
+     </property>
+     <widget class="QLabel" name="cL">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Text Color:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cL_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">BG Color:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cL_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Taskbar Color:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cL_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Taskbar Text Color:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cL_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Button Color:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cL_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Button Text Color:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE_2">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>60</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE_3">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>90</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE_4">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>120</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE_5">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>150</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cLE_6">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>180</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="themes">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>10</y>
+        <width>171</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string notr="true">Themes</string>
+      </property>
+      <widget class="QComboBox" name="themeCB">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>131</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="currentText">
+        <string notr="true"/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="tApply">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>80</y>
+         <width>93</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string notr="true">Apply</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="tSave">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>110</y>
+         <width>93</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string notr="true">Save</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="showOnDesktop">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>121</width>
+       <height>181</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">Show On Desktop</string>
+     </property>
+     <widget class="QCheckBox" name="dCHB">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Settings</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>50</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Run .rndr</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">FileSystem</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">camelInstall</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Editor</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">AOSHelp</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dCHB_7">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">ATerm</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="eBc">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>460</y>
+       <width>91</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">Ok</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="font">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>220</y>
+       <width>131</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">Font</string>
+     </property>
+     <widget class="QSpinBox" name="fSB">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>51</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="suffix">
+       <string notr="true">px</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="fL">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>23</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Font Size</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="shortcuts">
+    <attribute name="title">
+     <string notr="true">Shortcuts</string>
+    </attribute>
+    <widget class="QGroupBox" name="sDesktop">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>401</width>
+       <height>451</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">Desktop</string>
+     </property>
+     <widget class="QKeySequenceEdit" name="KS">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>30</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="keySequence">
+       <string notr="true">Ctrl+R</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="sL">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>55</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Run...</string>
+      </property>
+     </widget>
+     <widget class="QKeySequenceEdit" name="KS_2">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>60</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="keySequence">
+       <string notr="true">Ctrl+R</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="sL_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>55</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Terminal</string>
+      </property>
+     </widget>
+     <widget class="QKeySequenceEdit" name="KS_3">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>90</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="keySequence">
+       <string notr="true">Ctrl+Shift+S</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="sL_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>90</y>
+        <width>55</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Settings</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="sL_4">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>120</y>
+        <width>55</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Help</string>
+      </property>
+     </widget>
+     <widget class="QKeySequenceEdit" name="KS_4">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>120</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="keySequence">
+       <string notr="true">Ctrl+H</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="eBs">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>460</y>
+       <width>91</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">Ok</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="reset">
+    <attribute name="title">
+     <string notr="true">Reset</string>
+    </attribute>
+    <widget class="QPushButton" name="rAOS">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>50</y>
+       <width>161</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">Reset AOS...</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
