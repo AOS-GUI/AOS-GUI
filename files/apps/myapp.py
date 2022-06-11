@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 # next line is the project description, format is #(tilde){name}|{desc}|{ver}
-#~template|template project|v0.1
+#~myapp|my app!|v0.1
 
 
 # class name can be anything
@@ -20,7 +20,7 @@ class main_print(QWidget):
 
         self.closeButton.setText("hi")
 
-        self.closeButton.setGeometry(QRect(170, 290, 161, 51))
+        self.closeButton.setGeometry(QRect(170, 130, 161, 51))
         self.closeButton.setCheckable(False)
         self.closeButton.setFlat(False)
 

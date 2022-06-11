@@ -7,10 +7,10 @@ class FsWindow(QWidget):
      def __init__(self):
           super(FsWindow, self).__init__()
           self.setWindowTitle("AOS-GUI/fs")
-          self.resize(600, 400)
+          self.setFixedSize(600, 400)
 
-          self.treeView = QTreeView()
-          self.treeView.resize(600,500)
+          self.treeView = QTreeView(self)
+          self.treeView.setGeometry(10,10,580,380)
           self.fileSystemModel = QFileSystemModel(self.treeView)
           self.fileSystemModel.setReadOnly(False)
           root = self.fileSystemModel.setRootPath("files")
@@ -19,10 +19,6 @@ class FsWindow(QWidget):
           self.fileSystemModel
           
           # self.treeView.doubleClicked.connect(self.openInEditor)
-
-          Layout = QVBoxLayout(self)
-          Layout.addWidget(self.treeView)
-          self.setLayout(Layout)
 
      # def openInEditor(self, signal):
      #      file_path=self.treeView.model().filePath(signal)
