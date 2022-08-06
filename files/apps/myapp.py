@@ -10,12 +10,15 @@ from PyQt5.QtCore import *
 
 # class name can be anything
 
+
 class main_print(QWidget):
+
     # this can be your normal PyQt5 code, go crazy!
     def __init__(self):
         super(main_print, self).__init__()
         self.setFixedSize(500, 400)
         self.setWindowTitle("AOS-GUI")
+        self.setStyleSheet(f"background-color: {self.bgcolor}; color: {self.textcolor};")
         self.closeButton = QPushButton(self)
 
         self.closeButton.setText("hi")

@@ -8,6 +8,7 @@ class FsWindow(QWidget):
           super(FsWindow, self).__init__()
           self.setWindowTitle("AOS-GUI/fs")
           self.setFixedSize(600, 400)
+          self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
           self.treeView = QTreeView(self)
           self.treeView.setGeometry(10,10,580,380)

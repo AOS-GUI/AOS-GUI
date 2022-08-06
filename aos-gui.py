@@ -7,21 +7,19 @@ try:
      from PyQt5.QtGui import *
      from PyQt5.QtWidgets import *
      from PyQt5.QtCore import *
-     from PyQt5.QtWebEngineWidgets import *
      from PyQt5.QtPrintSupport import *
 except:
      print("Installing AOS-GUI requirements...")
      pipmain(["install","PyQt5"])
-     pipmain(["install","PyQtWebEngine"])
+     # pipmain(["install","PyQtWebEngine"])
      print("Done! Starting up...")
 
      from PyQt5.QtGui import *
      from PyQt5.QtWidgets import *
      from PyQt5.QtCore import *
-     from PyQt5.QtWebEngineWidgets import *
      from PyQt5.QtPrintSupport import *
 
-from files.support.system import fs,render,editor,startupWindow,settings,AOShelp,aterm
+from files.support.system import fs,editor,startupWindow,settings,AOShelp,aterm,splash
 from files.support.system import cinstall
 from files.support.system.setup import setupAOS
 
@@ -82,15 +80,23 @@ class AOS(QMainWindow):
 
      def setupButtons(self):
           global buttonX
+          global buttonY
+
+          self.settingsWindow = settings.settingsWidget()
+          self.fsWindow = fs.FsWindow()
+          self.cInstWindow = cinstall.camelInstall()
+          self.editWindow = editor.editApp()
+          self.helpWindow = AOShelp.aoshelp()
+          self.atermWindow = aterm.aterm()
+
           if buttonsShown[0] == "True":
                self.settings = QPushButton(self)
                self.settings.setGeometry(buttonX, buttonY, 100,50)
                self.settings.setText('Settings')
                self.settings.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.settings.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.settings.window = settings.settingsWidget()
-               self.settings.clicked.connect(self.settings.window.show)
-               self.settings.clicked.connect(self.settings.window.activateWindow)
+               self.settings.clicked.connect(self.settingsWindow.show)
+               self.settings.clicked.connect(self.settingsWindow.activateWindow)
                buttonX += 120
                
 
@@ -109,9 +115,8 @@ class AOS(QMainWindow):
                self.fs.setText('FileSystem')
                self.fs.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.fs.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.fs.window = fs.FsWindow()
-               self.fs.clicked.connect(self.fs.window.show)
-               self.fs.clicked.connect(self.fs.window.activateWindow)
+               self.fs.clicked.connect(self.fsWindow.show)
+               self.fs.clicked.connect(self.fsWindow.activateWindow)
                buttonX += 120
 
           if buttonsShown[3] == "True":
@@ -120,9 +125,8 @@ class AOS(QMainWindow):
                self.cInst.setText('camelInstall')
                self.cInst.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.cInst.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.cInst.window = cinstall.camelInstall()
-               self.cInst.clicked.connect(self.cInst.window.show)
-               self.cInst.clicked.connect(self.cInst.window.activateWindow)
+               self.cInst.clicked.connect(self.cInstWindow.show)
+               self.cInst.clicked.connect(self.cInstWindow.activateWindow)
                buttonX += 120
 
           if buttonsShown[4] == "True":
@@ -131,9 +135,8 @@ class AOS(QMainWindow):
                self.edit.setText('Edit')
                self.edit.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.edit.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.edit.window = editor.editApp()
-               self.edit.clicked.connect(self.edit.window.show)
-               self.edit.clicked.connect(self.edit.window.activateWindow)
+               self.edit.clicked.connect(self.editWindow.show)
+               self.edit.clicked.connect(self.editWindow.activateWindow)
                buttonX += 120
 
           if buttonsShown[5] == "True":
@@ -142,20 +145,18 @@ class AOS(QMainWindow):
                self.help.setText('AOSHelp')
                self.help.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.help.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.help.window = AOShelp.aoshelp()
-               self.help.clicked.connect(self.help.window.show)
-               self.help.clicked.connect(self.help.window.activateWindow)
+               self.help.clicked.connect(self.helpWindow.show)
+               self.help.clicked.connect(self.helpWindow.activateWindow)
                buttonX += 120
-
+          
           if buttonsShown[6] == "True":
                self.aterm = QPushButton(self)
                self.aterm.setGeometry(buttonX, buttonY, 100,50)
                self.aterm.setText('Terminal')
                self.aterm.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                self.aterm.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.aterm.window = aterm.aterm()
-               self.aterm.clicked.connect(self.aterm.window.show)
-               self.aterm.clicked.connect(self.aterm.window.activateWindow)
+               self.aterm.clicked.connect(self.atermWindow.show)
+               self.aterm.clicked.connect(self.atermWindow.activateWindow)
                buttonX += 120
 
      def setupMenuBar(self):
@@ -197,25 +198,40 @@ class AOS(QMainWindow):
                pass
           else:
                if prgm.lower() == "fs":
-                    self.fs.window.show()
+                    self.fsWindow.show()
                elif prgm.lower() == "editor":
-                    self.edit.window.show()
+                    self.editWindow.show()
                elif prgm.lower() == "settings":
                     self.settings.show()
                elif prgm.lower() == "render":
                     self.rndr()
                elif prgm.lower() == "aoshelp":
-                    self.help.window.show()
+                    self.helpWindow.show()
                elif prgm.lower() == "cinstall":
-                    self.cInst.window.show()
+                    self.cInstWindow.show()
                elif prgm.lower() == "aterm":
-                    self.aterm.window.show()
+                    self.atermWindow.show()
                else:
                     try:
                          modulePrgm = importlib.import_module("files.apps."+prgm)
                          importlib.reload(modulePrgm)
                     except ModuleNotFoundError:
-                         pass
+                         msg = QMessageBox()
+                         msg.setIcon(QMessageBox.Critical)
+                         msg.setText(f"No app called \"{prgm}\" found in files/apps")
+                         msg.setWindowTitle("ERROR!")
+                         msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+                         msg.setStandardButtons(QMessageBox.Ok)
+                         retval = msg.exec_()
+                    except Exception as err:
+                         msg = QMessageBox()
+                         msg.setIcon(QMessageBox.Critical)
+                         msg.setText(f"Critical error in app \"{prgm}\": {err}")
+                         msg.setWindowTitle("ERROR!")
+                         msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+                         msg.setStandardButtons(QMessageBox.Ok)
+                         retval = msg.exec_()
+
                self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
 
      def setupShortcuts(self):
@@ -224,28 +240,42 @@ class AOS(QMainWindow):
           self.setSC = QShortcut(QKeySequence(kSeqs[2]), self)
           self.helpSC = QShortcut(QKeySequence(kSeqs[3]), self)
           self.runSC.activated.connect(self.run)
-          self.termSC.activated.connect(self.aterm.window.show)
+          self.termSC.activated.connect(self.atermWindow.show)
           self.setSC.activated.connect(self.settings.show)
-          self.helpSC.activated.connect(self.help.window.show)
+          self.helpSC.activated.connect(self.helpWindow.show)
      # setupUi
 
      # def openStartupWindow(self):
      #      self.startupWin = startupWindow.startupWindow()
      #      self.startupWin.show()
      #      self.startupWin.raise_()
-
+# +++ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 if __name__ == '__main__':
      app = QApplication([])
+
      try:
           f = open("files/support/data/user/data.aos", "r")
           window = AOS()
           window.showFullScreen()
+
+          content = f.read()
+          content = content.split("\n")
+          if content[1] != "":
+               passwordInput = ""
+               while passwordInput != content[1]:
+                    passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password:", QLineEdit.Normal, "")
+          if content[15] == "False" or content[15] == "":
+               splashscreen = splash.splashScreen()
+               splashscreen.show()
+
           f.close()
      except Exception as e:
-          print(e)
+          if not str(e).startswith("[Errno 2]"):
+               print(e)
           window = setupAOS.installform()
           window.show()
+
      # window = MainWindow()
      exit(app.exec_())

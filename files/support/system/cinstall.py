@@ -10,6 +10,7 @@ class camelInstall(QWidget):
 
         self.setFixedSize(660, 460)
         self.setWindowTitle("camelInstall")
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.font = QFont()
         self.font.setPointSize(12)
         self.font.setItalic(True)
@@ -96,10 +97,11 @@ class camelInstall(QWidget):
             msg.setIcon(QMessageBox.Warning)
             msg.setText(f"Are you sure you want to uninstall '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'?")
             msg.setWindowTitle("Uninstall?")
+            msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
             msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
             retval = msg.exec_()
 
-            if retval != 16384:
+            if retval == 16384:
                 self.doneUninstalling()
 
         except AttributeError:
@@ -110,7 +112,8 @@ class camelInstall(QWidget):
         thing.setIcon(QMessageBox.Information)
         thing.setText(f"Uninstalled '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'!")
         thing.setWindowTitle("Uninstalled!")
-        thing.setStandardButtons(QMessageBox.Okay)
+        thing.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+        thing.setStandardButtons(QMessageBox.Ok)
         retval = thing.exec_()
 
     # retranslateUi
