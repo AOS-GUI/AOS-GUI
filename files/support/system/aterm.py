@@ -11,13 +11,15 @@ helpText = {"help":"aos help (syntax: help {command})",
             "echo":"echoes text (syntax: echo [text])",
             "rm":"removes a file (syntax: rm [path from /])",
             "dir":"lists the files and directories inside a directory (syntax: dir [path] {-notypes})",
-            "read":"reads a file's contents (syntax: read [file])"}
+            "read":"reads a file's contents (syntax: read [file])",
+            "script":"runs a script (syntax: script [file] {-v | -verbose})"}
 
 class aterm(QWidget):
     def __init__(self):
         super(aterm, self).__init__()
-        self.setWindowTitle("aterm")
+        self.setWindowTitle("AOS-GUI/aterm")
         self.setFixedSize(620, 440)
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.lineEdit = QLineEdit(self)
         self.lineEdit.setObjectName(u"lineEdit")
         self.lineEdit.setGeometry(QRect(10, 400, 521, 31))
@@ -43,19 +45,29 @@ class aterm(QWidget):
         self.echo("AOSTerminal v1.0", True)
         self.echo("Changed dir to /", True)
     
-    def doCommand(self):
-        command = self.lineEdit.text()
+    def doCommand(self, command="",silentOut=False):
+        if command == "":
+            command = self.lineEdit.text()
+            self.echo("[YOU] "+command)
+        else:
+            if silentOut == False:
+                self.echo("[SCRIPT] "+command)
+            
 
-        self.echo("[YOU] "+command)
+        lowcommand = command.lower()
 
         self.lineEdit.setText("")
 
         splitUnneededSlash = False
 
         try:
-            if command.startswith("echo"):
-                self.echo(self.splitParams(command)[0])
-            elif command.startswith("rm"):
+            if lowcommand.startswith("echo"):
+                final = self.splitParams(command)[0]
+                for i in self.splitParams(command)[1:]:
+                    final += " "+i
+
+                self.echo(final)
+            elif lowcommand.startswith("rm"):
                 param = self.splitParams(command)[0]
                 ok = True
 
@@ -68,6 +80,7 @@ class aterm(QWidget):
                     warn.setIcon(QMessageBox.Warning)
                     warn.setText(f"'{param}' is a child of or is the 'support' folder, which contains vital system files. Are you sure you want to delete it?")
                     warn.setWindowTitle("Are you sure?")
+                    warn.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
                     warn.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
                     retval = warn.exec_()
 
@@ -81,7 +94,7 @@ class aterm(QWidget):
                         except FileNotFoundError:
                             self.echo("ERR: The directory doesn't exist!",True)
                         except OSError:
-                            self.echo(f"ERR: The directory isn't empty!",True)
+                            self.echo(f"ERR: The directory isn't empty or doesn't exist!",True)
                 else:
                     try:
                         os.remove((os.getcwd().replace("\\","/")+"/files/"+param))
@@ -92,34 +105,42 @@ class aterm(QWidget):
                             
                 #.replace("/","\\")
                 # fix
-            elif command.startswith("dir"):
+            elif lowcommand.startswith("dir"):
                 param = self.splitParams(command)[0]
 
                 if param.startswith("/"):
-                    param = param.split("/",1)
-                    param = param[1]
+                    if param != "/":
+                        param = param.split("/",1)
+                        param = param[1]
+
+                if not param.endswith("/"):
+                    param = param+"/"
 
                 try:
-                    self.echo("List of files/directories in "+param+":")
-                    self.echo()
+                    try:
+                        self.echo("List of files/directories in "+param+":")
+                        self.echo()
 
-                    for _ in os.listdir(os.getcwd().replace("\\","/")+"/files/"+param):
-                        if command.__contains__("-notypes"):
-                            self.echo(_)
-                        else:
-                            if os.path.isdir(os.getcwd().replace("\\","/")+"/files/"+param+_):
-                                self.echo(_+" [DIR]")
-                            elif os.path.isfile(os.getcwd().replace("\\","/")+"/files/"+param+_):
-                                self.echo(_+" [FILE]")
-                            elif os.path.islink(os.getcwd().replace("\\","/")+"/files/"+param+_):
-                                self.echo(_+" [LINK]")
-                            elif os.path.ismount(os.getcwd().replace("\\","/")+"/files/"+param+_):
-                                self.echo(_+" [MNT]")
-                    self.echo()
+                        for _ in os.listdir(os.getcwd().replace("\\","/")+"/files/"+param):
+                            if lowcommand.__contains__("-notypes"):
+                                self.echo(_)
+                            else:
+                                if os.path.isdir(os.getcwd().replace("\\","/")+"/files/"+param+_):
+                                    self.echo(_+" [DIR]")
+                                elif os.path.isfile(os.getcwd().replace("\\","/")+"/files/"+param+_):
+                                    self.echo(_+" [FILE]")
+                                elif os.path.islink(os.getcwd().replace("\\","/")+"/files/"+param+_):
+                                    self.echo(_+" [LINK]")
+                                elif os.path.ismount(os.getcwd().replace("\\","/")+"/files/"+param+_):
+                                    self.echo(_+" [MNT]")
+                        self.echo()
+                    except FileNotFoundError:
+                        self.echo("ERR: Directory not found!")
+
                 except NotADirectoryError:
                     self.echo("ERR: "+param+" is not a directory!", True)
 
-            elif command.startswith("read"):
+            elif lowcommand.startswith("read"):
                 param = self.splitParams(command)[0]
                 if param.startswith("/"):
                     param = param.split("/",1)
@@ -142,10 +163,10 @@ class aterm(QWidget):
                 except PermissionError:
                     self.echo("ERR: File not found! Did you try to read a directory?",True)
 
-            elif command.startswith("clear"):
+            elif lowcommand.startswith("clear"):
                 self.listWidget.clear()
-            elif command.startswith("help"):
-                if command.strip() == "help":
+            elif lowcommand.startswith("help"):
+                if lowcommand.strip() == "help":
                     self.echo("List of all commands in database:")
                     self.echo()
                     tempList = []
@@ -159,7 +180,31 @@ class aterm(QWidget):
                         self.echo(x)
                     self.echo()
                 else:
-                    self.echo(helpText[self.splitParams(command)[0]],True)
+                    try:
+                        self.echo(helpText[(self.splitParams(command)[0]).lower()],True)
+                    except KeyError:
+                        self.echo("Command "+self.splitParams(command)[0]+" not found!")
+            elif lowcommand.startswith("script"):
+                param = self.splitParams(command)[0]
+                silentOut = True
+
+                if lowcommand.__contains__("-v") or lowcommand.__contains__("-verbose"):
+                    self.echo("[SCRIPT] Running script "+param+"...")
+                    silentOut = False
+
+                self.echo()
+
+                try:
+                    script = open(os.getcwd().replace("\\","/")+"/files/"+param,"r")
+                    script = script.read()
+                    script = script.split("\n")
+
+                    for i in script:
+                        self.doCommand(i,silentOut)
+                except OSError as e:
+                    self.echo(f"ERR: {e}")
+                
+
         except IndexError:
             self.echo("ERR: No arguments provided!", True)
 

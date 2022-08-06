@@ -6,12 +6,14 @@ from os import getcwd
 
 filePath = ""
 currentlyOpenFile = "Untitled"
+currentlyOpenFileName = "Untitled"
 
 class editApp(QWidget):
      def __init__(self):
           super(editApp, self).__init__()
           self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
           self.setFixedSize(640, 480)
+          self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
           self.textEdit = QTextEdit(self)
           self.textEdit.setObjectName(u"textEdit")
@@ -38,15 +40,15 @@ class editApp(QWidget):
           self.newFileBtn.clicked.connect(self.newFile)
 
      def newFile(self):
-          global currentlyOpenFile
+          global currentlyOpenFile,currentlyOpenFileName
           file,check = QFileDialog.getSaveFileName(None, "New File", getcwd().replace("\\","/")+"/files/")
           if check:
                text = open(file,"w")
                text.close()
                currentlyOpenFile = file
-               currentlyOpenFile = currentlyOpenFile.split("/")
-               currentlyOpenFile = currentlyOpenFile[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
+               currentlyOpenFileName = currentlyOpenFile.split("/")
+               currentlyOpenFileName = currentlyOpenFileName[-1]
+               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
 
 
      def openFile(self):
@@ -56,16 +58,16 @@ class editApp(QWidget):
                self.textEdit.setText(text.read())
                text.close()
 
-               global currentlyOpenFile
+               global currentlyOpenFile,currentlyOpenFileName
                currentlyOpenFile = file
-               currentlyOpenFile = currentlyOpenFile.split("/")
-               currentlyOpenFile = currentlyOpenFile[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
+               currentlyOpenFileName = currentlyOpenFile.split("/")
+               currentlyOpenFileName = currentlyOpenFileName[-1]
+               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
      
      def saveFile(self):
-          global currentlyOpenFile
+          global currentlyOpenFile,currentlyOpenFileName
 
-          if currentlyOpenFile == "Untitled":
+          if currentlyOpenFileName == "Untitled":
                self.saveAsFile()
           else:
                text = open(currentlyOpenFile,"w")
@@ -73,7 +75,7 @@ class editApp(QWidget):
                text.close()
      
      def saveAsFile(self):
-          global currentlyOpenFile
+          global currentlyOpenFile,currentlyOpenFileName
 
           file,check = QFileDialog.getSaveFileName(None, "Save", getcwd().replace("\\","/")+"/files/")
           if check:
@@ -81,9 +83,9 @@ class editApp(QWidget):
                text.write(self.textEdit.toPlainText())
                text.close()
                currentlyOpenFile = file
-               currentlyOpenFile = currentlyOpenFile.split("/")
-               currentlyOpenFile = currentlyOpenFile[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
+               currentlyOpenFileName = currentlyOpenFile.split("/")
+               currentlyOpenFileName = currentlyOpenFileName[-1]
+               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
                
 # maybe later :D
 

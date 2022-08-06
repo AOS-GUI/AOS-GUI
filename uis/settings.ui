@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -471,6 +471,32 @@
       </property>
       <property name="text">
        <string notr="true">Font Size</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="splash">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>220</y>
+       <width>141</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string notr="true">Splash</string>
+     </property>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">Show on startup</string>
       </property>
      </widget>
     </widget>

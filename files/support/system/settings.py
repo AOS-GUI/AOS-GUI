@@ -1,8 +1,10 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os.path import exists
-from os import listdir,getcwd
+from os.path import exists,isdir
+from os import listdir,getcwd,remove,mkdir
+from shutil import rmtree
+from time import sleep
 
 titleText = u"AOS-GUI/settings"
 endButtonText = u"Apply changes"
@@ -14,8 +16,9 @@ class settingsWidget(QWidget):
 
         global titleText,endButtonText
 
-        self.resize(450, 540)
+        self.setFixedSize(450, 540)
         self.setWindowTitle(u"AOS-GUI/settings")
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.tabs = QTabWidget(self)
         self.tabs.setObjectName(u"tabs")
         self.tabs.setGeometry(QRect(10, 10, 431, 521))
@@ -161,6 +164,14 @@ class settingsWidget(QWidget):
         self.fL.setObjectName(u"fL")
         self.fL.setGeometry(QRect(70, 23, 61, 16))
         self.fL.setText(u"Font Size")
+        self.splash = QGroupBox(self.customization)
+        self.splash.setObjectName(u"splash")
+        self.splash.setGeometry(QRect(280, 220, 141, 51))
+        self.splash.setTitle(u"Splash")
+        self.showSplashOnStartup = QCheckBox(self.splash)
+        self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
+        self.showSplashOnStartup.setGeometry(QRect(10, 20, 131, 20))
+        self.showSplashOnStartup.setText(u"Show on startup")
         self.tabs.addTab(self.customization, "")
         self.shortcuts = QWidget()
         self.shortcuts.setObjectName(u"shortcuts")
@@ -228,6 +239,7 @@ class settingsWidget(QWidget):
         msg.setIcon(QMessageBox.Warning)
         msg.setText(f"Are you sure you want to reset AOS to its default settings?")
         msg.setWindowTitle("Reset AOS?")
+        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
         retval = msg.exec_()
 
@@ -236,6 +248,7 @@ class settingsWidget(QWidget):
             msg2.setIcon(QMessageBox.Warning)
             msg2.setText(f"Are you SURE? All of your documents and user data will be erased!")
             msg2.setWindowTitle("Are you SURE?")
+            msg2.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
             msg2.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
             retval2 = msg2.exec_()
             if retval2 == 16384:
@@ -243,6 +256,7 @@ class settingsWidget(QWidget):
                 msg3.setIcon(QMessageBox.Warning)
                 msg3.setText(f"If you say so...")
                 msg3.setWindowTitle("Whatever you say!")
+                msg3.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
                 msg3.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
                 retval3 = msg3.exec_()
                 if retval3 == 16384:
@@ -262,8 +276,21 @@ class settingsWidget(QWidget):
         self.getCurrentSettings()
 
     def eraseAllData(self):
-        # delete everything
-        pass
+        homeCwd = getcwd().replace("\\","/")+"/files/home/"
+
+        remove(getcwd().replace("\\","/")+"/files/support/data/user/data.aos")
+        rmtree(homeCwd)
+        sleep(2)
+        mkdir(homeCwd)
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText(f"AOS has been factory reset.")
+        msg.setWindowTitle("Done.")
+        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_()
+        exit()
+        
     # retranslateUi
     def getCurrentSettings(self):
         # pass
@@ -328,6 +355,11 @@ class settingsWidget(QWidget):
         else:
             self.dCHB_7.setChecked(False)
 
+        if content[15] == "True":
+            self.showSplashOnStartup.setChecked(False)
+        else:
+            self.showSplashOnStartup.setChecked(True)
+
     def applyTheme(self):
         tFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
         colors = tFile.read()
@@ -372,7 +404,8 @@ class settingsWidget(QWidget):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setText(f"You have unsaved color changes. Would you like to save them to a new theme?")
-            msg.setWindowTitle("Uninstall?")
+            msg.setWindowTitle("Save changes to theme?")
+            msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
             msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
             retval = msg.exec_()
 
@@ -411,12 +444,14 @@ class settingsWidget(QWidget):
         f.write(str(self.dCHB_4.isChecked())+"\n")
         f.write(str(self.dCHB_5.isChecked())+"\n")
         f.write(str(self.dCHB_6.isChecked())+"\n")
-        f.write(str(self.dCHB_7.isChecked()))
+        f.write(str(self.dCHB_7.isChecked())+"\n")
+        f.write(str(not self.showSplashOnStartup.isChecked()))
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText("Your settings have been applied! Please reopen AOS-GUI.")
         msg.setWindowTitle("Settings set!")
+        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         msg.setStandardButtons(QMessageBox.Ok)
         retval = msg.exec_()
         self.close()
