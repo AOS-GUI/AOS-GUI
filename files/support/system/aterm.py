@@ -4,6 +4,8 @@ from PyQt5.QtCore import *
 from time import sleep
 import os
 
+from files.support.system.helpers.funcs import msgBox
+
 dir = "/home"
 
 helpText = {"help":"aos help (syntax: help {command})",
@@ -76,14 +78,7 @@ class aterm(QWidget):
                     param = param[1]
                     
                 if param.startswith("support"):
-                    warn = QMessageBox()
-                    warn.setIcon(QMessageBox.Warning)
-                    warn.setText(f"'{param}' is a child of or is the 'support' folder, which contains vital system files. Are you sure you want to delete it?")
-                    warn.setWindowTitle("Are you sure?")
-                    warn.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-                    warn.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-                    retval = warn.exec_()
-
+                    retval = msgBox(f"'{param}' is a child of or is the 'support' folder, which contains vital system files. Are you sure you want to delete it?","Are you sure?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
                     if retval != 16384:
                         ok = False
 
@@ -96,12 +91,13 @@ class aterm(QWidget):
                         except OSError:
                             self.echo(f"ERR: The directory isn't empty or doesn't exist!",True)
                 else:
-                    try:
-                        os.remove((os.getcwd().replace("\\","/")+"/files/"+param))
-                    except FileNotFoundError:
-                        self.echo("ERR: The file or directory doesn't exist!",True)
-                    except NotADirectoryError:
-                        self.echo(f"ERR: File not found! Are you sure it's not a directory?",True)
+                    if ok == True:
+                        try:
+                            os.remove((os.getcwd().replace("\\","/")+"/files/"+param+"/"))
+                        except FileNotFoundError:
+                            self.echo("ERR: The file or directory doesn't exist!",True)
+                        except NotADirectoryError:
+                            self.echo(f"ERR: File not found! Are you sure it's not a directory?",True)
                             
                 #.replace("/","\\")
                 # fix

@@ -1,0 +1,2 @@
+testapp|a test app for camelInstall|v1.0|cIgit/testapp.py
+anotherapp|app!|v1.0|https://nanobot567.github.io/anotherapp.py

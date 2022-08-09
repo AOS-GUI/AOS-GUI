@@ -19,9 +19,10 @@ except:
      from PyQt5.QtCore import *
      from PyQt5.QtPrintSupport import *
 
-from files.support.system import fs,editor,startupWindow,settings,AOShelp,aterm,splash
+from files.support.system import fs,editor,settings,AOShelp,aterm,splash
 from files.support.system import cinstall
 from files.support.system.setup import setupAOS
+from files.support.system.helpers.funcs import *
 
 from time import sleep
 import importlib
@@ -76,7 +77,6 @@ class AOS(QMainWindow):
           self.setupButtons()
           self.setupMenuBar()
           self.setupShortcuts()
-          # self.openStartupWindow()
 
      def setupButtons(self):
           global buttonX
@@ -216,21 +216,9 @@ class AOS(QMainWindow):
                          modulePrgm = importlib.import_module("files.apps."+prgm)
                          importlib.reload(modulePrgm)
                     except ModuleNotFoundError:
-                         msg = QMessageBox()
-                         msg.setIcon(QMessageBox.Critical)
-                         msg.setText(f"No app called \"{prgm}\" found in files/apps")
-                         msg.setWindowTitle("ERROR!")
-                         msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-                         msg.setStandardButtons(QMessageBox.Ok)
-                         retval = msg.exec_()
+                         msgBox(f"No app called \"{prgm}\" found in files/apps","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
                     except Exception as err:
-                         msg = QMessageBox()
-                         msg.setIcon(QMessageBox.Critical)
-                         msg.setText(f"Critical error in app \"{prgm}\": {err}")
-                         msg.setWindowTitle("ERROR!")
-                         msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-                         msg.setStandardButtons(QMessageBox.Ok)
-                         retval = msg.exec_()
+                         msgBox(f"Critical error in app \"{prgm}\": {err}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
 
                self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
 
@@ -253,6 +241,7 @@ class AOS(QMainWindow):
 
 
 if __name__ == '__main__':
+     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
      app = QApplication([])
 
      try:
@@ -266,6 +255,7 @@ if __name__ == '__main__':
                passwordInput = ""
                while passwordInput != content[1]:
                     passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password:", QLineEdit.Normal, "")
+          
           if content[15] == "False" or content[15] == "":
                splashscreen = splash.splashScreen()
                splashscreen.show()

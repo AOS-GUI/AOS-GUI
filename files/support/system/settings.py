@@ -5,6 +5,7 @@ from os.path import exists,isdir
 from os import listdir,getcwd,remove,mkdir
 from shutil import rmtree
 from time import sleep
+from files.support.system.helpers.funcs import msgBox
 
 titleText = u"AOS-GUI/settings"
 endButtonText = u"Apply changes"
@@ -234,31 +235,13 @@ class settingsWidget(QWidget):
         QMetaObject.connectSlotsByName(self)
     # setupUi
 
-    def resetAOS(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setText(f"Are you sure you want to reset AOS to its default settings?")
-        msg.setWindowTitle("Reset AOS?")
-        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-        retval = msg.exec_()
+    def resetAOS(self, andmodules = False):
+        retval = msgBox(f"Are you sure you want to reset AOS to its default settings?","Reset AOS?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
 
         if retval == 16384:
-            msg2 = QMessageBox()
-            msg2.setIcon(QMessageBox.Warning)
-            msg2.setText(f"Are you SURE? All of your documents and user data will be erased!")
-            msg2.setWindowTitle("Are you SURE?")
-            msg2.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-            msg2.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-            retval2 = msg2.exec_()
+            retval2 = msgBox(f"Are you SURE? All of your documents and user data will be erased!","Are you SURE?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
             if retval2 == 16384:
-                msg3 = QMessageBox()
-                msg3.setIcon(QMessageBox.Warning)
-                msg3.setText(f"If you say so...")
-                msg3.setWindowTitle("Whatever you say!")
-                msg3.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-                msg3.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-                retval3 = msg3.exec_()
+                retval3 = msgBox("If you say so...","Whatever you say!",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
                 if retval3 == 16384:
                     self.eraseAllData()
 
@@ -282,13 +265,7 @@ class settingsWidget(QWidget):
         rmtree(homeCwd)
         sleep(2)
         mkdir(homeCwd)
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText(f"AOS has been factory reset.")
-        msg.setWindowTitle("Done.")
-        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        msg.setStandardButtons(QMessageBox.Ok)
-        retval = msg.exec_()
+        msgBox("AOS has been factory reset.","Done.",QMessageBox.Information,QMessageBox.Ok)
         exit()
         
     # retranslateUi
@@ -401,13 +378,7 @@ class settingsWidget(QWidget):
         if currentColors != tFsplit:
             tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
 
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText(f"You have unsaved color changes. Would you like to save them to a new theme?")
-            msg.setWindowTitle("Save changes to theme?")
-            msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-            msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-            retval = msg.exec_()
+            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384: # yes value
                 tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
@@ -447,11 +418,5 @@ class settingsWidget(QWidget):
         f.write(str(self.dCHB_7.isChecked())+"\n")
         f.write(str(not self.showSplashOnStartup.isChecked()))
 
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Your settings have been applied! Please reopen AOS-GUI.")
-        msg.setWindowTitle("Settings set!")
-        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        msg.setStandardButtons(QMessageBox.Ok)
-        retval = msg.exec_()
+        msgBox("Your settings have been applied! Please reopen AOS-GUI.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         self.close()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>310</height>
+    <width>450</width>
+    <height>309</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,9 @@
   <widget class="QLabel" name="aosgui">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>-2</x>
      <y>10</y>
-     <width>321</width>
+     <width>450</width>
      <height>91</height>
     </rect>
    </property>
@@ -32,9 +32,9 @@
   <widget class="QLabel" name="aidensos">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>0</x>
      <y>100</y>
-     <width>391</width>
+     <width>451</width>
      <height>21</height>
     </rect>
    </property>
@@ -45,9 +45,9 @@
   <widget class="QPushButton" name="button">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>46</x>
      <y>230</y>
-     <width>361</width>
+     <width>370</width>
      <height>41</height>
     </rect>
    </property>
@@ -58,27 +58,27 @@
     </font>
    </property>
    <property name="text">
-    <string notr="true">That's cool and all, but let me in!</string>
+    <string notr="true">Cool!</string>
    </property>
   </widget>
   <widget class="QLabel" name="version">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>130</y>
+     <x>-78</x>
+     <y>290</y>
      <width>211</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;version 1.0 &lt;span style=&quot; color:#ff0000;&quot;&gt;alpha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;1.0 &lt;span style=&quot; color:#ff0000;&quot;&gt;alpha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="createdby">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>170</y>
+     <x>126</x>
+     <y>120</y>
      <width>211</width>
      <height>20</height>
     </rect>
@@ -93,14 +93,27 @@
   <widget class="QCheckBox" name="dontshowagain">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>156</x>
      <y>280</y>
-     <width>151</width>
+     <width>150</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string notr="true">Don't show this again</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="splashTextLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>160</y>
+     <width>462</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; blink;&quot;&gt;SPLASH TEXT!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
  </widget>

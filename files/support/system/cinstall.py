@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from os import listdir,path
 
+from files.support.system.helpers.funcs import msgBox
+
 class camelInstall(QWidget):
 
     def __init__(self):
@@ -11,43 +13,62 @@ class camelInstall(QWidget):
         self.setFixedSize(660, 460)
         self.setWindowTitle("camelInstall")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        self.font = QFont()
-        self.font.setPointSize(12)
-        self.font.setItalic(True)
         self.camel = QLabel(self)
-        self.camel.setText("camelInstall")
-        self.camel.setObjectName(u"label")
-        self.camel.setGeometry(QRect(530, 10, 111, 16))
-        self.camel.setFont(self.font)
-
-        self.tab = QWidget()
-        self.tab.setObjectName(u"tab")
-
+        self.camel.setObjectName(u"camel")
+        self.camel.setGeometry(QRect(530, 10, 121, 16))
+        font = QFont()
+        font.setPointSize(12)
+        font.setItalic(True)
+        self.camel.setFont(font)
+        self.camel.setText(u"camelInstall")
         self.tabWidget = QTabWidget(self)
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabWidget.setGeometry(QRect(10, 10, 640, 440))
-
-        self.notyet = QLabel(self.tab)
-        self.notyet.setObjectName(u"label_2")
-        self.notyet.setGeometry(QRect(80, 140, 481, 101))
-        self.notyet.setWordWrap(True)
-        self.notyet.setText(u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt;\">not implemented yet! check back when a new AOS version is released!</span></p></body></html>")
-
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.tabWidget.addTab(self.tab_2, "installed")
-        self.tabWidget.addTab(self.tab, "app database")
-
-        self.tableWidget = QTableWidget(self.tab_2)
-        self.tableWidget.setGeometry(QRect(0, 0, 397, 411))
+        self.installed = QWidget()
+        self.installed.setObjectName(u"installed")
+        self.tableWidget = QTableWidget(self.installed)
+        self.tableWidget.setObjectName(u"tableWidget")
+        self.tableWidget.setGeometry(QRect(0, 0, 400, 411))
+        self.tableWidget.setAutoScroll(False)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.tableWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
-
-        self.uninstall = QPushButton(self.tab_2)
-        self.uninstall.setText("Uninstall...")
+        self.uninstall = QPushButton(self.installed)
+        self.uninstall.setObjectName(u"uninstall")
         self.uninstall.setGeometry(QRect(450, 80, 141, 28))
+        self.uninstall.setText(u"Uninstall...")
         self.uninstall.clicked.connect(self.areYouSure)
+        self.tabWidget.addTab(self.installed, "")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.installed), u"installed")
+        self.database = QWidget()
+        self.database.setObjectName(u"database")
+        self.dbTable = QTableWidget(self.database)
+        self.dbTable.setObjectName(u"dbTable")
+        self.dbTable.setGeometry(QRect(0, 0, 400, 411))
+        self.dbTable.setAutoScroll(False)
+        self.dbTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.dbTable.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.dbTable.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.install = QPushButton(self.database)
+        self.install.setObjectName(u"install")
+        self.install.setGeometry(QRect(480, 70, 93, 28))
+        self.install.setText("Install")
+        self.install.clicked.connect(self.installApp)
+        self.viewSource = QPushButton(self.database)
+        self.viewSource.setObjectName(u"viewSource")
+        self.viewSource.setGeometry(QRect(462, 110, 131, 28))
+        self.viewSource.setText("View Source")
+        self.viewSource.clicked.connect(self.viewSourceOfApp)
+        self.search = QPushButton(self.database)
+        self.search.setObjectName(u"search")
+        self.search.setGeometry(QRect(560, 220, 61, 28))
+        self.search.setText("Search")
+        self.search.clicked.connect(self.searchForApp)
+        self.searchEdit = QLineEdit(self.database)
+        self.searchEdit.setObjectName(u"searchEdit")
+        self.searchEdit.setGeometry(QRect(420, 220, 141, 28))
+        self.tabWidget.addTab(self.database, "")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.database), u"app database")
 
         nameItem = QTableWidgetItem()
         nameItem.setText("name")
@@ -61,6 +82,15 @@ class camelInstall(QWidget):
         self.tableWidget.setHorizontalHeaderItem(0, nameItem)
         self.tableWidget.setHorizontalHeaderItem(1, descItem)
         self.tableWidget.setHorizontalHeaderItem(2, verItem)
+
+        self.dbTable.setColumnCount(3)
+        self.dbTable.setHorizontalHeaderItem(0, nameItem)
+        self.dbTable.setHorizontalHeaderItem(1, descItem)
+        self.dbTable.setHorizontalHeaderItem(2, verItem)
+        self.dbTable.setRowCount(1)
+        self.dbTable.setItem(0,0,QTableWidgetItem("hello"))
+        self.dbTable.setItem(0,1,QTableWidgetItem("hello"))
+        self.dbTable.setItem(0,2,QTableWidgetItem("hello"))
 
         filepath = "files/apps/"
         files = []
@@ -90,17 +120,22 @@ class camelInstall(QWidget):
                 self.tableWidget.setItem(row, 0, QTableWidgetItem(name))
                 self.tableWidget.setItem(row, 1, QTableWidgetItem(name))
                 row += 1
+            f.close()
+
+    
+
+    def installApp(self):
+        msgBox(self.dbTable.item(self.dbTable.currentRow(),0).text(),"",0,QMessageBox.Ok)
+    
+    def searchForApp(self):
+        pass
+
+    def viewSourceOfApp(self):
+        pass
 
     def areYouSure(self):
         try:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText(f"Are you sure you want to uninstall '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'?")
-            msg.setWindowTitle("Uninstall?")
-            msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-            msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-            retval = msg.exec_()
-
+            retval = msgBox(f"Are you sure you want to uninstall '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'?","Uninstall?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
             if retval == 16384:
                 self.doneUninstalling()
 
@@ -108,13 +143,7 @@ class camelInstall(QWidget):
             pass
 
     def doneUninstalling(self):
-        thing = QMessageBox()
-        thing.setIcon(QMessageBox.Information)
-        thing.setText(f"Uninstalled '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'!")
-        thing.setWindowTitle("Uninstalled!")
-        thing.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        thing.setStandardButtons(QMessageBox.Ok)
-        retval = thing.exec_()
+        msgBox(f"Uninstalled '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'!","Uninstalled!",QMessageBox.Information,QMessageBox.Ok)
 
     # retranslateUi
 
