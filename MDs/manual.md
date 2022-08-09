@@ -23,3 +23,19 @@ Contained within it is the main menu, which you can access by clicking on `AOS -
 ### desktop
 
 The desktop is what contains all of the buttons that link to applications. You can customize which buttons are on the desktop in the `settings` app.
+
+## Apps
+
+Documentation on all of the AOS-GUI system apps is below.
+
+### AOShelp
+
+Displays help on AOS-GUI. Note that the help text is taken straight from a markdown file and has not been modified to look better in AOS.
+
+### aterm
+
+AOS terminal. Commands are listed in-app by typing `help`.
+
+### camelInstall
+
+camelInstall is AOS's package manager. 

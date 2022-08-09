@@ -4,6 +4,8 @@ from PyQt5.QtCore import *
 from os.path import exists
 from os import listdir,getcwd
 
+from files.support.system.helpers.funcs import msgBox
+
 titleText = u"welcome to AOS-GUI!"
 endButtonText = u"Setup AOS-GUI"
 
@@ -223,13 +225,7 @@ class installform(QMainWindow):
     # setupUi
 
     def showWelcomeMessage(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Before you start using AOS, please configure it to your liking. (You can always change these settings later!)")
-        msg.setWindowTitle("Welcome to AOS-GUI!")
-        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        msg.setStandardButtons(QMessageBox.Ok)
-        retval = msg.exec_()
+        msgBox("Before you start using AOS, please configure it to your liking. (You can always change these settings later!)","Welcome to AOS-GUI!",QMessageBox.Information,QMessageBox.Ok)
 
     def retranslateUi(self):
         self.pLE.setInputMask("")
@@ -303,13 +299,7 @@ class installform(QMainWindow):
         if currentColors != tFsplit:
             tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
 
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText(f"You have unsaved color changes. Would you like to save them to a new theme?")
-            msg.setWindowTitle("Save?")
-            msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-            msg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-            retval = msg.exec_()
+            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?","Save?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384:
                 tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
@@ -349,11 +339,5 @@ class installform(QMainWindow):
         f.write(str(self.dCHB_7.isChecked())+"\n")
         f.write(str(not self.showSplashOnStartup.isChecked()))
 
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Your settings have been applied! Please reopen AOS-GUI.")
-        msg.setWindowTitle("Settings set!")
-        msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        msg.setStandardButtons(QMessageBox.Ok)
-        retval = msg.exec_()
+        msgBox("Your settings have been applied! Please reopen AOS-GUI.","Settings set!",QMessageBox.Information,QMessageBox.Ok)
         self.close()
