@@ -297,42 +297,45 @@ class settingsWidget(QWidget):
         self.KS_2.setKeySequence(content[5])
         self.KS_3.setKeySequence(content[6])
         self.KS_4.setKeySequence(content[7])
-        if content[8] == "True":
+
+        desktopCheckmarkVals = content[8].split("|")
+
+        if desktopCheckmarkVals[0] == "True":
             self.dCHB.setChecked(True)
         else:
             self.dCHB.setChecked(False)
         
-        if content[9] == "True":
+        if desktopCheckmarkVals[1] == "True":
             self.dCHB_2.setChecked(True)
         else:
             self.dCHB_2.setChecked(False)
 
-        if content[10] == "True":
+        if desktopCheckmarkVals[2] == "True":
             self.dCHB_3.setChecked(True)
         else:
             self.dCHB_3.setChecked(False)
 
-        if content[11] == "True":
+        if desktopCheckmarkVals[3] == "True":
             self.dCHB_4.setChecked(True)
         else:
             self.dCHB_4.setChecked(False)
 
-        if content[12] == "True":
+        if desktopCheckmarkVals[4] == "True":
             self.dCHB_5.setChecked(True)
         else:
             self.dCHB_5.setChecked(False)
 
-        if content[13] == "True":
+        if desktopCheckmarkVals[5] == "True":
             self.dCHB_6.setChecked(True)
         else:
             self.dCHB_6.setChecked(False)
 
-        if content[14] == "True":
+        if desktopCheckmarkVals[6] == "True":
             self.dCHB_7.setChecked(True)
         else:
             self.dCHB_7.setChecked(False)
 
-        if content[15] == "True":
+        if content[9] == "True":
             self.showSplashOnStartup.setChecked(False)
         else:
             self.showSplashOnStartup.setChecked(True)
@@ -391,9 +394,6 @@ class settingsWidget(QWidget):
                     themeFile.write(currentColors[5])
 
                     themeFile.close()
-                    
-
-            
 
         f.write(self.uLE.text()+"\n")
         f.write(self.pLE.text()+"\n")
@@ -409,12 +409,12 @@ class settingsWidget(QWidget):
         f.write(self.KS_2.keySequence().toString()+"\n")
         f.write(self.KS_3.keySequence().toString()+"\n")
         f.write(self.KS_4.keySequence().toString()+"\n")
-        f.write(str(self.dCHB.isChecked())+"\n")
-        f.write(str(self.dCHB_2.isChecked())+"\n")
-        f.write(str(self.dCHB_3.isChecked())+"\n")
-        f.write(str(self.dCHB_4.isChecked())+"\n")
-        f.write(str(self.dCHB_5.isChecked())+"\n")
-        f.write(str(self.dCHB_6.isChecked())+"\n")
+        f.write(str(self.dCHB.isChecked())+"|")
+        f.write(str(self.dCHB_2.isChecked())+"|")
+        f.write(str(self.dCHB_3.isChecked())+"|")
+        f.write(str(self.dCHB_4.isChecked())+"|")
+        f.write(str(self.dCHB_5.isChecked())+"|")
+        f.write(str(self.dCHB_6.isChecked())+"|")
         f.write(str(self.dCHB_7.isChecked())+"\n")
         f.write(str(not self.showSplashOnStartup.isChecked()))
 

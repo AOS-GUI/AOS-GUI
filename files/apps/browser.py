@@ -5,8 +5,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtWebEngineWidgets import *
 
-import requests
-
 from files.support.system.helpers.funcs import msgBox
 
 # next line is the project description, format is '#(tilde){name}|{desc}|{ver}'
