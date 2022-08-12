@@ -64,8 +64,8 @@ class AOS(QMainWindow):
           tbgcolor = themeColors[2]
           btextcolor = themeColors[5]
           bbgcolor = themeColors[4]
-          for i in range(8,len(content)):
-               buttonsShown.append(content[i])
+          
+          buttonsShown = content[8].split("|")
 
           f.close()
 
@@ -89,75 +89,47 @@ class AOS(QMainWindow):
           self.helpWindow = AOShelp.aoshelp()
           self.atermWindow = aterm.aterm()
 
-          if buttonsShown[0] == "True":
-               self.settings = QPushButton(self)
-               self.settings.setGeometry(buttonX, buttonY, 100,50)
-               self.settings.setText('Settings')
-               self.settings.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.settings.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.settings.clicked.connect(self.settingsWindow.show)
-               self.settings.clicked.connect(self.settingsWindow.activateWindow)
-               buttonX += 120
-               
+          btnName = 0
 
-          if buttonsShown[1] == "True":
-               self.rndrButton = QPushButton(self)
-               self.rndrButton.setGeometry(buttonX, buttonY, 100,50)
-               self.rndrButton.setText('Run .rndr')
-               self.rndrButton.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.rndrButton.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.rndrButton.clicked.connect(self.rndr)
-               buttonX += 120
-          
-          if buttonsShown[2] == "True":
-               self.fs = QPushButton(self)
-               self.fs.setGeometry(buttonX, buttonY, 100,50)
-               self.fs.setText('FileSystem')
-               self.fs.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.fs.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.fs.clicked.connect(self.fsWindow.show)
-               self.fs.clicked.connect(self.fsWindow.activateWindow)
-               buttonX += 120
+          for i in buttonsShown:
+               if i == "True":
+                    globals()[btnName] = QPushButton(self)
+                    globals()[btnName].setGeometry(buttonX,buttonY,100,50)
+                    globals()[btnName].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
+                    globals()[btnName].setCursor(Qt.CursorShape.PointingHandCursor)
 
-          if buttonsShown[3] == "True":
-               self.cInst = QPushButton(self)
-               self.cInst.setGeometry(buttonX, buttonY, 100,50)
-               self.cInst.setText('camelInstall')
-               self.cInst.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.cInst.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.cInst.clicked.connect(self.cInstWindow.show)
-               self.cInst.clicked.connect(self.cInstWindow.activateWindow)
-               buttonX += 120
+                    if btnName == 0:
+                         globals()[btnName].setText("Settings")
+                         globals()[btnName].clicked.connect(self.settingsWindow.show)
+                         globals()[btnName].clicked.connect(self.settingsWindow.activateWindow)
+                    elif btnName == 1:
+                         globals()[btnName].setText("Run .rndr")
+                         globals()[btnName].clicked.connect(self.rndr)
+                    elif btnName == 2:
+                         globals()[btnName].setText("FileSystem")
+                         globals()[btnName].clicked.connect(self.fsWindow.show)
+                         globals()[btnName].clicked.connect(self.fsWindow.activateWindow)
+                    elif btnName == 3:
+                         globals()[btnName].setText("camelInstall")
+                         globals()[btnName].clicked.connect(self.cInstWindow.show)
+                         globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
+                    elif btnName == 4:
+                         globals()[btnName].setText("Edit")
+                         globals()[btnName].clicked.connect(self.editWindow.show)
+                         globals()[btnName].clicked.connect(self.editWindow.activateWindow)
+                    elif btnName == 5:
+                         globals()[btnName].setText("AOSHelp")
+                         globals()[btnName].clicked.connect(self.helpWindow.show)
+                         globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
+                    elif btnName == 6:
+                         globals()[btnName].setText("Terminal")
+                         globals()[btnName].clicked.connect(self.atermWindow.show)
+                         globals()[btnName].clicked.connect(self.atermWindow.activateWindow)
 
-          if buttonsShown[4] == "True":
-               self.edit = QPushButton(self)
-               self.edit.setGeometry(buttonX, buttonY, 100,50)
-               self.edit.setText('Edit')
-               self.edit.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.edit.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.edit.clicked.connect(self.editWindow.show)
-               self.edit.clicked.connect(self.editWindow.activateWindow)
-               buttonX += 120
 
-          if buttonsShown[5] == "True":
-               self.help = QPushButton(self)
-               self.help.setGeometry(buttonX, buttonY, 100,50)
-               self.help.setText('AOSHelp')
-               self.help.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.help.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.help.clicked.connect(self.helpWindow.show)
-               self.help.clicked.connect(self.helpWindow.activateWindow)
-               buttonX += 120
-          
-          if buttonsShown[6] == "True":
-               self.aterm = QPushButton(self)
-               self.aterm.setGeometry(buttonX, buttonY, 100,50)
-               self.aterm.setText('Terminal')
-               self.aterm.setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
-               self.aterm.setCursor(Qt.CursorShape.PointingHandCursor)
-               self.aterm.clicked.connect(self.atermWindow.show)
-               self.aterm.clicked.connect(self.atermWindow.activateWindow)
-               buttonX += 120
+                    buttonX += 120
+
+               btnName += 1
 
      def setupMenuBar(self):
           menuBar = self.menuBar()
@@ -256,7 +228,7 @@ if __name__ == '__main__':
                while passwordInput != content[1]:
                     passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password:", QLineEdit.Normal, "")
           
-          if content[15] == "False" or content[15] == "":
+          if content[9] == "False" or content[9] == "":
                splashscreen = splash.splashScreen()
                splashscreen.show()
 

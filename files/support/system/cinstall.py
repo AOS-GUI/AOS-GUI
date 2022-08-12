@@ -1,7 +1,7 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os import listdir,path
+from os import listdir,path,getcwd
 
 from files.support.system.helpers.funcs import msgBox
 
@@ -76,6 +76,8 @@ class camelInstall(QWidget):
         descItem.setText("description")
         verItem = QTableWidgetItem()
         verItem.setText("version")
+        urlItem = QTableWidgetItem()
+        urlItem.setText("url")
 
         self.tableWidget.setColumnCount(3)
 
@@ -83,10 +85,11 @@ class camelInstall(QWidget):
         self.tableWidget.setHorizontalHeaderItem(1, descItem)
         self.tableWidget.setHorizontalHeaderItem(2, verItem)
 
-        self.dbTable.setColumnCount(3)
+        self.dbTable.setColumnCount(4)
         self.dbTable.setHorizontalHeaderItem(0, nameItem)
         self.dbTable.setHorizontalHeaderItem(1, descItem)
         self.dbTable.setHorizontalHeaderItem(2, verItem)
+        self.dbTable.setHorizontalHeaderItem(3, verItem)
         self.dbTable.setRowCount(1)
         self.dbTable.setItem(0,0,QTableWidgetItem("hello"))
         self.dbTable.setItem(0,1,QTableWidgetItem("hello"))
@@ -121,6 +124,40 @@ class camelInstall(QWidget):
                 self.tableWidget.setItem(row, 1, QTableWidgetItem(name))
                 row += 1
             f.close()
+
+        f = open(getcwd()+"\\camelInstallList.txt","r")
+
+        filesOnline = f.readlines()
+        filesOnlineNames = []
+        filesOnlineDescs = []
+        filesOnlineVers = []
+        filesOnlineUrls = []
+        i = 0
+
+        for files in filesOnline:
+            filesOnlineNames.append(filesOnline[i].split("|")[0])
+            filesOnlineDescs.append(filesOnline[i].split("|")[1])
+            filesOnlineVers.append(filesOnline[i].split("|")[2])
+            filesOnlineUrls.append(filesOnline[i].split("|")[3])
+            i+=1
+
+
+        self.dbTable.setRowCount(len(filesOnlineNames))
+        i = 0
+
+        for name in filesOnlineNames:
+            self.dbTable.setItem(i, 0, QTableWidgetItem(name))
+            i += 1
+        for desc in filesOnlineDescs:
+            self.dbTable.setItem(i, 1, QTableWidgetItem(desc))
+            i += 1
+        for ver in filesOnlineVers:
+            self.dbTable.setItem(i, 2, QTableWidgetItem(ver))
+            i += 1
+        for url in filesOnlineUrls:
+            self.dbTable.setItem(i, 3, QTableWidgetItem(url))
+            i += 1
+
 
     
 

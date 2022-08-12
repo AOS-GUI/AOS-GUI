@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -324,7 +324,7 @@
        <x>10</x>
        <y>220</y>
        <width>121</width>
-       <height>181</height>
+       <height>211</height>
       </rect>
      </property>
      <property name="title">
@@ -419,6 +419,19 @@
       </property>
       <property name="text">
        <string notr="true">ATerm</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="externalButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">External...</string>
       </property>
      </widget>
     </widget>
