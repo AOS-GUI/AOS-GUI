@@ -1,2 +1,5 @@
-testapp|a test app for camelInstall|v1.0|cIgit/testapp.py
 anotherapp|app!|v1.0|https://nanobot567.github.io/anotherapp.py
+browser2.0|browser for AOS|v1.0|db/browse2.py
+potscr|potatoscript test package|v3.24|https://raw.githubusercontent.com/Nanobot567/potscr/main/potscr.py
+prodHub|productivity hub for AOS|v1.5|db/prodHub
+testapp|a test app for camelInstall|v1.0|db/testapp.py

@@ -38,4 +38,16 @@ AOS terminal. Commands are listed in-app by typing `help`.
 
 ### camelInstall
 
-camelInstall is AOS's package manager. 
+camelInstall is AOS's package manager. It contains information on both your installed packages and online packages that you can install from the camelInstall database.
+
+### editor
+
+AOS editor. Here you can edit text files.
+
+### fs (filesystem)
+
+AOS filesystem viewer. Here you can view all of the folders and files within the AOS `/` directory.
+
+### settings
+
+AOS settings. Here you can change all of AOS's settings (surprising, I know).

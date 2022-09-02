@@ -291,7 +291,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Run .rndr</string>
+       <string>appLauncher</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBox_3">

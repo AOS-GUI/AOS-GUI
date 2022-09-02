@@ -49,13 +49,13 @@ class aterm(QWidget):
     
     def doCommand(self, command="",silentOut=False):
         if command == "":
+            # if self.lineEdit.text() != False:
             command = self.lineEdit.text()
             self.echo("[YOU] "+command)
         else:
             if silentOut == False:
                 self.echo("[SCRIPT] "+command)
             
-
         lowcommand = command.lower()
 
         self.lineEdit.setText("")
