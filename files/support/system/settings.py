@@ -1,3 +1,4 @@
+from types import NoneType
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -103,23 +104,30 @@ class settingsWidget(QWidget):
         self.cLE_6.setGeometry(QRect(130, 180, 81, 22))
         self.themes = QGroupBox(self.colors)
         self.themes.setObjectName(u"themes")
-        self.themes.setGeometry(QRect(220, 10, 171, 191))
-        self.themes.setTitle(u"Themes")
+        self.themes.setGeometry(QRect(220, 10, 171, 131))
+        self.themes.setTitle(u"Color Themes")
         self.themeCB = QComboBox(self.themes)
         self.themeCB.setObjectName(u"themeCB")
-        self.themeCB.setGeometry(QRect(20, 50, 131, 22))
+        self.themeCB.setGeometry(QRect(20, 30, 131, 22))
         self.themeCB.setCurrentText(u"")
         self.tApply = QPushButton(self.themes)
         self.tApply.setObjectName(u"tApply")
-        self.tApply.setGeometry(QRect(40, 80, 93, 28))
+        self.tApply.setGeometry(QRect(40, 60, 93, 28))
         self.tApply.setText(u"Apply")
         self.tSave = QPushButton(self.themes)
         self.tSave.setObjectName(u"tSave")
-        self.tSave.setGeometry(QRect(40, 110, 93, 28))
+        self.tSave.setGeometry(QRect(40, 90, 93, 28))
         self.tSave.setText(u"Save")
+        self.guiThemes = QGroupBox(self.colors)
+        self.guiThemes.setObjectName(u"guiThemes")
+        self.guiThemes.setGeometry(QRect(220, 150, 171, 51))
+        self.guiThemes.setTitle(u"GUI Themes")
+        self.guiThemeCB = QComboBox(self.guiThemes)
+        self.guiThemeCB.setObjectName(u"guiThemeCB")
+        self.guiThemeCB.setGeometry(QRect(10, 20, 151, 22))
         self.showOnDesktop = QGroupBox(self.customization)
         self.showOnDesktop.setObjectName(u"showOnDesktop")
-        self.showOnDesktop.setGeometry(QRect(10, 220, 121, 261))
+        self.showOnDesktop.setGeometry(QRect(10, 220, 101, 231))
         self.showOnDesktop.setTitle(u"Show On Desktop")
         self.dCHB = QCheckBox(self.showOnDesktop)
         self.dCHB.setObjectName(u"dCHB")
@@ -128,7 +136,7 @@ class settingsWidget(QWidget):
         self.dCHB_2 = QCheckBox(self.showOnDesktop)
         self.dCHB_2.setObjectName(u"dCHB_2")
         self.dCHB_2.setGeometry(QRect(10, 50, 81, 20))
-        self.dCHB_2.setText(u"Run .rndr")
+        self.dCHB_2.setText(u"appLauncher")
         self.dCHB_3 = QCheckBox(self.showOnDesktop)
         self.dCHB_3.setObjectName(u"dCHB_3")
         self.dCHB_3.setGeometry(QRect(10, 70, 91, 20))
@@ -155,22 +163,22 @@ class settingsWidget(QWidget):
         self.eBc.setText(u"Ok")
         self.font = QGroupBox(self.customization)
         self.font.setObjectName(u"font")
-        self.font.setGeometry(QRect(140, 220, 131, 51))
-        self.font.setTitle("Font")
+        self.font.setGeometry(QRect(270, 220, 141, 51))
+        self.font.setTitle(u"Font")
         self.fSB = QSpinBox(self.font)
         self.fSB.setObjectName(u"fSB")
-        self.fSB.setGeometry(QRect(10, 20, 51, 22))
+        self.fSB.setGeometry(QRect(20, 20, 51, 22))
         self.fSB.setSuffix(u"px")
         self.fL = QLabel(self.font)
         self.fL.setObjectName(u"fL")
-        self.fL.setGeometry(QRect(70, 23, 61, 16))
+        self.fL.setGeometry(QRect(80, 23, 61, 16))
         self.fL.setText(u"Font Size")
         self.splash = QGroupBox(self.customization)
         self.splash.setObjectName(u"splash")
-        self.splash.setGeometry(QRect(280, 220, 141, 51))
-        self.splash.setTitle(u"Splash")
+        self.splash.setGeometry(QRect(120, 220, 141, 51))
+        self.splash.setTitle(u"Splash Dialog")
         self.showSplashOnStartup = QCheckBox(self.splash)
-        self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
+        self.showSplashOnStartup.setObjectName(u"checkBox")
         self.showSplashOnStartup.setGeometry(QRect(10, 20, 131, 20))
         self.showSplashOnStartup.setText(u"Show on startup")
         self.tabs.addTab(self.customization, "")
@@ -271,6 +279,7 @@ class settingsWidget(QWidget):
     # retranslateUi
     def getCurrentSettings(self):
         # pass
+
         f = open("files/support/data/user/data.aos","r")
         content = f.read()
         content = content.split("\n")
@@ -279,9 +288,11 @@ class settingsWidget(QWidget):
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 
+        self.guiThemeCB.clear()
+        self.themeCB.clear()
+
         for _ in listdir(getcwd().replace("\\","/")+"/files/support/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
-
 
         self.uLE.setText(content[0])
         self.pLE.setText(content[1])
@@ -334,11 +345,16 @@ class settingsWidget(QWidget):
             self.dCHB_7.setChecked(True)
         else:
             self.dCHB_7.setChecked(False)
-
+            
         if content[9] == "True":
             self.showSplashOnStartup.setChecked(False)
         else:
             self.showSplashOnStartup.setChecked(True)
+        
+        for i in QStyleFactory.keys():
+            self.guiThemeCB.addItem(i)
+        
+        self.guiThemeCB.setCurrentText(content[10])
 
     def applyTheme(self):
         tFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -351,7 +367,6 @@ class settingsWidget(QWidget):
         self.cLE_4.setText(themeColors[3])
         self.cLE_5.setText(themeColors[4])
         self.cLE_6.setText(themeColors[5])
-        
 
 
     def saveTheme(self):
@@ -366,6 +381,7 @@ class settingsWidget(QWidget):
             themeFile.write(currentColors[5])
 
             themeFile.close()
+        self.getCurrentSettings()
 
     def getmeout(self):
         retval = 0
@@ -416,7 +432,8 @@ class settingsWidget(QWidget):
         f.write(str(self.dCHB_5.isChecked())+"|")
         f.write(str(self.dCHB_6.isChecked())+"|")
         f.write(str(self.dCHB_7.isChecked())+"\n")
-        f.write(str(not self.showSplashOnStartup.isChecked()))
+        f.write(str(not self.showSplashOnStartup.isChecked())+"\n")
+        f.write(self.guiThemeCB.currentText())
 
         msgBox("Your settings have been applied! Please reopen AOS-GUI.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         self.close()

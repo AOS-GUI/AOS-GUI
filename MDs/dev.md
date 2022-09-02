@@ -56,4 +56,7 @@ window.show()
 
 ## publishing your app
 
-Currently, there is no official way to distribute apps. Until there is, you can use GitHub or another VSC site / service to publish it.
+To publish your app, create a pull request at [camelInstall](https://github.com/nanobot567/cInstall) with the following contents:
+
+- your standalone python module in `/dl/`
+- your change to camelInstallList.txt located in `/dl/`

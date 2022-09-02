@@ -18,7 +18,7 @@ class main_print(QWidget):
         super(main_print, self).__init__()
         self.setFixedSize(500, 400)
         self.setWindowTitle("AOS-GUI")
-        self.setStyleSheet(f"background-color: {self.bgcolor}; color: {self.textcolor};")
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.closeButton = QPushButton(self)
 
         self.closeButton.setText("hi")

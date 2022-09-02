@@ -1,7 +1,8 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os import listdir,path,getcwd
+from os import listdir,path,getcwd,remove
+import requests
 
 from files.support.system.helpers.funcs import msgBox
 
@@ -89,12 +90,12 @@ class camelInstall(QWidget):
         self.dbTable.setHorizontalHeaderItem(0, nameItem)
         self.dbTable.setHorizontalHeaderItem(1, descItem)
         self.dbTable.setHorizontalHeaderItem(2, verItem)
-        self.dbTable.setHorizontalHeaderItem(3, verItem)
+        self.dbTable.setHorizontalHeaderItem(3, urlItem)
         self.dbTable.setRowCount(1)
-        self.dbTable.setItem(0,0,QTableWidgetItem("hello"))
-        self.dbTable.setItem(0,1,QTableWidgetItem("hello"))
-        self.dbTable.setItem(0,2,QTableWidgetItem("hello"))
 
+        self.refreshApps()
+
+    def refreshApps(self):
         filepath = "files/apps/"
         files = []
         row = 0
@@ -124,9 +125,11 @@ class camelInstall(QWidget):
                 self.tableWidget.setItem(row, 1, QTableWidgetItem(name))
                 row += 1
             f.close()
+        
+        # r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt")
+        f = open(getcwd()+"/camelInstallList.txt","r")
 
-        f = open(getcwd()+"\\camelInstallList.txt","r")
-
+        # filesOnline = r.text.splitlines(False)
         filesOnline = f.readlines()
         filesOnlineNames = []
         filesOnlineDescs = []
@@ -148,24 +151,38 @@ class camelInstall(QWidget):
         for name in filesOnlineNames:
             self.dbTable.setItem(i, 0, QTableWidgetItem(name))
             i += 1
+        i = 0
         for desc in filesOnlineDescs:
             self.dbTable.setItem(i, 1, QTableWidgetItem(desc))
             i += 1
+        i = 0
         for ver in filesOnlineVers:
             self.dbTable.setItem(i, 2, QTableWidgetItem(ver))
             i += 1
+        i = 0
         for url in filesOnlineUrls:
             self.dbTable.setItem(i, 3, QTableWidgetItem(url))
             i += 1
-
-
-    
+        i = 0
 
     def installApp(self):
-        msgBox(self.dbTable.item(self.dbTable.currentRow(),0).text(),"",0,QMessageBox.Ok)
-    
+        ret = msgBox("Are you sure you want to install \""+self.dbTable.item(self.dbTable.currentRow(),0).text()+"\"?","Install?",0,QMessageBox.Yes|QMessageBox.No)
+        if ret == 16384:
+            url = self.dbTable.item(self.dbTable.currentRow(),3).text()
+            if url.startswith("db/"):
+                url = url.split("db/")[1]
+                url = "https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/"+url
+            r = requests.get(url)
+            f = open(getcwd().replace("\\","/")+"/files/apps/"+(url.split("/")[len(url.split("/"))-1]).split("\n")[0],"w")
+            f.write(r.text)
+            f.close()
+            msgBox(f"Installed \"{self.dbTable.item(self.dbTable.currentRow(),0).text()}\"!","Installed!",QMessageBox.Information,QMessageBox.Ok)
+            self.refreshApps()
+
     def searchForApp(self):
-        pass
+        for i in range(self.dbTable.rowCount()):
+            if self.searchEdit.text() in self.dbTable.item(i,0).text() or self.searchEdit.text() in self.dbTable.item(i,1).text():
+                self.dbTable.selectRow(i)
 
     def viewSourceOfApp(self):
         pass
@@ -180,7 +197,12 @@ class camelInstall(QWidget):
             pass
 
     def doneUninstalling(self):
-        msgBox(f"Uninstalled '{self.tableWidget.item(self.tableWidget.currentRow(),0).text()}'!","Uninstalled!",QMessageBox.Information,QMessageBox.Ok)
+        item = self.tableWidget.item(self.tableWidget.currentRow(),0).text()
+        if not item.endswith(".py"):
+            item = item+".py"
+        remove(getcwd().replace("\\","/")+"/files/apps/"+item)
+        msgBox(f"Uninstalled '{item}'!","Uninstalled!",QMessageBox.Information,QMessageBox.Ok)
+        self.refreshApps()
 
     # retranslateUi
 
