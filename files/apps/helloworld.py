@@ -4,8 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-# next line is the project description, format is #(tilde){name}|{desc}|{ver}
-#~helloworld!|AOS-GUI Demo App|v1.0
+#~helloworld|AOS-GUI Demo App|v1.0
 
 
 class hiworld(QWidget):

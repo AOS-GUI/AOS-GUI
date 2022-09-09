@@ -284,7 +284,10 @@ class settingsWidget(QWidget):
         content = f.read()
         content = content.split("\n")
 
-        themeText = open("files/support/data/user/themes/"+content[2]+".theme","r")
+        try:
+            themeText = open("files/support/data/user/themes/"+content[2]+".theme","r")
+        except FileNotFoundError:
+            themeText = open("files/support/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 

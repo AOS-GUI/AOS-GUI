@@ -27,7 +27,7 @@ from files.support.system import cinstall
 from files.support.system.setup import setupAOS
 from files.support.system.helpers.funcs import *
 
-from time import sleep
+from time import sleep,strftime
 import importlib
 import sys
 import os
@@ -51,17 +51,8 @@ class AOS(QMainWindow):
           super(AOS, self).__init__()
           global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme
 
-          # apply settings
+          content,themeColors = userSettings()
 
-          f = open("files/support/data/user/data.aos","r")
-          content = f.read()
-          content = content.split("\n")
-
-          print("Setting up main window...")
-
-          themeText = open("files/support/data/user/themes/"+content[2]+".theme","r")
-          themeText = themeText.read()
-          themeColors = themeText.split("\n")
           username = content[0]
           password = content[1]
           fontSize = content[3]
@@ -78,7 +69,6 @@ class AOS(QMainWindow):
           buttonsShown = content[8].split("|")
 
           guiTheme = content[10]
-          f.close()
 
           self.setWindowTitle("AOS-GUI")
           # remove title bar
@@ -149,6 +139,7 @@ class AOS(QMainWindow):
                btnName += 1
 
      def setupMenuBar(self):
+          global timeMenu
           menuBar = self.menuBar()
 
           menuBar.setStyleSheet(f"background-color: {tbgcolor}; color: {ttextcolor};")
@@ -161,13 +152,18 @@ class AOS(QMainWindow):
           self.setAction = QAction("&Settings", self)
           self.exitAction = QAction("&Exit", self)
 
-
           aosMenu = QMenu(f"&AOS - {username}", self)
+          timeMenu = QMenu(strftime('%H:%M:%S - /%m/%d/%Y'), self)
+
           menuBar.addMenu(aosMenu)
+          menuSeparator = menuBar.addMenu("|")
+          menuSeparator.setEnabled(False)
+          menuBar.addMenu(timeMenu)
           aosMenu.addAction(self.runAction)
           # aosMenu.addAction(self.cInstAction)
           aosMenu.addAction(self.setAction)
           aosMenu.addAction(self.exitAction)
+          timeMenu.setEnabled(False)
 
           self.runAction.triggered.connect(self.run)
           # self.cInstAction.triggered.connect(cinstall.window.show)
@@ -243,11 +239,16 @@ if __name__ == '__main__':
 
           f.close()
      except Exception as e:
-          if not str(e).startswith("[Errno 2]"):
-               print(e)
-          window = setupAOS.installform()
-          window.show()
+          if not str(e).startswith("[Errno 2] No such file or directory: 'files/support/data/user/data.aos'"):
+               print("ERR: "+e)
+          else:
+               window = setupAOS.installform()
+               window.show()
 
      # window = MainWindow()
+     # app.setAttribute(Qt.WA_StyledBackground)
      app.setStyle(guiTheme)
+     timer = QTimer()
+     timer.timeout.connect(lambda: timeMenu.setTitle(strftime('%H:%M:%S - %m/%d/%Y')))
+     timer.start(1000)
      exit(app.exec_())

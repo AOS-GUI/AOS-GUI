@@ -32,6 +32,10 @@ Documentation on all of the AOS-GUI system apps is below.
 
 Displays help on AOS-GUI. Note that the help text is taken straight from a markdown file and has not been modified to look better in AOS.
 
+### appLauncher
+
+This app launches external apps that you have downloaded via camelInstall.
+
 ### aterm
 
 AOS terminal. Commands are listed in-app by typing `help`.
