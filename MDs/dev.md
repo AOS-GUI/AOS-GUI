@@ -15,7 +15,9 @@ First, take a look at the comment on line 8:
 
 `#~template|template project|v0.1`
 
-AOS pulls the name, description, and version of your app from this comment in programs such as `camelInstall`. For users to recognize your app, replace the template values with whatever you like.
+AOS pulls the name, description, and version of your app from this comment in programs such as `camelInstall`. For users to recognize your app, replace the template values with whatever you like. 
+
+    note: the "name" section must be the same as your python module name.
 
 Metadata comment format:
 `#~(NAME)|(DESCRIPTION)|(VERSION)`
@@ -58,5 +60,9 @@ window.show()
 
 To publish your app, create a pull request at [camelInstall](https://github.com/nanobot567/cInstall) with the following contents:
 
-- your standalone python module in `/dl/`
-- your change to camelInstallList.txt located in `/dl/`
+- your change to appList.txt located in `/dl/`
+- your standalone python module in `/dl/` if you would like to store it in the database.
+
+Your change to appList.txt should ONLY contain your python module name, description, version number, and URL to the module. The URL portion can be a direct link to your python module, or it can be `dl/` followed by the module name if the module is in the camelInstall GitHub repository.
+
+The format of each line of appList.txt is `(NAME)|(DESCRIPTION)|(VERSION)|(URL)`.

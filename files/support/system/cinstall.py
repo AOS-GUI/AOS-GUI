@@ -4,16 +4,29 @@ from PyQt5.QtCore import *
 from os import listdir,path,getcwd,remove
 import requests
 
-from files.support.system.helpers.funcs import msgBox
+from files.support.system.helpers.funcs import msgBox,userSettings
+
+class srcWindow(QWidget):
+    def __init__(self):
+        super(srcWindow, self).__init__()
+
+        self.setFixedSize(700, 500)
+        self.setWindowTitle("camelInstall - view source")
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+
+        self.source = QTextEdit(self)
+        self.source.setGeometry(0,0,700,500)
+        self.source.setText("no source")
+
 
 class camelInstall(QWidget):
-
     def __init__(self):
         super(camelInstall, self).__init__()
 
         self.setFixedSize(660, 460)
         self.setWindowTitle("camelInstall")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+
         self.camel = QLabel(self)
         self.camel.setObjectName(u"camel")
         self.camel.setGeometry(QRect(530, 10, 121, 16))
@@ -126,11 +139,11 @@ class camelInstall(QWidget):
                 row += 1
             f.close()
         
-        # r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt")
-        f = open(getcwd()+"/camelInstallList.txt","r")
+        r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt")
+        # f = open(getcwd()+"/camelInstallList.txt","r")
 
-        # filesOnline = r.text.splitlines(False)
-        filesOnline = f.readlines()
+        filesOnline = r.text.splitlines(False)
+        # filesOnline = f.readlines()
         filesOnlineNames = []
         filesOnlineDescs = []
         filesOnlineVers = []
@@ -185,7 +198,12 @@ class camelInstall(QWidget):
                 self.dbTable.selectRow(i)
 
     def viewSourceOfApp(self):
-        pass
+        url = self.dbTable.item(self.dbTable.currentRow(),3).text()
+        if url.startswith("db/"):
+            url = url.split("db/")[1]
+            url = "https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/"+url
+        r = requests.get(url)
+        msgBox(r.text,"Source")
 
     def areYouSure(self):
         try:

@@ -49,7 +49,7 @@ class splashScreen(QWidget):
         self.version = QLabel(self)
         self.version.setObjectName(u"version")
         self.version.setGeometry(QRect(-78, 290, 211, 20))
-        self.version.setText(u"<html><head/><body><p align=\"center\">1.0 <span style=\" color:#ff0000;\">alpha</span></p></body></html>")
+        self.version.setText(u"<html><head/><body><p align=\"center\">0.2 <span style=\" color:#ff0000;\">alpha</span></p></body></html>")
         self.createdby = QLabel(self)
         self.createdby.setObjectName(u"createdby")
         self.createdby.setGeometry(QRect(126, 120, 211, 20))
