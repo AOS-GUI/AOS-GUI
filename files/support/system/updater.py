@@ -1,6 +1,7 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+import requests
 
 class updater(QWidget):
     # this can be your normal PyQt5 code, go crazy!

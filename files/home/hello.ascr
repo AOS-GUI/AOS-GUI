@@ -1,0 +1,7 @@
+echo This is a script that prints the system version! Here is the system version:
+ver
+echo Now I will print every command via 'help'!
+help
+echo Here is how to use 'echo':
+help echo
+echo And this is the end of the script! Goodbye!
