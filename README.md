@@ -1,15 +1,25 @@
-# AOS-GUI
-oh yeah. it's happening.
+<p align="center">
+    <img src="MDs/resources/aosgui.PNG">
+</p>
+<p align="center">
+    the definitive version of AOS
+</p>
+<p align="center">
+    <img src="https://img.shields.io/github/downloads/nanobot567/AOS-GUI/total?color=darkred">
+    <img src="https://img.shields.io/github/stars/nanobot567/AOS-GUI?color=darkred&label=stars&logo=github&style=flat">
+    <img src="https://img.shields.io/github/v/release/nanobot567/AOS-GUI">
+    <img src="https://img.shields.io/badge/platform-literally%20anything%20with%20python-darkred">
+    <img src="https://img.shields.io/badge/stupid%20test-11/10%20ABSOLUTELY-darkred">
+</p>
 
-## What is AOS?
-AOS is my hobby operating system, written in Python. AOS-GUI is the latest version and is the first to have a desktop and graphical applications.
+<h2 align="center"><a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/install.md">installation</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/manual.md">manual</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/dev.md">dev guide</a></h2>
 
-AOS is also designed to be incredibly easy to develop for (it only takes a few lines of PyQt5 code to make an app!)
+<hr>
 
-### todo
-- some apps
-- camelInstaller (package manager)
+<h1 align="center">FAQ</h1>
 
-## [manual](https://github.com/nanobot567/AOS-GUI/blob/main/MDs/manual.md)
-
-## [dev guide](https://github.com/nanobot567/AOS-GUI/blob/main/MDs/dev.md)
+<h2 align="center"> What is AOS? </h2>
+<h4 align="center">AOS is my hobby "operating system", written in Python. AOS-GUI is the latest version and is the first to have a desktop and graphical applications.</h4>
+<h4 align="center">AOS is also designed to be incredibly easy to develop for (it only takes a few lines of PyQt5 code to make an app!)</h4>
+<h2 align="center"> Why? </h2>
+<h4 align="center">For a long time I've been trying to create an OS that is easy to modify and hack. This is that OS! Because it is written in Python, even people who are new to programming can try to change some aspects of AOS (at the cost of performance).

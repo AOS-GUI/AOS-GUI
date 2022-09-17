@@ -18,8 +18,6 @@ def userSettings():
     content = f.read()
     content = content.split("\n")
 
-    print("Setting up main window...")
-
     try:
         themeText = open("files/support/data/user/themes/"+content[2]+".theme","r")
     except FileNotFoundError:
