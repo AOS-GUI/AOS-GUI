@@ -1,3 +1,10 @@
+#  █████╗  ██████╗ ███████╗       ██████╗ ██╗   ██╗██╗
+# ██╔══██╗██╔═══██╗██╔════╝      ██╔════╝ ██║   ██║██║
+# ███████║██║   ██║███████╗█████╗██║  ███╗██║   ██║██║
+# ██╔══██║██║   ██║╚════██║╚════╝██║   ██║██║   ██║██║
+# ██║  ██║╚██████╔╝███████║      ╚██████╔╝╚██████╔╝██║
+# ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
+
 try:
     from pip import main as pipmain
 except ImportError:
@@ -24,9 +31,9 @@ except:
      from PyQt5.QtPrintSupport import *
      import requests
 
-from files.support.system.apps import *
-from files.support.system.setup import setupAOS
-from files.support.system.helpers.funcs import *
+from files.system.apps import *
+from files.system.setup import setupAOS
+from files.system.sdk.sdk import *
 
 from time import sleep,strftime
 import importlib
@@ -52,7 +59,13 @@ class AOS(QMainWindow):
           super(AOS, self).__init__()
           global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme,clockMode
 
-          content,themeColors = userSettings()
+          f = open("files/system/data/user/data.aos","r")
+          content = f.read()
+          content = content.split("\n")
+          f.close()
+
+
+          themeColors = userTheme()
 
           username = content[0]
           password = content[1]
@@ -104,7 +117,7 @@ class AOS(QMainWindow):
 
           for i in buttonsShown:
                if i != "False":
-                    globals()[btnName] = QPushButton(self)
+                    globals()[btnName] = DraggableButton(self)
                     globals()[btnName].setGeometry(buttonX,buttonY,100,50)
                     globals()[btnName].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                     globals()[btnName].setCursor(Qt.CursorShape.PointingHandCursor)
@@ -207,7 +220,7 @@ class AOS(QMainWindow):
                     self.helpWindow.show()
                elif prgm.lower() == "cinstall" or prgm.lower() == "camelinstall":
                     self.cInstWindow.show()
-               elif prgm.lower() == "aterm":
+               elif prgm.lower() == "aterm" or prgm.lower() == "terminal":
                     self.atermWindow.show()
                elif prgm.lower() == "applauncher":
                     self.aLaunchWindow.show()
@@ -242,13 +255,13 @@ if __name__ == '__main__':
      app = QApplication([])
 
      try:
-          f = open("files/support/data/user/data.aos", "r")
+          f = open("files/system/data/user/data.aos", "r")
           window = AOS()
           window.showFullScreen()
 
           try:
-               playsound(os.getcwd().replace("\\","/")+"/files/support/data/silence.wav")
-               playsound(os.getcwd().replace("\\","/")+"/files/support/data/AOS.wav")
+               playsound(os.getcwd().replace("\\","/")+"/files/system/data/silence.wav")
+               playsound(os.getcwd().replace("\\","/")+"/files/system/data/AOS.wav")
           except:
                pass
 
@@ -274,7 +287,7 @@ if __name__ == '__main__':
           app.setStyle(guiTheme)
           
      except Exception as e:
-          if not str(e).startswith("[Errno 2] No such file or directory: 'files/support/data/user/data.aos'"):
+          if not str(e).startswith("[Errno 2] No such file or directory: 'files/system/data/user/data.aos'"):
                print("ERR: "+e)
           else:
                window = setupAOS.installform()

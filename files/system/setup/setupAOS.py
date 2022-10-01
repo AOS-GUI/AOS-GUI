@@ -5,7 +5,7 @@ from os.path import exists
 from os import listdir,getcwd
 import sys
 
-from files.support.system.helpers.funcs import msgBox
+from files.system.sdk.sdk import msgBox
 
 titleText = u"welcome to AOS-GUI!"
 endButtonText = u"Setup AOS-GUI"
@@ -191,6 +191,7 @@ class installform(QMainWindow):
         self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
         self.showSplashOnStartup.setGeometry(QRect(10, 20, 131, 20))
         self.showSplashOnStartup.setText(u"Show on startup")
+        self.showSplashOnStartup.setChecked(True)
         self.tabs.addTab(self.customization, "")
         self.shortcuts = QWidget()
         self.shortcuts.setObjectName(u"shortcuts")
@@ -262,11 +263,11 @@ class installform(QMainWindow):
     # retranslateUi
     def getCurrentSettings(self):
         # pass
-        themeText = open("files/support/data/user/themes/default-dark.theme","r")
+        themeText = open("files/system/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 
-        for _ in listdir(getcwd().replace("\\","/")+"/files/support/data/user/themes/"):
+        for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
         self.themeCB.setCurrentText("default-dark")
@@ -282,7 +283,7 @@ class installform(QMainWindow):
             self.guiThemeCB.addItem(i)
 
     def applyTheme(self):
-        tFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
+        tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
         colors = tFile.read()
         themeColors = colors.split("\n")
 
@@ -298,7 +299,7 @@ class installform(QMainWindow):
     def saveTheme(self):
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text()]
 
-        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
+        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
         if check:
             themeFile = open(tFile,"w")
 
@@ -311,21 +312,21 @@ class installform(QMainWindow):
     def getmeout(self):
         retval = 0
 
-        f = open("files/support/data/user/data.aos","w")
-        themeFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
-        tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
+        f = open("files/system/data/user/data.aos","w")
+        themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
+        tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
         tFsplit = themeFile.read().split("\n")
 
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text()]
 
         if currentColors != tFsplit:
-            tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
+            tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
             retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?","Save?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384:
-                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
+                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
                     themeFile = open(tFile,"w")
@@ -335,9 +336,7 @@ class installform(QMainWindow):
                     themeFile.write(currentColors[5])
 
                     themeFile.close()
-                    
 
-            
 
         f.write(self.uLE.text()+"\n")
         f.write(self.pLE.text()+"\n")

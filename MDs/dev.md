@@ -56,6 +56,18 @@ window = userapp()
 window.show()
 ```
 
+## sdk
+
+If you would like some shorthand functions for actions in AOS, add the line `from files.system.sdk.sdk import *` to the top of the file. All functions within this "SDK" are documented below.
+
+| Function | Action |
+|----------|--------|
+| `aosVersion()` | Returns the current AOS version as a string. |
+| `DraggableButton(QPushButton)` | Creates a new QPushButton object, but the button is draggable. |
+| `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None)` | Creates a message box. Returns a return value of type int. Refer to Qt5 manual to see what each return int stands for. |
+| `userSettings()`| Returns contents of `data.aos` as a list (data.aos splitted by newlines) |
+| `userTheme()` | Returns the current theme colors as a list. |
+
 ## publishing your app
 
 To publish your app, create a pull request at [camelInstall](https://github.com/nanobot567/cInstall) with the following contents:

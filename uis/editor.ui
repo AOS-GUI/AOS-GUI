@@ -75,6 +75,31 @@
     <string>New</string>
    </property>
   </widget>
+  <widget class="QComboBox" name="formatBox">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>10</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string notr="true">Plaintext</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string notr="true">Markdown</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string notr="true">HTML</string>
+    </property>
+   </item>
+  </widget>
  </widget>
  <resources/>
  <connections/>
