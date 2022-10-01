@@ -11,8 +11,9 @@ from time import sleep
 import requests
 from shutil import rmtree
 from random import choice
+from playsound import playsound
 
-from files.support.system.helpers.funcs import msgBox,userSettings
+from files.system.sdk.sdk import msgBox,userSettings
 
 # -- FOR AOSHELP -- #
 
@@ -31,7 +32,8 @@ helpText = {"help":"aos help (syntax: help {command})",
             "read":"reads a file's contents (syntax: read [file])",
             "script":"runs a script (syntax: script [file] {-v | -verbose})",
             "ver":"shows system and terminal version",
-            "aterm":"restarts aterm (syntax: aterm)"}
+            "aterm":"restarts aterm (syntax: aterm)",
+            "beep":"plays the current AOS startup sound (syntax: beep)"}
 
 # -- FOR CALC -- #
 
@@ -42,14 +44,15 @@ waitingForNum = False
 filePath = ""
 currentlyOpenFile = "Untitled"
 currentlyOpenFileName = "Untitled"
+originalText = ""
 
 # -- FOR SPLASH -- #
 
-f = open("files/support/data/splashes")
+f = open("files/system/data/splashes")
 splashTexts = f.readlines()
 f.close()
 
-f = open("files/support/data/version","r")
+f = open("files/system/data/version","r")
 version = f.read()
 f.close()
 
@@ -71,7 +74,7 @@ class launcher(QWidget):
     def __init__(self):
         super(launcher, self).__init__()
 
-        self.resize(400, 300)
+        self.setFixedSize(400, 300)
         self.setWindowTitle(u"appLauncher")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.appList = QListWidget(self)
@@ -138,27 +141,28 @@ class aterm(QWidget):
         self.echo("Changed dir to /", True)
     
     def doCommand(self, command="",silentOut=False):
-        if command == "":
-            # if self.lineEdit.text() != False:
-            command = self.lineEdit.text()
-            self.echo("[YOU] "+command)
-        else:
-            if silentOut == False:
-                self.echo("[SCRIPT] "+command)
-            
-        lowcommand = command.lower()
-
-        self.lineEdit.setText("")
-
-        splitUnneededSlash = False
-
         try:
+            if command == "":
+                # if self.lineEdit.text() != False:
+                command = self.lineEdit.text()
+                self.echo(text="[YOU] "+command,color="__YOU__")
+            else:
+                if silentOut == False:
+                    self.echo("[SCRIPT] "+command)
+                
+            lowcommand = command.lower()
+
+            self.lineEdit.setText("")
+
+            splitUnneededSlash = False
             if lowcommand.startswith("echo"):
                 final = self.splitParams(command)[0]
+
                 for i in self.splitParams(command)[1:]:
                     final += " "+i
 
                 self.echo(final)
+
             elif lowcommand.startswith("rm"):
                 param = self.splitParams(command)[0]
                 ok = True
@@ -188,9 +192,7 @@ class aterm(QWidget):
                             self.echo("ERR: The file or directory doesn't exist!",True)
                         except NotADirectoryError:
                             self.echo(f"ERR: File not found! Are you sure it's not a directory?",True)
-                            
-                #.replace("/","\\")
-                # fix
+
             elif lowcommand.startswith("dir"):
                 param = self.splitParams(command)[0]
 
@@ -265,6 +267,8 @@ class aterm(QWidget):
                     for x in tempList:
                         self.echo(x)
                     self.echo()
+                    self.echo("Type 'help {command}' for help on that command.")
+                    self.echo()
                 else:
                     try:
                         self.echo(helpText[(self.splitParams(command)[0]).lower()],True)
@@ -290,25 +294,40 @@ class aterm(QWidget):
                 except OSError as e:
                     self.echo(f"ERR: {e}")
             elif lowcommand.startswith("ver"):
-                z = open(getcwd().replace("\\","/")+"/files/support/data/version","r")
+                z = open(getcwd().replace("\\","/")+"/files/system/data/version","r")
                 self.echo("AOS v"+z.read()+". Terminal v"+str(terminalVer)+".",True)
                 z.close()
             elif lowcommand.startswith("aterm"):
                 self.listWidget.clear()
                 self.echo("AOSTerminal v"+str(terminalVer), True)
                 self.echo("Changed dir to /", True)
-                
+            elif lowcommand.startswith("beep"):
+                try:
+                    playsound(getcwd().replace("\\","/")+"/files/system/data/silence.wav")
+                    playsound(getcwd().replace("\\","/")+"/files/system/data/AOS.wav")
+                except:
+                    pass
+        except TypeError:
+            pass
 
         except IndexError:
             self.echo("ERR: No arguments provided!", True)
 
-    def echo(self, text="", fromSys=False):
-        # add statuses, like warning or error (bg color should change on that line)
+    def echo(self, text="", fromSys=False, color="white"):
+        if color != "__YOU__":
+            try:
+                color = text.split("|")[1]
+                text = text.split("|")[0]
+            except:
+                pass
 
         if fromSys == True:
             self.listWidget.addItem("[SYS] "+text)
         else:
             self.listWidget.addItem(text)
+        
+        if color != "__YOU__":
+            self.listWidget.item(self.listWidget.count()-1).setForeground(QColor(color))
 
         self.listWidget.scrollToBottom()
 
@@ -712,7 +731,7 @@ class camelInstall(QWidget):
         try:
             val = 0
             text = self.dbTable.item(self.dbTable.currentRow(),0).text()
-            ret = msgBox("Are you sure you want to install \""+text+"\"?","Install?",0,QMessageBox.Yes|QMessageBox.No)
+            ret = msgBox("Are you sure you want to install \""+text+"\"?","Install?",QMessageBox.Question,QMessageBox.Yes|QMessageBox.No)
             if ret == 16384:
                 url = self.dbTable.item(self.dbTable.currentRow(),3).text()
                 if url.startswith("db/"):
@@ -766,98 +785,213 @@ class camelInstall(QWidget):
     # retranslateUi
 
 class editApp(QWidget):
-     def __init__(self):
-          super(editApp, self).__init__()
-          self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
-          self.setFixedSize(640, 480)
-          self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+    def __init__(self):
+        super(editApp, self).__init__()
+        global textEdit
+        self.originalText = ""
+        self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFile}")
+        self.setFixedSize(640, 480)
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
-          self.textEdit = QTextEdit(self)
-          self.textEdit.setObjectName(u"textEdit")
-          self.textEdit.setGeometry(QRect(10, 40, 621, 431))
-          self.open = QPushButton(self)
-          self.open.setObjectName(u"open")
-          self.open.setGeometry(QRect(60, 10, 51, 28))
-          self.open.setText(u"Open")
-          self.open.clicked.connect(self.openFile)
-          self.save = QPushButton(self)
-          self.save.setObjectName(u"save")
-          self.save.setGeometry(QRect(120, 10, 51, 28))
-          self.save.setText(u"Save")
-          self.save.clicked.connect(self.saveFile)
-          self.saveAs = QPushButton(self)
-          self.saveAs.setObjectName(u"saveAs")
-          self.saveAs.setGeometry(QRect(180, 10, 71, 28))
-          self.saveAs.setText(u"Save As")
-          self.saveAs.clicked.connect(self.saveAsFile)
-          self.newFileBtn = QPushButton(self)
-          self.newFileBtn.setObjectName(u"newFile")
-          self.newFileBtn.setGeometry(QRect(10, 10, 41, 28))
-          self.newFileBtn.setText("New")
-          self.newFileBtn.clicked.connect(self.newFile)
+        textEdit = QTextEdit(self)
+        textEdit.setObjectName(u"textEdit")
+        textEdit.setGeometry(QRect(10, 40, 621, 431))
+        self.open = QPushButton(self)
+        self.open.setObjectName(u"open")
+        self.open.setGeometry(QRect(60, 10, 51, 28))
+        self.open.setText(u"Open")
+        self.open.clicked.connect(self.openFile)
+        self.save = QPushButton(self)
+        self.save.setObjectName(u"save")
+        self.save.setGeometry(QRect(120, 10, 51, 28))
+        self.save.setText(u"Save")
+        self.save.clicked.connect(self.saveFile)
+        self.saveAs = QPushButton(self)
+        self.saveAs.setObjectName(u"saveAs")
+        self.saveAs.setGeometry(QRect(180, 10, 71, 28))
+        self.saveAs.setText(u"Save As")
+        self.saveAs.clicked.connect(self.saveAsFile)
+        self.newFileBtn = QPushButton(self)
+        self.newFileBtn.setObjectName(u"newFile")
+        self.newFileBtn.setGeometry(QRect(10, 10, 41, 28))
+        self.newFileBtn.setText("New")
+        self.newFileBtn.clicked.connect(self.newFile)
+        self.formatBox = QComboBox(self)
+        self.formatBox.addItem(u"Plaintext")
+        self.formatBox.addItem(u"Markdown")
+        self.formatBox.addItem(u"HTML")
+        self.formatBox.setObjectName(u"formatBox")
+        self.formatBox.setGeometry(QRect(490, 10, 141, 21))
+        self.formatBox.activated.connect(self.updateText)
+        
 
-     def newFile(self):
-          global currentlyOpenFile,currentlyOpenFileName
-          file,check = QFileDialog.getSaveFileName(None, "New File", directory=getcwd().replace("\\","/")+"/files/")
-          if check:
-               text = open(file,"w")
-               text.close()
-               currentlyOpenFile = file
-               currentlyOpenFileName = currentlyOpenFile.split("/")
-               currentlyOpenFileName = currentlyOpenFileName[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
+    def updateText(self):
+        if self.formatBox.currentText() == "Plaintext":
+            if self.originalText != "":
+                textEdit.setText(self.originalText)
+            else:
+                textEdit.setText(textEdit.toPlainText())
+        elif self.formatBox.currentText() == "Markdown":
+            self.originalText = textEdit.toPlainText()
+            textEdit.setMarkdown(textEdit.toMarkdown())
+        elif self.formatBox.currentText() == "HTML":
+            self.originalText = textEdit.toPlainText()
+            textEdit.setHtml(textEdit.toHtml())
+
+    def newFile(self):
+        global currentlyOpenFile,currentlyOpenFileName
+        file,check = QFileDialog.getSaveFileName(None, "New File", directory=getcwd().replace("\\","/")+"/files/")
+        if check:
+            text = open(file,"w")
+            text.close()
+            currentlyOpenFile = file
+            currentlyOpenFileName = currentlyOpenFile.split("/")
+            currentlyOpenFileName = currentlyOpenFileName[-1]
+            self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
 
 
-     def openFile(self):
-          file,check = QFileDialog.getOpenFileName(None, "Open a file", getcwd().replace("\\","/")+"/files/", "All Files (*)")
-          if check:
-               text = open(file,"r")
-               self.textEdit.setText(text.read())
-               text.close()
+    def openFile(self):
+        file,check = QFileDialog.getOpenFileName(None, "Open a file", getcwd().replace("\\","/")+"/files/", "All Files (*)")
+        if check:
+            text = open(file,"r")
+            textEdit.setText(text.read())
+            text.close()
 
-               global currentlyOpenFile,currentlyOpenFileName
-               currentlyOpenFile = file
-               currentlyOpenFileName = currentlyOpenFile.split("/")
-               currentlyOpenFileName = currentlyOpenFileName[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
-     
-     def saveFile(self):
-          global currentlyOpenFile,currentlyOpenFileName
+            global currentlyOpenFile,currentlyOpenFileName
+            currentlyOpenFile = file
+            currentlyOpenFileName = currentlyOpenFile.split("/")
+            currentlyOpenFileName = currentlyOpenFileName[-1]
+            self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
+    
+    def saveFile(self):
+        global currentlyOpenFile,currentlyOpenFileName
 
-          if currentlyOpenFileName == "Untitled":
-               self.saveAsFile()
-          else:
-               text = open(currentlyOpenFile,"w")
-               text.write(self.textEdit.toPlainText())
-               text.close()
-     
-     def saveAsFile(self):
-          global currentlyOpenFile,currentlyOpenFileName
+        if currentlyOpenFileName == "Untitled":
+            self.saveAsFile()
+        else:
+            text = open(currentlyOpenFile,"w")
+            text.write(textEdit.toPlainText())
+            text.close()
+    
+    def saveAsFile(self):
+        global currentlyOpenFile,currentlyOpenFileName
 
-          file,check = QFileDialog.getSaveFileName(None, "Save", directory=getcwd().replace("\\","/")+"/files/")
-          if check:
-               text = open(file,"w")
-               text.write(self.textEdit.toPlainText())
-               text.close()
-               currentlyOpenFile = file
-               currentlyOpenFileName = currentlyOpenFile.split("/")
-               currentlyOpenFileName = currentlyOpenFileName[-1]
-               self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
+        file,check = QFileDialog.getSaveFileName(None, "Save", directory=getcwd().replace("\\","/")+"/files/")
+        if check:
+            text = open(file,"w")
+            text.write(textEdit.toPlainText())
+            text.close()
+            currentlyOpenFile = file
+            currentlyOpenFileName = currentlyOpenFile.split("/")
+            currentlyOpenFileName = currentlyOpenFileName[-1]
+            self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
+
+    def openViaOutsideSource(self, path):
+        if self == None:
+            self = super(editApp, self).__init__
+            print("self none")
+        text = open(path,"r")
+        textEdit.setText(text.read())
+        text.close()
+
+        global currentlyOpenFile,currentlyOpenFileName
+        currentlyOpenFile = path
+        currentlyOpenFileName = currentlyOpenFile.split("/")
+        currentlyOpenFileName = currentlyOpenFileName[-1]
+        editApp().setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
+        editApp().show()
+        print("yea")
 
 class FsWindow(QWidget):
-     def __init__(self):
-          super(FsWindow, self).__init__()
-          self.setWindowTitle("AOS-GUI/fs")
-          self.setFixedSize(600, 400)
-          self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+    def __init__(self):
+        super(FsWindow, self).__init__()
+        self.setWindowTitle("AOS-GUI/fs")
+        self.setFixedSize(600, 400)
+        self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
-          self.treeView = QTreeView(self)
-          self.treeView.setGeometry(10,10,580,380)
-          self.fileSystemModel = QFileSystemModel(self.treeView)
-          self.fileSystemModel.setReadOnly(False)
-          root = self.fileSystemModel.setRootPath("files")
-          self.treeView.setModel(self.fileSystemModel)
-          self.treeView.setRootIndex(root)
+        self.treeView = QTreeView(self)
+        self.treeView.setGeometry(10,10,580,380)
+        self.fileSystemModel = QFileSystemModel(self.treeView)
+        self.fileSystemModel.setReadOnly(False)
+        root = self.fileSystemModel.setRootPath("files")
+        self.treeView.setModel(self.fileSystemModel)
+        self.treeView.setRootIndex(root)
+        self.treeView.setDragDropMode(QAbstractItemView.InternalMove)
+        self.treeView.setDragEnabled(True)
+        self.treeView.setAcceptDrops(True)
+        self.treeView.setDropIndicatorShown(True)
+
+        # self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+        # self.treeView.customContextMenuRequested.connect(self.menuContextTree)
+
+    def dragEnterEvent(self, event):
+        m = event.mimeData()
+        if m.hasUrls():
+            for url in m.urls():
+                if url.isLocalFile():
+                    event.accept()
+                    return
+        event.ignore()
+
+    def dropEvent(self, event):
+        if event.source():
+            QTreeView.dropEvent(self, event)
+        else:
+            ix = self.indexAt(event.pos())
+            if not self.model().isDir(ix):
+                ix = ix.parent()
+            pathDir = self.model().filePath(ix)
+            m = event.mimeData()
+            if m.hasUrls():
+                urlLocals = [url for url in m.urls() if url.isLocalFile()]
+                accepted = False
+                for urlLocal in urlLocals:
+                    path = urlLocal.toLocalFile()
+                    info = QFileInfo(path)
+                    n_path = QDir(pathDir).filePath(info.fileName())
+                    o_path = info.absoluteFilePath()
+                    if n_path == o_path:
+                        continue
+                    if info.isDir():
+                        QDir().rename(o_path, n_path)
+                    else:
+                        qfile = QFile(o_path)
+                        if QFile(n_path).exists():
+                            n_path += "(copy)" 
+                        qfile.rename(n_path)
+                    accepted = True
+                if accepted:
+                    event.acceptProposedAction()
+
+    # def createFolder(self):
+    #     index = self.treeView.currentIndex()
+    #     if not self.model().isDir(index):
+    #         index = index.parent()
+    #     pathDir = self.model().filePath(index)
+    #     mkdir(pathDir+"/New Folder")
+
+    def menuContextTree(self, point):
+        index = self.treeView.indexAt(point)
+
+        if not index.isValid():
+            return
+
+        # item = self.treeView.childAt(point)
+        name = index.data()
+
+        menu = QMenu()
+        action = menu.addAction(name)
+        menu.addSeparator()
+        action_1 = menu.addAction("Delete")
+        action_2 = menu.addAction("New Folder")
+        action_3 = menu.addAction("3")
+
+        app = editApp()
+
+        menu.exec_(self.treeView.mapToGlobal(point))
+
+        # action_2.triggered.connect(self.createFolder)
+
 
 class settingsWidget(QWidget):
     def __init__(self):
@@ -1126,7 +1260,7 @@ class settingsWidget(QWidget):
     def eraseAllData(self):
         homeCwd = getcwd().replace("\\","/")+"/files/home/"
 
-        remove(getcwd().replace("\\","/")+"/files/support/data/user/data.aos")
+        remove(getcwd().replace("\\","/")+"/files/system/data/user/data.aos")
         rmtree(homeCwd)
         sleep(2)
         mkdir(homeCwd)
@@ -1143,21 +1277,21 @@ class settingsWidget(QWidget):
     def getCurrentSettings(self):
         # pass
 
-        f = open("files/support/data/user/data.aos","r")
+        f = open("files/system/data/user/data.aos","r")
         content = f.read()
         content = content.split("\n")
 
         try:
-            themeText = open("files/support/data/user/themes/"+content[2]+".theme","r")
+            themeText = open("files/system/data/user/themes/"+content[2]+".theme","r")
         except FileNotFoundError:
-            themeText = open("files/support/data/user/themes/default-dark.theme","r")
+            themeText = open("files/system/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 
         self.guiThemeCB.clear()
         self.themeCB.clear()
 
-        for _ in listdir(getcwd().replace("\\","/")+"/files/support/data/user/themes/"):
+        for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
         self.uLE.setText(content[0])
@@ -1197,7 +1331,7 @@ class settingsWidget(QWidget):
 
 
     def applyTheme(self):
-        tFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
+        tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
         colors = tFile.read()
         themeColors = colors.split("\n")
 
@@ -1212,7 +1346,7 @@ class settingsWidget(QWidget):
     def saveTheme(self):
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text()]
 
-        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
+        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
         if check:
             themeFile = open(tFile,"w")
 
@@ -1226,21 +1360,21 @@ class settingsWidget(QWidget):
     def getmeout(self):
         retval = 0
 
-        f = open("files/support/data/user/data.aos","w")
-        themeFile = open("files/support/data/user/themes/"+self.themeCB.currentText()+".theme","r")
-        tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
+        f = open("files/system/data/user/data.aos","w")
+        themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
+        tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
         tFsplit = themeFile.read().split("\n")
 
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text()]
 
         if currentColors != tFsplit:
-            tFile = getcwd().replace("\\","/")+"/files/support/data/user/themes/"+self.themeCB.currentText()+".theme"
+            tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
             retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384: # yes value
-                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/support/data/user/themes/", "AOS theme (*.theme)")
+                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
                     themeFile = open(tFile,"w")
@@ -1317,7 +1451,7 @@ class splashScreen(QWidget):
         self.version = QLabel(self)
         self.version.setObjectName(u"version")
         self.version.setGeometry(QRect(-78, 290, 211, 20))
-        self.version.setText(u"<html><head/><body><p align=\"center\">0.2 <span style=\" color:#ff0000;\">alpha</span></p></body></html>")
+        self.version.setText(u"<html><head/><body><p align=\"center\">"+version+" <span style=\" color:#ff0000;\">alpha</span></p></body></html>")
         self.createdby = QLabel(self)
         self.createdby.setObjectName(u"createdby")
         self.createdby.setGeometry(QRect(126, 120, 211, 20))
@@ -1337,10 +1471,10 @@ class splashScreen(QWidget):
         
     
     def letsgo(self):
-        f = open("files/support/data/user/data.aos","r")
+        f = open("files/system/data/user/data.aos","r")
         content = f.readlines()
         f.close()
-        f = open("files/support/data/user/data.aos","w")
+        f = open("files/system/data/user/data.aos","w")
         content[9] = str(self.dontshowagain.isChecked())+"\n"
         for i in content:
             if i != "":
