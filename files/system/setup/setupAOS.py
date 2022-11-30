@@ -19,7 +19,7 @@ class installform(QMainWindow):
         self.setFixedSize(450, 540)
         self.setWindowTitle(u"AOS-GUI/setupAOS")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        self.tabs = QTabWidget(settings)
+        self.tabs = QTabWidget()
         self.tabs.setObjectName(u"tabs")
         self.tabs.setGeometry(QRect(10, 10, 431, 521))
         self.tabs.setMovable(False)
