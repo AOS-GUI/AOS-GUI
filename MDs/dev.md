@@ -26,7 +26,7 @@ Metadata comment format:
 
 Replace every string that contains "template" with your own values. Then, simply type in your PyQt5 code as you would in an application of your own.
 
-    note: since the "application" is a QWidget, some functions may not be available.
+    note: this template uses "QWidget", but "QMainWindow" works as well.
 
 For example, here is `template.py`:
 
@@ -34,7 +34,7 @@ For example, here is `template.py`:
 class template(QWidget):
     def __init__(self):
         super(template, self).__init__()
-        self.setFixedSize(500, 500)
+        self.setFixedSize(500, 500) # does not have to be fixed size
         self.setWindowTitle("template!")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
@@ -46,7 +46,7 @@ And here is what a modified version may look like:
 class userapp(QWidget):
     def __init__(self):
         super(userapp, self).__init__()
-        self.setFixedSize(500, 500)
+        self.setFixedSize(500, 500) # does not have to be fixed size
         self.setWindowTitle("My awesome application!")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
 
@@ -65,6 +65,7 @@ If you would like some shorthand functions for actions in AOS, add the line `fro
 | `aosVersion()` | Returns the current AOS version as a string. |
 | `DraggableButton(QPushButton)` | Creates a new QPushButton object, but the button is draggable. |
 | `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None)` | Creates a message box. Returns a return value of type int. Refer to Qt5 manual to see what each return int stands for. |
+| `openApplication(app, path="files/apps/")` | Opens an external application. By default checks in files/apps/ for the app.
 | `userSettings()`| Returns contents of `data.aos` as a list (data.aos splitted by newlines) |
 | `userTheme()` | Returns the current theme colors as a list. |
 
@@ -73,8 +74,14 @@ If you would like some shorthand functions for actions in AOS, add the line `fro
 To publish your app, create a pull request at [camelInstall](https://github.com/nanobot567/cInstall) with the following contents:
 
 - your change to appList.txt located in `/dl/`
-- your standalone python module in `/dl/` if you would like to store it in the database.
+- your python module in `/dl/` if you would like to store it in the database
 
 Your change to appList.txt should ONLY contain your python module name, description, version number, and URL to the module. The URL portion can be a direct link to your python module, or it can be `dl/` followed by the module name if the module is in the camelInstall GitHub repository.
 
-The format of each line of appList.txt is `(NAME)|(DESCRIPTION)|(VERSION)|(URL)`.
+If your app requires assets that cannot be provided in a standalone module, you can specify the URLs of extra assets using a semicolon (`;`). You may also store these assets in the database, but they must be within a folder named `/assets/(moduleName)/`. Everything requested for download within the `/assets/` folder will be installed to the `apps/assets/(appname)/` folder in AOS. A shorthand for your app's asset directory is `assets/`.
+
+Example: (`Test|testing|1.0|/dl/test.py;assets/functions.py`).
+
+When adding extra assets, any path towards any file must be a direct path to the file, starting from the /AOS-GUI/ directory. For example, /assets/myapp/image.png becomes /files/apps/assets/myapp/image.png.
+
+The format of each line in appList.txt is `(NAME)|(DESCRIPTION)|(VERSION)|(URL)`.

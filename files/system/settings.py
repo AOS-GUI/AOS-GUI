@@ -1,25 +1,21 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os.path import exists
-from os import listdir,getcwd
-import sys
 
-from files.system.sdk.sdk import msgBox
+from os import listdir,getcwd,remove,mkdir
+from time import sleep
+from shutil import rmtree
 
-titleText = u"welcome to AOS-GUI!"
-endButtonText = u"Setup AOS-GUI"
+from files.system.sdk.sdk import *
 
-class installform(QMainWindow):
+class settingsWidget(QWidget):
     def __init__(self):
-        super(installform, self).__init__()
-
-        global titleText,endButtonText
+        super(settingsWidget, self).__init__()
 
         self.setFixedSize(450, 540)
-        self.setWindowTitle(u"AOS-GUI/setupAOS")
+        self.setWindowTitle(u"AOS-GUI/settings")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        self.tabs = QTabWidget(settings)
+        self.tabs = QTabWidget(self)
         self.tabs.setObjectName(u"tabs")
         self.tabs.setGeometry(QRect(10, 10, 431, 521))
         self.tabs.setMovable(False)
@@ -278,6 +274,16 @@ class installform(QMainWindow):
         self.eBs.setGeometry(QRect(170, 460, 91, 28))
         self.eBs.setText(u"Ok")
         self.tabs.addTab(self.shortcuts, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.shortcuts), u"Shortcuts")
+        self.reset = QWidget()
+        self.reset.setObjectName(u"reset")
+        self.rAOS = QPushButton(self.reset)
+        self.rAOS.setObjectName(u"rAOS")
+        self.rAOS.setGeometry(QRect(130, 50, 161, 28))
+        self.rAOS.setText(u"Reset AOS...")
+        self.rAOS.clicked.connect(self.resetAOS)
+        self.tabs.addTab(self.reset, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.reset), u"Reset")
 
         self.retranslateUi()
 
@@ -287,8 +293,16 @@ class installform(QMainWindow):
         QMetaObject.connectSlotsByName(self)
     # setupUi
 
-    def showWelcomeMessage(self):
-        msgBox("Before you start using AOS, please configure it to your liking. (You can always change these settings later!)","Welcome to AOS-GUI!",QMessageBox.Information,QMessageBox.Ok)
+    def resetAOS(self, andmodules = False):
+        retval = msgBox(f"Are you sure you want to reset AOS to its default settings?","Reset AOS?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+
+        if retval == 16384:
+            retval2 = msgBox(f"Are you SURE? All of your documents and user data will be erased!","Are you SURE?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+            if retval2 == 16384:
+                retval3 = msgBox("If you say so...","Whatever you say!",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+                if retval3 == 16384:
+                    self.eraseAllData()
+
 
     def retranslateUi(self):
         self.pLE.setInputMask("")
@@ -301,33 +315,85 @@ class installform(QMainWindow):
         self.eBc.clicked.connect(self.getmeout)
         self.eBs.clicked.connect(self.getmeout)
         self.getCurrentSettings()
-        self.showWelcomeMessage()
+
+    def eraseAllData(self):
+        homeCwd = getcwd().replace("\\","/")+"/files/home/"
+
+        remove(getcwd().replace("\\","/")+"/files/system/data/user/data.aos")
+        rmtree(homeCwd)
+        sleep(2)
+        mkdir(homeCwd)
+        msgBox("AOS has been factory reset.","Done.",QMessageBox.Information,QMessageBox.Ok)
+        exit()
+
+    def toBool(self, string):
+        if string == "True":
+            return True
+        elif string == "False":
+            return False
+        
     # retranslateUi
     def getCurrentSettings(self):
         # pass
-        themeText = open("files/system/data/user/themes/default-dark.theme","r")
+
+        f = open("files/system/data/user/data.aos","r")
+        content = f.read()
+        content = content.split("\n")
+
+        try:
+            themeText = open("files/system/data/user/themes/"+content[2]+".theme","r")
+        except FileNotFoundError:
+            themeText = open("files/system/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
         themeColors = themeText.split("\n")
+
+        self.guiThemeCB.clear()
+        self.themeCB.clear()
 
         for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
-        self.themeCB.setCurrentText("default-dark")
+        self.uLE.setText(content[0])
+        self.pLE.setText(content[1])
+        self.themeCB.setCurrentText(content[2])
         self.cLE.setText(themeColors[0])
         self.cLE_2.setText(themeColors[1])
         self.cLE_3.setText(themeColors[2])
         self.cLE_4.setText(themeColors[3])
         self.cLE_5.setText(themeColors[4])
         self.cLE_6.setText(themeColors[5])
-        self.fSB.setValue(12)
+        self.cLE_7.setText(themeColors[6])
+        self.fSB.setValue(int(content[3]))
+        self.KS.setKeySequence(content[4])
+        self.KS_2.setKeySequence(content[5])
+        self.KS_3.setKeySequence(content[6])
+        self.KS_4.setKeySequence(content[7])
 
+        desktopCheckmarkVals = content[8].split("|")
+
+        self.dCHB.setChecked(self.toBool(desktopCheckmarkVals[0]))
+        self.dCHB_2.setChecked(self.toBool(desktopCheckmarkVals[1]))
+        self.dCHB_3.setChecked(self.toBool(desktopCheckmarkVals[2]))
+        self.dCHB_4.setChecked(self.toBool(desktopCheckmarkVals[3]))
+        self.dCHB_5.setChecked(self.toBool(desktopCheckmarkVals[4]))
+        self.dCHB_6.setChecked(self.toBool(desktopCheckmarkVals[5]))
+        self.dCHB_7.setChecked(self.toBool(desktopCheckmarkVals[6]))
+        self.dCHB_8.setChecked(self.toBool(desktopCheckmarkVals[7]))
+
+        self.showSplashOnStartup.setChecked(not self.toBool(content[9]))
+        
         for i in QStyleFactory.keys():
             self.guiThemeCB.addItem(i)
+        
+        self.guiThemeCB.setCurrentText(content[10])
 
-        self.btnW.setValue(100)
-        self.btnH.setValue(50)
-        self.btnX.setValue(20)
-        self.btnY.setValue(25)
+        self.clockMode.setChecked(self.toBool(content[11]))
+
+        self.btnW.setValue(int(content[12].split("|")[0]))
+        self.btnH.setValue(int(content[12].split("|")[1]))
+        self.btnX.setValue(int(content[12].split("|")[2]))
+        self.btnY.setValue(int(content[12].split("|")[3]))
+
 
     def applyTheme(self):
         tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -342,8 +408,25 @@ class installform(QMainWindow):
         self.cLE_6.setText(themeColors[5])
         self.cLE_7.setText(themeColors[6])
 
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(themeColors[6]))
+        palette.setColor(QPalette.WindowText, QColor(themeColors[0]))
+        palette.setColor(QPalette.Base, QColor(themeColors[1]))
+        palette.setColor(QPalette.AlternateBase, QColor(themeColors[6]))
+        palette.setColor(QPalette.ToolTipBase, QColor(themeColors[1]))
+        palette.setColor(QPalette.ToolTipText, QColor(themeColors[0]))
+        palette.setColor(QPalette.Text, QColor(themeColors[0]))
+        palette.setColor(QPalette.Button, QColor(themeColors[1]))
+        palette.setColor(QPalette.ButtonText, QColor(themeColors[5]))
+        palette.setColor(QPalette.BrightText, Qt.red)
+        palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        palette.setColor(QPalette.Highlight, QColor(themeColors[4]))
+        palette.setColor(QPalette.HighlightedText, QColor(themeColors[0]))
+        QGuiApplication.setPalette(palette)
+
+
     def saveTheme(self):
-        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
+        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()] # edit all others with new color
 
         tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
         if check:
@@ -354,6 +437,7 @@ class installform(QMainWindow):
             themeFile.write(currentColors[6])
 
             themeFile.close()
+        self.getCurrentSettings()
 
     def getmeout(self):
         retval = 0
@@ -364,14 +448,14 @@ class installform(QMainWindow):
 
         tFsplit = themeFile.read().split("\n")
 
-        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text()]
+        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
         if currentColors != tFsplit:
             tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
-            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?","Save?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
-            if retval == 16384:
+            if retval == 16384: # yes value
                 tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
@@ -382,7 +466,6 @@ class installform(QMainWindow):
                     themeFile.write(currentColors[6])
 
                     themeFile.close()
-
 
         f.write(self.uLE.text()+"\n")
         f.write(self.pLE.text()+"\n")
@@ -411,6 +494,5 @@ class installform(QMainWindow):
         f.write(str(self.clockMode.isChecked())+"\n")
         f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value()))
 
-        msgBox("Your settings have been applied! Restarting AOS...","Settings set!",QMessageBox.Information,QMessageBox.Ok)
-        QCoreApplication.quit()
-        QProcess.startDetached(sys.executable, sys.argv)
+        msgBox("Your settings have been applied! Please restart AOS-GUI to see your changes to the desktop.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
+        self.close()

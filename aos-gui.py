@@ -1,9 +1,12 @@
+#! /bin/python
+
 #  █████╗  ██████╗ ███████╗       ██████╗ ██╗   ██╗██╗
 # ██╔══██╗██╔═══██╗██╔════╝      ██╔════╝ ██║   ██║██║
 # ███████║██║   ██║███████╗█████╗██║  ███╗██║   ██║██║
 # ██╔══██║██║   ██║╚════██║╚════╝██║   ██║██║   ██║██║
 # ██║  ██║╚██████╔╝███████║      ╚██████╔╝╚██████╔╝██║
 # ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
+# by nanobot567
 
 try:
     from pip import main as pipmain
@@ -21,7 +24,7 @@ except:
      print("Installing AOS-GUI requirements...")
      pipmain(["install","PyQt5"])
      pipmain(["install","requests"])
-     pipmain(["install","playsound"])
+     pipmain(["install","playsound==1.2.2"])
      # pipmain(["install","PyQtWebEngine"])
      print("Done! Starting up...")
 
@@ -31,7 +34,7 @@ except:
      from PyQt5.QtPrintSupport import *
      import requests
 
-from files.system.apps import *
+from files.system import aoshelp,calc,cinstall,edit,fs,launcher,settings,splash, terminal
 from files.system.setup import setupAOS
 from files.system.sdk.sdk import *
 
@@ -44,8 +47,15 @@ fontSize = 11
 buttonFontSize = f"font-size:{fontSize}px"
 buttonX = 20
 buttonY = 40
+buttonSpaceX = 20
+buttonSpaceY = 40
+buttonWidth = 100
+buttonHeight = 50
 buttonsShown = []
+numShortcuts = 8
 guiTheme = ""
+
+sysApps = ["Settings","appLauncher","FileSystem","camelInstall","Edit","AOSHelp","Terminal","Calculator"]
 
 kSeqs = []
 
@@ -55,9 +65,9 @@ def launchExtApp(prgm):
 
 class AOS(QMainWindow):
      def __init__(self):
-          size = app.primaryScreen().size()
           super(AOS, self).__init__()
-          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme,clockMode
+          self.setContextMenuPolicy(Qt.ActionsContextMenu)
+          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight,buttonSpaceX,buttonSpaceY
 
           f = open("files/system/data/user/data.aos","r")
           content = f.read()
@@ -79,6 +89,7 @@ class AOS(QMainWindow):
           tbgcolor = themeColors[2]
           btextcolor = themeColors[5]
           bbgcolor = themeColors[4]
+          windowcolor = themeColors[6]
           
           buttonsShown = content[8].split("|")
 
@@ -86,39 +97,125 @@ class AOS(QMainWindow):
 
           clockMode = content[11]
 
+          buttonWidth = int(content[12].split("|")[0])
+          buttonHeight = int(content[12].split("|")[1])
+          buttonSpaceX = int(content[12].split("|")[2])
+          buttonSpaceY = int(content[12].split("|")[3])
+
           print("\nStarting up AOS-GUI, please wait...")
           print("Setting up system apps...")
 
-          self.settingsWindow = settingsWidget()
-          self.fsWindow = FsWindow()
-          self.cInstWindow = camelInstall()
-          self.editWindow = editApp()
-          self.helpWindow = aoshelp()
-          self.atermWindow = aterm()
-          self.aLaunchWindow = launcher()
-          self.calcWindow = calculator()
+          self.settingsWindow = settings.settingsWidget()
+          self.fsWindow = fs.FsWindow()
+          self.cInstWindow = cinstall.camelInstall()
+          self.editWindow = edit.editApp()
+          self.helpWindow = aoshelp.aoshelp()
+          self.atermWindow = terminal.aterm()
+          self.aLaunchWindow = launcher.launcher()
+          self.calcWindow = calc.calculator()
 
           self.setWindowTitle("AOS-GUI")
           # remove title bar
           self.setWindowFlag(Qt.FramelessWindowHint)
           self.setGeometry(0,0,700,500)
           self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
+          # set it so all colors transferred to all widgets
           print("Finalizing desktop...")
           self.setupMenuBar()
           self.setupButtons()
           self.setupShortcuts()
           print("Finished!")
 
+     def updateDesktopFile(self):
+          global numShortcuts
+          f = open(getcwd().replace("\\","/")+"/files/system/data/user/desktop.aos","w")
+
+          for i in range(8,numShortcuts):
+               f.write(str(globals()["sc"+str(i)].text()))
+               if i != numShortcuts-1:
+                    f.write("|")
+
+     def removeShortcut(self, prgm=""):
+          global buttonX,buttonY,btextcolor,bbgcolor,buttonFontSize,buttonWidth,buttonHeight,buttonSpaceX,buttonSpaceY,numShortcuts,sysApps
+          size = app.primaryScreen().size()
+          ok = False
+
+          if prgm == False:
+               prgm,done = QInputDialog.getText(
+               self, 'Remove Shortcut', 'Type the program you would like to remove the shortcut to. (Omit .py)', flags=Qt.Window | Qt.WindowStaysOnTopHint)
+               ok = True
+          
+          if prgm.isspace() or prgm == "":
+               pass
+          else:
+               
+               for i in globals():
+                    try:
+                         if globals().get(i).text() == prgm:
+                              if prgm not in sysApps:
+                                   numShortcuts -= 1
+                                   globals().get(i).hide()
+
+                                   buttonX -= buttonWidth + buttonSpaceX
+
+                                   if buttonX+buttonWidth >= size.width()-buttonSpaceX:
+                                        buttonY -= buttonHeight+buttonSpaceY
+                                        buttonX = buttonSpaceX
+                                   break
+                    except AttributeError:
+                         pass
+                    except TypeError:
+                         pass
+
+          if ok==True:
+               self.updateDesktopFile()
+          
+     def createShortcut(self, prgm=""):
+          # replace this with dropdown menu with apps using qwidget instead.
+          global buttonX,buttonY,btextcolor,bbgcolor,buttonFontSize,buttonWidth,buttonHeight,buttonSpaceX,buttonSpaceY,numShortcuts
+          size = app.primaryScreen().size()
+          ok = False
+
+          if prgm == False:
+               prgm,done = QInputDialog.getText(
+               self, 'Create Shortcut', 'Type the program you would like to make a shortcut to. (Omit .py)', flags=Qt.Window | Qt.WindowStaysOnTopHint)
+               ok = True
+          
+          if prgm.isspace() or prgm == "":
+               pass
+          else:
+               globals()["sc"+str(numShortcuts)] = DraggableButton(self)
+               globals()["sc"+str(numShortcuts)].setGeometry(buttonX,buttonY,buttonWidth,buttonHeight)
+               globals()["sc"+str(numShortcuts)].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
+               globals()["sc"+str(numShortcuts)].setCursor(Qt.CursorShape.PointingHandCursor)
+               globals()["sc"+str(numShortcuts)].setText(prgm)
+               globals()["sc"+str(numShortcuts)].clicked.connect(lambda: openApplication(prgm))
+               globals()["sc"+str(numShortcuts)].show()
+
+               self.repaint()
+
+               numShortcuts += 1
+
+               buttonX += buttonWidth + buttonSpaceX
+
+               if buttonX+buttonWidth >= size.width()-buttonSpaceX:
+                    buttonY += buttonHeight+buttonSpaceY
+                    buttonX = buttonSpaceX
+
+          if ok==True:
+               self.updateDesktopFile()
+
      def setupButtons(self):
-          global buttonX
-          global buttonY
+          global buttonX,buttonY,buttonSpaceX,buttonSpaceY
 
           btnName = 0
+
+          buttonX = buttonSpaceX
 
           for i in buttonsShown:
                if i != "False":
                     globals()[btnName] = DraggableButton(self)
-                    globals()[btnName].setGeometry(buttonX,buttonY,100,50)
+                    globals()[btnName].setGeometry(buttonX,buttonY,buttonWidth,buttonHeight)
                     globals()[btnName].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                     globals()[btnName].setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -154,15 +251,23 @@ class AOS(QMainWindow):
                          globals()[btnName].setText("Calculator")
                          globals()[btnName].clicked.connect(self.calcWindow.show)
                          globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
-                    buttonX += 120
+                    buttonX += buttonWidth + buttonSpaceX
 
                     # later release, make it so buttons linking to external apps possible.
 
                btnName += 1
+          
+          f = open(getcwd().replace("\\","/")+"/files/system/data/user/desktop.aos","r")
+          desktopFile = f.read().split("|")
+          f.close()
+
+          for i in desktopFile:
+               self.createShortcut(i)
 
      def restart(self):
           print("Restarting...")
           QCoreApplication.quit()
+          # print(sys.executable)
           QProcess.startDetached(sys.executable, sys.argv)
 
      def setupMenuBar(self):
@@ -177,13 +282,19 @@ class AOS(QMainWindow):
           self.setAction = QAction("&Settings", self)
           self.restartAction = QAction("&Restart", self)
           self.exitAction = QAction("&Exit", self)
+          self.scAction = QAction("&Create Shortcut...", self)
+          self.rscAction = QAction("&Remove Shortcut...", self)
 
           aosMenu = QMenu(f"&AOS - {username}", self)
+          extrasMenu = QMenu(f"Extras", self)
           timeMenu = QMenu(strftime('%H:%M:%S - /%m/%d/%Y'), self)
 
           menuBar.addMenu(aosMenu)
           menuSeparator = menuBar.addMenu("|")
           menuSeparator.setEnabled(False)
+          menuBar.addMenu(extrasMenu)
+          menuSeparator2 = menuBar.addMenu("|")
+          menuSeparator2.setEnabled(False)
           menuBar.addMenu(timeMenu)
           aosMenu.addAction(self.runAction)
           # aosMenu.addAction(self.cInstAction)
@@ -191,12 +302,16 @@ class AOS(QMainWindow):
           aosMenu.addAction(self.restartAction)
           aosMenu.addAction(self.exitAction)
           timeMenu.setEnabled(False)
+          extrasMenu.addAction(self.scAction)
+          extrasMenu.addAction(self.rscAction)
 
           self.runAction.triggered.connect(self.run)
           # self.cInstAction.triggered.connect(cinstall.window.show)
           self.setAction.triggered.connect(self.settingsWindow.show)
           self.restartAction.triggered.connect(self.restart)
-          self.exitAction.triggered.connect(self.close)
+          self.exitAction.triggered.connect(QCoreApplication.quit)
+          self.scAction.triggered.connect(self.createShortcut)
+          self.rscAction.triggered.connect(self.removeShortcut)
 
      def rndr(self):
           rndr,check = QFileDialog.getOpenFileName(None, "Open a .rndr", "", "Renderable file (*.rndr);;All Files (*)")
@@ -229,14 +344,10 @@ class AOS(QMainWindow):
                     splashscreen.show()
                elif prgm.lower() == "calc":
                     self.calcWindow.show()
+               elif prgm.lower() == "about":
+                    msgBox("AOS-GUI version "+version+", created by nanobot567 on GitHub. More information can be found in AOSHelp or the GitHub repository.","About")
                else:
-                    try:
-                         modulePrgm = importlib.import_module("files.apps."+prgm)
-                         importlib.reload(modulePrgm)
-                    except ModuleNotFoundError:
-                         msgBox(f"No app called \"{prgm}\" found in files/apps","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
-                    except Exception as err:
-                         msgBox(f"Critical error in app \"{prgm}\": {err}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+                    openApplication(prgm)
 
                self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
 
@@ -251,6 +362,7 @@ class AOS(QMainWindow):
           self.helpSC.activated.connect(self.helpWindow.show)
 
 if __name__ == '__main__':
+
      QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
      app = QApplication([])
 
@@ -273,7 +385,7 @@ if __name__ == '__main__':
                     passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password:", QLineEdit.Normal, "")
           
           if content[9] == "False" or content[9] == "":
-               splashscreen = splashScreen()
+               splashscreen = splash.splashScreen()
                splashscreen.show()
 
           f.close()
@@ -292,6 +404,22 @@ if __name__ == '__main__':
           else:
                window = setupAOS.installform()
                window.show()
+
+     palette = QPalette()
+     palette.setColor(QPalette.Window, QColor(windowcolor))
+     palette.setColor(QPalette.WindowText, QColor(textcolor))
+     palette.setColor(QPalette.Base, QColor(bgcolor))
+     palette.setColor(QPalette.AlternateBase, QColor(windowcolor))
+     palette.setColor(QPalette.ToolTipBase, QColor(bgcolor))
+     palette.setColor(QPalette.ToolTipText, QColor(textcolor))
+     palette.setColor(QPalette.Text, QColor(textcolor))
+     palette.setColor(QPalette.Button, QColor(bgcolor))
+     palette.setColor(QPalette.ButtonText, QColor(btextcolor))
+     palette.setColor(QPalette.BrightText, Qt.red)
+     palette.setColor(QPalette.Link, QColor(42, 130, 218))
+     palette.setColor(QPalette.Highlight, QColor(bbgcolor))
+     palette.setColor(QPalette.HighlightedText, QColor(textcolor))
+     QGuiApplication.setPalette(palette)
 
      # window = MainWindow()
      # app.setAttribute(Qt.WA_StyledBackground)
