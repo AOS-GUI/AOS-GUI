@@ -404,23 +404,26 @@ if __name__ == '__main__':
           else:
                window = setupAOS.installform()
                window.show()
-
+    
      try:
+          try:
           palette = QPalette()
-          palette.setColor(QPalette.Window, QColor(windowcolor))
-          palette.setColor(QPalette.WindowText, QColor(textcolor))
-          palette.setColor(QPalette.Base, QColor(bgcolor))
-          palette.setColor(QPalette.AlternateBase, QColor(windowcolor))
-          palette.setColor(QPalette.ToolTipBase, QColor(bgcolor))
-          palette.setColor(QPalette.ToolTipText, QColor(textcolor))
-          palette.setColor(QPalette.Text, QColor(textcolor))
-          palette.setColor(QPalette.Button, QColor(bgcolor))
-          palette.setColor(QPalette.ButtonText, QColor(btextcolor))
-          palette.setColor(QPalette.BrightText, Qt.red)
-          palette.setColor(QPalette.Link, QColor(42, 130, 218))
-          palette.setColor(QPalette.Highlight, QColor(bbgcolor))
-          palette.setColor(QPalette.HighlightedText, QColor(textcolor))
-          QGuiApplication.setPalette(palette)
+               palette.setColor(QPalette.Window, QColor(windowcolor))
+               palette.setColor(QPalette.WindowText, QColor(textcolor))
+               palette.setColor(QPalette.Base, QColor(bgcolor))
+               palette.setColor(QPalette.AlternateBase, QColor(windowcolor))
+               palette.setColor(QPalette.ToolTipBase, QColor(bgcolor))
+               palette.setColor(QPalette.ToolTipText, QColor(textcolor))
+               palette.setColor(QPalette.Text, QColor(textcolor))
+               palette.setColor(QPalette.Button, QColor(bgcolor))
+               palette.setColor(QPalette.ButtonText, QColor(btextcolor))
+               palette.setColor(QPalette.BrightText, Qt.red)
+               palette.setColor(QPalette.Link, QColor(42, 130, 218))
+               palette.setColor(QPalette.Highlight, QColor(bbgcolor))
+               palette.setColor(QPalette.HighlightedText, QColor(textcolor))
+               QGuiApplication.setPalette(palette)
+     except NameError:
+          pass
      except NameError:
           pass
 
