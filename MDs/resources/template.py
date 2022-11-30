@@ -9,11 +9,11 @@ from PyQt5.QtCore import *
 
 # class name can be anything
 
-class template(QWidget):
+class template(QWidget): # can be QMainWindow as well
     # this can be your normal PyQt5 code, go crazy!
     def __init__(self):
         super(template, self).__init__()
-        self.setFixedSize(500, 500)
+        self.setFixedSize(500, 500) # doesn't have to be fixed size!
         self.setWindowTitle("template!")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint) # this line is needed for the program to stay on top of desktop
 

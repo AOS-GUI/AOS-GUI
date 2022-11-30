@@ -14,7 +14,7 @@ AOS-GUI was designed on Windows, so it looks the best there. All features listed
 On Mac OS, the menubar is only available when you move the mouse to the top of the screen, and many but not all features will be supported on Mac OS. Mac OS will have better support in later versions.
 
 ### Linux
-I have not yet tested AOS-GUI on Linux. Please let me know if you own a Linux machine and would be willing to test AOS-GUI on it!
+AOS-GUI functions correctly on Linux, and fully supports AOS.
 
 ### the menubar
 
@@ -34,6 +34,15 @@ Contained within it is the main menu, which you can access by clicking on `AOS -
 ### desktop
 
 The desktop is what contains all of the buttons that link to applications. You can customize which buttons are on the desktop in the `settings` app. To customize the locations of each button, simply drag and drop a button to the new location.
+
+While focusing on the desktop, shortcuts that you have bound in `settings` can be called by pressing the key combos you have set. The default keybinds are:
+
+| Action | Key Combo|
+|------|------------|
+|Run...|Ctrl+R|
+|Terminal|Ctrl+T|
+|Settings|Ctrl+Shift+S|
+|Help|Ctrl+H|
 
 ## apps
 
@@ -66,7 +75,7 @@ camelInstall is AOS's package manager. It contains information on both your inst
 
 **-- Tab "installed" --**
 
-Click on an app in the table and select "Uninstall..." to uninstall it from AOS.
+Click on an app in the table and select "Uninstall..." to uninstall it from AOS. You can also click "Run" to run the selected app.
 
 **-- Tab "database" --**
 
@@ -75,7 +84,6 @@ The table here can either contain a list of apps or a notification that you don'
 | Button | Action|
 |------|------------|
 |Install| Install the app|
-|View Source|View the source code of the app|
 |Search|Searches the database for any reference of the words typed|
 
 ### editor

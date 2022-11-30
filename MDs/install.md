@@ -2,7 +2,7 @@
 
 ## you will need...
 
-- The latest version of [Python](https://python.org/downloads/)
+- The latest version of [Python](https://python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Pypy is recommended if you are concerned about CPU usage and/or speed.
 - The latest version of [pip](https://pip.pypa.io/en/stable/installation/)
 - The latest version of AOS-GUI
 - Any terminal emulator (for example, Terminal for Mac OS or Command Prompt for Windows)
