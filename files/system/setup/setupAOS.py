@@ -19,11 +19,11 @@ class installform(QMainWindow):
         self.setFixedSize(450, 540)
         self.setWindowTitle(u"AOS-GUI/setupAOS")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        self.tabs = QTabWidget(settings)
+        self.tabs = QTabWidget(self)
         self.tabs.setObjectName(u"tabs")
         self.tabs.setGeometry(QRect(10, 10, 431, 521))
         self.tabs.setMovable(False)
-        self.general = QWidget()
+        self.general = QWidget(self)
         self.general.setObjectName(u"general")
         self.user = QGroupBox(self.general)
         self.user.setObjectName(u"user")
@@ -319,6 +319,7 @@ class installform(QMainWindow):
         self.cLE_4.setText(themeColors[3])
         self.cLE_5.setText(themeColors[4])
         self.cLE_6.setText(themeColors[5])
+        self.cLE_7.setText(themeColors[6])
         self.fSB.setValue(12)
 
         for i in QStyleFactory.keys():
