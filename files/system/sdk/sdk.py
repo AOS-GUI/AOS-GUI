@@ -39,6 +39,9 @@ class DraggableButton(QPushButton):
 
         super(DraggableButton, self).mouseReleaseEvent(event)
 
+def getAOSdir():
+    return getcwd().replace("\\","/")+"/files/"
+
 def restart():
     print("Restarting...")
     QCoreApplication.quit()

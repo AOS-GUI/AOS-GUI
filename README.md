@@ -1,15 +1,15 @@
+
 <p align="center">
-    <img src="MDs/resources/images/aosgui.PNG">
+    <img src="MDs/resources/images/aosgui-black.png">
 </p>
 <p align="center">
-    <i>the definitive version of AOS</i>
+    <i>the definitive version of AOS, now in open beta!</i>
 </p>
 <p align="center">
-    <img src="https://img.shields.io/github/downloads/nanobot567/AOS-GUI/total?color=darkred">
-    <img src="https://img.shields.io/github/stars/nanobot567/AOS-GUI?color=darkred&label=stars&logo=github&style=flat">
     <img src="https://img.shields.io/github/v/release/nanobot567/AOS-GUI">
-    <img src="https://img.shields.io/badge/platform-windows%20|%20macos%20|%20linux-darkred">
-    <img src="https://img.shields.io/badge/stupid%20test-11/10%20ABSOLUTELY-darkred">
+    <img src="https://img.shields.io/github/stars/nanobot567/AOS-GUI?color=darkred&label=stars&logo=github&style=flat">
+    <img src="https://img.shields.io/github/downloads/nanobot567/AOS-GUI/total?color=darkred">
+    <img src="https://img.shields.io/badge/platform-windows%20|%20macos%20(ish)%20|%20linux-darkred">
 </p>
 
 <h2 align="center"><a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/install.md">installation</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/manual.md">manual</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/dev.md">dev guide</a></h2>
@@ -23,6 +23,8 @@
 <h4 align="center">AOS is also designed to be incredibly easy to develop for (it only takes a few lines of PyQt5 code to make an app!)</h4>
 <h2 align="center"> Why? </h2>
 <h4 align="center">For a long time I've been trying to create an OS that is easy to modify and hack. This is that OS! Because it is written in Python, even people who are new to programming can try to change some aspects of AOS (at the cost of performance).
+<h2 align="center">I found a bug, how do I report it?</h2>
+<h4 align="center">Head into the GitHub issues tab and create an issue, or if you're up for it you can make a pull request and fix it yourself!</h4>
 <br>
 <h1 align="center">Features</h1>
 <h3 align="center">Low footprint (not including modules, takes up 1MB. modules take up ~50MB)</h3>
@@ -37,3 +39,7 @@
 <br>
 <h1 align="center">Screenshots</h1>
 <img src="MDs/resources/images/usage.png">
+
+<br>
+<h1 align="center">License?</h1>
+<h3 align="center">If AOS-GUI ever becomes a massive project, then I'll probably add a license, but for now you can copy as much code as you want! If you take a big chunk of the code for one of your own projects, though, I would appreciate it if you gave credit!

@@ -213,16 +213,20 @@ class camelInstall(QWidget):
 
                         for x in url:
                             newUrl += "/"+x
-                                                        
                     else:
                         newUrl = url
                         print(url)
-                        r = requests.get(url)
-
-                    f = self.openWriteDirs(getcwd().replace("\\","/")+"/files/apps/"+newUrl,"wb")
+                        try:
+                            r = requests.get(url)
+                        except requests.exceptions.MissingSchema:
+                            pass
                     
-                    f.write(r.content)
-                    f.close()
+                    if newUrl != "":
+                        f = self.openWriteDirs(getcwd().replace("\\","/")+"/files/apps/"+newUrl,"wb")
+                    
+                        f.write(r.content)
+                        f.close()
+                        
                 msgBox(f"Installed \"{self.dbTable.item(self.dbTable.currentRow(),0).text()}\"!","Installed!",QMessageBox.Information,QMessageBox.Ok)
                 self.refreshApps()
         except AttributeError:

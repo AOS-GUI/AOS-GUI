@@ -8,6 +8,8 @@ from shutil import rmtree
 
 from files.system.sdk.sdk import *
 
+standardSegs = ["Clock","Battery","CPU Usage","Available Memory"]
+
 class settingsWidget(QWidget):
     def __init__(self):
         super(settingsWidget, self).__init__()
@@ -23,7 +25,7 @@ class settingsWidget(QWidget):
         self.general.setObjectName(u"general")
         self.user = QGroupBox(self.general)
         self.user.setObjectName(u"user")
-        self.user.setGeometry(QRect(10, 0, 251, 81))
+        self.user.setGeometry(QRect(10, 0, 261, 81))
         self.user.setTitle(u"User")
         self.uLabel = QLabel(self.user)
         self.uLabel.setObjectName(u"uLabel")
@@ -31,7 +33,7 @@ class settingsWidget(QWidget):
         self.uLabel.setText(u"Username:")
         self.uLE = QLineEdit(self.user)
         self.uLE.setObjectName(u"uLE")
-        self.uLE.setGeometry(QRect(100, 20, 131, 21))
+        self.uLE.setGeometry(QRect(100, 20, 141, 21))
         self.uLE.setText(u"")
         self.pLabel = QLabel(self.user)
         self.pLabel.setObjectName(u"pLabel")
@@ -39,20 +41,32 @@ class settingsWidget(QWidget):
         self.pLabel.setText(u"Password:")
         self.pLE = QLineEdit(self.user)
         self.pLE.setObjectName(u"pLE")
-        self.pLE.setGeometry(QRect(100, 50, 131, 21))
+        self.pLE.setGeometry(QRect(100, 50, 141, 21))
         self.pLE.setEchoMode(QLineEdit.Password)
         self.eBg = QPushButton(self.general)
         self.eBg.setObjectName(u"eBg")
-        self.eBg.setGeometry(QRect(170, 460, 91, 28))
+        self.eBg.setGeometry(QRect(170, 460, 81, 28))
         self.eBg.setText(u"Ok")
         self.clockBox = QGroupBox(self.general)
         self.clockBox.setObjectName(u"clockBox")
-        self.clockBox.setGeometry(QRect(270, 0, 151, 51))
+        self.clockBox.setGeometry(QRect(280, 0, 141, 51))
         self.clockBox.setTitle(u"Clock")
         self.clockMode = QCheckBox(self.clockBox)
         self.clockMode.setObjectName(u"clockMode")
         self.clockMode.setGeometry(QRect(10, 20, 131, 17))
         self.clockMode.setText(u"24 hour clock")
+        self.startup = QGroupBox(self.general)
+        self.startup.setObjectName(u"startup")
+        self.startup.setGeometry(QRect(10, 80, 261, 51))
+        self.startup.setTitle(u"Startup")
+        self.playStartupSound = QCheckBox(self.startup)
+        self.playStartupSound.setObjectName(u"playStartupSound")
+        self.playStartupSound.setGeometry(QRect(10, 20, 121, 20))
+        self.playStartupSound.setText(u"Play sound")
+        self.showSplashOnStartup = QCheckBox(self.startup)
+        self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
+        self.showSplashOnStartup.setGeometry(QRect(110, 20, 161, 20))
+        self.showSplashOnStartup.setText(u"Show splash window")
         self.tabs.addTab(self.general, "")
         self.tabs.setTabText(self.tabs.indexOf(self.general), u"General")
         self.customization = QWidget()
@@ -106,7 +120,7 @@ class settingsWidget(QWidget):
         self.themes = QGroupBox(self.colors)
         self.themes.setObjectName(u"themes")
         self.themes.setGeometry(QRect(220, 20, 171, 131))
-        self.themes.setTitle(u"Color Themes")
+        self.themes.setTitle(u"Color Theme")
         self.themeCB = QComboBox(self.themes)
         self.themeCB.setObjectName(u"themeCB")
         self.themeCB.setGeometry(QRect(20, 30, 131, 22))
@@ -122,7 +136,7 @@ class settingsWidget(QWidget):
         self.guiThemes = QGroupBox(self.colors)
         self.guiThemes.setObjectName(u"guiThemes")
         self.guiThemes.setGeometry(QRect(220, 170, 171, 51))
-        self.guiThemes.setTitle(u"GUI Themes")
+        self.guiThemes.setTitle(u"GUI Style")
         self.guiThemeCB = QComboBox(self.guiThemes)
         self.guiThemeCB.setObjectName(u"guiThemeCB")
         self.guiThemeCB.setGeometry(QRect(10, 20, 151, 22))
@@ -164,18 +178,18 @@ class settingsWidget(QWidget):
         self.dCHB_7 = QCheckBox(self.showOnDesktop)
         self.dCHB_7.setObjectName(u"dCHB_7")
         self.dCHB_7.setGeometry(QRect(10, 150, 81, 20))
-        self.dCHB_7.setText(u"ATerm")
+        self.dCHB_7.setText(u"Terminal")
         self.dCHB_8 = QCheckBox(self.showOnDesktop)
         self.dCHB_8.setObjectName(u"dCHB_8")
         self.dCHB_8.setGeometry(QRect(10, 170, 81, 20))
         self.dCHB_8.setText(u"Calculator")
         self.eBc = QPushButton(self.customization)
         self.eBc.setObjectName(u"eBc")
-        self.eBc.setGeometry(QRect(170, 460, 91, 28))
+        self.eBc.setGeometry(QRect(170, 460, 81, 28))
         self.eBc.setText(u"Ok")
         self.font = QGroupBox(self.customization)
         self.font.setObjectName(u"font")
-        self.font.setGeometry(QRect(270, 250, 141, 51))
+        self.font.setGeometry(QRect(120, 250, 151, 51))
         self.font.setTitle(u"Font")
         self.fSB = QSpinBox(self.font)
         self.fSB.setObjectName(u"fSB")
@@ -185,17 +199,9 @@ class settingsWidget(QWidget):
         self.fL.setObjectName(u"fL")
         self.fL.setGeometry(QRect(80, 23, 61, 16))
         self.fL.setText(u"Font Size")
-        self.splash = QGroupBox(self.customization)
-        self.splash.setObjectName(u"splash")
-        self.splash.setGeometry(QRect(120, 250, 141, 51))
-        self.splash.setTitle(u"Splash Dialog")
-        self.showSplashOnStartup = QCheckBox(self.splash)
-        self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
-        self.showSplashOnStartup.setGeometry(QRect(10, 20, 131, 20))
-        self.showSplashOnStartup.setText(u"Show on startup")
         self.btnSizeBox = QGroupBox(self.customization)
         self.btnSizeBox.setObjectName(u"btnSizeBox")
-        self.btnSizeBox.setGeometry(QRect(120, 300, 291, 81))
+        self.btnSizeBox.setGeometry(QRect(120, 300, 151, 151))
         self.btnSizeBox.setTitle(u"Buttons")
         self.btnW = QSpinBox(self.btnSizeBox)
         self.btnW.setObjectName(u"btnW")
@@ -207,11 +213,11 @@ class settingsWidget(QWidget):
         self.btnH.setMaximum(999999)
         self.btnX = QSpinBox(self.btnSizeBox)
         self.btnX.setObjectName(u"btnX")
-        self.btnX.setGeometry(QRect(150, 20, 61, 22))
+        self.btnX.setGeometry(QRect(10, 80, 61, 22))
         self.btnX.setMaximum(999999)
         self.btnY = QSpinBox(self.btnSizeBox)
         self.btnY.setObjectName(u"btnY")
-        self.btnY.setGeometry(QRect(150, 50, 61, 22))
+        self.btnY.setGeometry(QRect(10, 110, 61, 22))
         self.btnY.setMaximum(999999)
         self.btnWL = QLabel(self.btnSizeBox)
         self.btnWL.setObjectName(u"btnWL")
@@ -223,14 +229,42 @@ class settingsWidget(QWidget):
         self.btnHL.setText(u"Height")
         self.btnXL = QLabel(self.btnSizeBox)
         self.btnXL.setObjectName(u"btnXL")
-        self.btnXL.setGeometry(QRect(220, 20, 81, 16))
+        self.btnXL.setGeometry(QRect(80, 80, 81, 16))
         self.btnXL.setText(u"X Spacing")
         self.btnYL = QLabel(self.btnSizeBox)
         self.btnYL.setObjectName(u"btnYL")
-        self.btnYL.setGeometry(QRect(220, 50, 81, 16))
+        self.btnYL.setGeometry(QRect(80, 110, 81, 16))
         self.btnYL.setText(u"Y Spacing")
         self.tabs.addTab(self.customization, "")
         self.tabs.setTabText(self.tabs.indexOf(self.customization), u"Customization")
+        self.menubar = QWidget()
+        self.menubar.setObjectName(u"menubar")
+        self.segments = QListWidget(self.menubar)
+        self.segments.setObjectName(u"segments")
+        self.segments.setGeometry(QRect(30, 120, 161, 231))
+        self.segments.setDragDropMode(QAbstractItemView.DragDrop)
+        self.segments.setDefaultDropAction(Qt.MoveAction)
+        self.menubarSegments = QListWidget(self.menubar)
+        self.menubarSegments.setObjectName(u"menubarSegments")
+        self.menubarSegments.setGeometry(QRect(230, 120, 161, 231))
+        self.menubarSegments.setDragDropMode(QAbstractItemView.DragDrop)
+        self.menubarSegments.setDefaultDropAction(Qt.MoveAction)
+        self.labelSegments = QLabel(self.menubar)
+        self.labelSegments.setObjectName(u"labelSegments")
+        self.labelSegments.setGeometry(QRect(24, 90, 171, 20))
+        self.labelSegments.setText(u"Segments Available")
+        self.labelSegments.setAlignment(Qt.AlignCenter)
+        self.labelMB = QLabel(self.menubar)
+        self.labelMB.setObjectName(u"labelMB")
+        self.labelMB.setGeometry(QRect(230, 90, 161, 20))
+        self.labelMB.setText(u"Segments In Menu Bar")
+        self.labelMB.setAlignment(Qt.AlignCenter)
+        self.eBm = QPushButton(self.menubar)
+        self.eBm.setObjectName(u"eBm")
+        self.eBm.setGeometry(QRect(170, 460, 81, 28))
+        self.eBm.setText(u"Ok")
+        self.tabs.addTab(self.menubar, "")
+        self.tabs.setTabText(self.tabs.indexOf(self.menubar), u"Menu Bar")
         self.shortcuts = QWidget()
         self.shortcuts.setObjectName(u"shortcuts")
         self.sDesktop = QGroupBox(self.shortcuts)
@@ -271,7 +305,7 @@ class settingsWidget(QWidget):
         self.KS_4.setKeySequence(u"Ctrl+H")
         self.eBs = QPushButton(self.shortcuts)
         self.eBs.setObjectName(u"eBs")
-        self.eBs.setGeometry(QRect(170, 460, 91, 28))
+        self.eBs.setGeometry(QRect(170, 460, 81, 28))
         self.eBs.setText(u"Ok")
         self.tabs.addTab(self.shortcuts, "")
         self.tabs.setTabText(self.tabs.indexOf(self.shortcuts), u"Shortcuts")
@@ -281,14 +315,12 @@ class settingsWidget(QWidget):
         self.rAOS.setObjectName(u"rAOS")
         self.rAOS.setGeometry(QRect(130, 50, 161, 28))
         self.rAOS.setText(u"Reset AOS...")
-        self.rAOS.clicked.connect(self.resetAOS)
         self.tabs.addTab(self.reset, "")
         self.tabs.setTabText(self.tabs.indexOf(self.reset), u"Reset")
 
         self.retranslateUi()
 
         self.tabs.setCurrentIndex(0)
-
 
         QMetaObject.connectSlotsByName(self)
     # setupUi
@@ -314,15 +346,25 @@ class settingsWidget(QWidget):
         self.eBg.clicked.connect(self.getmeout)
         self.eBc.clicked.connect(self.getmeout)
         self.eBs.clicked.connect(self.getmeout)
+        self.eBm.clicked.connect(self.getmeout)
+        self.rAOS.clicked.connect(self.resetAOS)
         self.getCurrentSettings()
 
     def eraseAllData(self):
-        homeCwd = getcwd().replace("\\","/")+"/files/home/"
+        cwd = getcwd().replace("\\","/")
 
         remove(getcwd().replace("\\","/")+"/files/system/data/user/data.aos")
-        rmtree(homeCwd)
+        remove(getcwd().replace("\\","/")+"/files/system/data/user/desktop.aos")
+        rmtree(cwd+"/files/home/")
+        rmtree(cwd+"/files/apps/")
         sleep(2)
-        mkdir(homeCwd)
+        mkdir(cwd+"/files/home/")
+        mkdir(cwd+"/files/apps/")
+        mkdir(cwd+"/files/apps/assets/")
+        f = open(getcwd().replace("\\","/")+"/files/system/data/user/desktop.aos","w+")
+        f.close()
+        f = open(getcwd().replace("\\","/")+"/files/system/data/user/menubar.aos","w+")
+        f.close()
         msgBox("AOS has been factory reset.","Done.",QMessageBox.Information,QMessageBox.Ok)
         exit()
 
@@ -334,6 +376,7 @@ class settingsWidget(QWidget):
         
     # retranslateUi
     def getCurrentSettings(self):
+        global standardSegs
         # pass
 
         f = open("files/system/data/user/data.aos","r")
@@ -383,7 +426,8 @@ class settingsWidget(QWidget):
         self.showSplashOnStartup.setChecked(not self.toBool(content[9]))
         
         for i in QStyleFactory.keys():
-            self.guiThemeCB.addItem(i)
+            if i != "windowsvista":
+                self.guiThemeCB.addItem(i)
         
         self.guiThemeCB.setCurrentText(content[10])
 
@@ -394,6 +438,23 @@ class settingsWidget(QWidget):
         self.btnX.setValue(int(content[12].split("|")[2]))
         self.btnY.setValue(int(content[12].split("|")[3]))
 
+        self.playStartupSound.setChecked(self.toBool(content[13]))
+
+        f = open("files/system/data/user/menubar.aos","r")
+        menubarSegs = f.read()
+
+        if menubarSegs == "":
+            self.segments.addItems(standardSegs)
+        else:
+            for i in menubarSegs.split("|"):
+                if i != "":
+                    self.menubarSegments.addItem(i)
+
+            for z in standardSegs: # cycle through segments in menubar already
+                if not z in menubarSegs.split("|"):
+                    self.segments.addItem(z)
+
+        f.close()
 
     def applyTheme(self):
         tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -492,7 +553,14 @@ class settingsWidget(QWidget):
         f.write(str(not self.showSplashOnStartup.isChecked())+"\n")
         f.write(self.guiThemeCB.currentText()+"\n")
         f.write(str(self.clockMode.isChecked())+"\n")
-        f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value()))
+        f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value())+"\n")
+        f.write(str(self.playStartupSound.isChecked()))
+        f.close()
+
+        f = open("files/system/data/user/menubar.aos","w")
+        for i in range(self.menubarSegments.count()):
+            f.write(self.menubarSegments.item(i).text()+"|")
+        f.close()
 
         msgBox("Your settings have been applied! Please restart AOS-GUI to see your changes to the desktop.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         self.close()

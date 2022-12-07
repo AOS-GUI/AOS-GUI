@@ -122,8 +122,7 @@ class editApp(QWidget):
             currentlyOpenFile = file
             currentlyOpenFileName = currentlyOpenFile.split("/")
             currentlyOpenFileName = currentlyOpenFileName[-1]
-        else:
-            self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
+        self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
 
     def openViaOutsideSource(self, path):
         if self == None:
