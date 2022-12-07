@@ -16,5 +16,4 @@ class aoshelp(QWidget):
         self.helpText = QTextEdit(self)
         self.helpText.setGeometry(QRect(0, 0, 500, 500))
         self.helpText.setReadOnly(True)
-
         self.helpText.setMarkdown(text)

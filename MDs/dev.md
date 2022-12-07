@@ -64,6 +64,7 @@ If you would like some shorthand functions for actions in AOS, add the line `fro
 |----------|--------|
 | `aosVersion()` | Returns the current AOS version as a string. |
 | `DraggableButton(QPushButton)` | Creates a new QPushButton object, but the button is draggable. |
+| `getAOSdirectory()` | Returns the current working AOS directory. |
 | `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None)` | Creates a message box. Returns a return value of type int. Refer to Qt5 manual to see what each return int stands for. |
 | `openApplication(app, path="files/apps/")` | Opens an external application. By default checks in files/apps/ for the app.
 | `userSettings()`| Returns contents of `data.aos` as a list (data.aos splitted by newlines) |

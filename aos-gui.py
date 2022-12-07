@@ -8,6 +8,8 @@
 # ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
 # by nanobot567
 
+# feel free to use any of this code, but if you take a sizable chunk of it i would appreciate it if you gave credit! thanks :)
+
 try:
     from pip import main as pipmain
 except ImportError:
@@ -25,6 +27,7 @@ except:
      pipmain(["install","PyQt5"])
      pipmain(["install","requests"])
      pipmain(["install","playsound==1.2.2"])
+     pipmain(["install","psutil"])
      # pipmain(["install","PyQtWebEngine"])
      print("Done! Starting up...")
 
@@ -42,6 +45,7 @@ from time import sleep,strftime
 import importlib
 import sys
 import os
+import psutil
 
 fontSize = 11
 buttonFontSize = f"font-size:{fontSize}px"
@@ -59,10 +63,6 @@ sysApps = ["Settings","appLauncher","FileSystem","camelInstall","Edit","AOSHelp"
 
 kSeqs = []
 
-def launchExtApp(prgm):
-     modulePrgm = importlib.import_module("files.apps."+prgm)
-     importlib.reload(modulePrgm)
-
 class AOS(QMainWindow):
      def __init__(self):
           super(AOS, self).__init__()
@@ -73,7 +73,6 @@ class AOS(QMainWindow):
           content = f.read()
           content = content.split("\n")
           f.close()
-
 
           themeColors = userTheme()
 
@@ -115,11 +114,9 @@ class AOS(QMainWindow):
           self.calcWindow = calc.calculator()
 
           self.setWindowTitle("AOS-GUI")
-          # remove title bar
           self.setWindowFlag(Qt.FramelessWindowHint)
           self.setGeometry(0,0,700,500)
           self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
-          # set it so all colors transferred to all widgets
           print("Finalizing desktop...")
           self.setupMenuBar()
           self.setupButtons()
@@ -148,7 +145,6 @@ class AOS(QMainWindow):
           if prgm.isspace() or prgm == "":
                pass
           else:
-               
                for i in globals():
                     try:
                          if globals().get(i).text() == prgm:
@@ -219,38 +215,39 @@ class AOS(QMainWindow):
                     globals()[btnName].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
                     globals()[btnName].setCursor(Qt.CursorShape.PointingHandCursor)
 
-                    if btnName == 0:
-                         globals()[btnName].setText("Settings")
-                         globals()[btnName].clicked.connect(self.settingsWindow.show)
-                         globals()[btnName].clicked.connect(self.settingsWindow.activateWindow)
-                    elif btnName == 1:
-                         globals()[btnName].setText("appLauncher")
-                         globals()[btnName].clicked.connect(self.aLaunchWindow.show)
-                         globals()[btnName].clicked.connect(self.aLaunchWindow.activateWindow)
-                    elif btnName == 2:
-                         globals()[btnName].setText("FileSystem")
-                         globals()[btnName].clicked.connect(self.fsWindow.show)
-                         globals()[btnName].clicked.connect(self.fsWindow.activateWindow)
-                    elif btnName == 3:
-                         globals()[btnName].setText("camelInstall")
-                         globals()[btnName].clicked.connect(self.cInstWindow.show)
-                         globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
-                    elif btnName == 4:
-                         globals()[btnName].setText("Edit")
-                         globals()[btnName].clicked.connect(self.editWindow.show)
-                         globals()[btnName].clicked.connect(self.editWindow.activateWindow)
-                    elif btnName == 5:
-                         globals()[btnName].setText("AOSHelp")
-                         globals()[btnName].clicked.connect(self.helpWindow.show)
-                         globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
-                    elif btnName == 6:
-                         globals()[btnName].setText("Terminal")
-                         globals()[btnName].clicked.connect(self.atermWindow.show)
-                         globals()[btnName].clicked.connect(self.atermWindow.activateWindow)
-                    elif btnName == 7:
-                         globals()[btnName].setText("Calculator")
-                         globals()[btnName].clicked.connect(self.calcWindow.show)
-                         globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
+                    match btnName:
+                         case 0:
+                              globals()[btnName].setText("Settings")
+                              globals()[btnName].clicked.connect(self.settingsWindow.show)
+                              globals()[btnName].clicked.connect(self.settingsWindow.activateWindow)
+                         case 1:
+                              globals()[btnName].setText("appLauncher")
+                              globals()[btnName].clicked.connect(self.aLaunchWindow.show)
+                              globals()[btnName].clicked.connect(self.aLaunchWindow.activateWindow)
+                         case 2:
+                              globals()[btnName].setText("FileSystem")
+                              globals()[btnName].clicked.connect(self.fsWindow.show)
+                              globals()[btnName].clicked.connect(self.fsWindow.activateWindow)
+                         case 3:
+                              globals()[btnName].setText("camelInstall")
+                              globals()[btnName].clicked.connect(self.cInstWindow.show)
+                              globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
+                         case 4:
+                              globals()[btnName].setText("Edit")
+                              globals()[btnName].clicked.connect(self.editWindow.show)
+                              globals()[btnName].clicked.connect(self.editWindow.activateWindow)
+                         case 5:
+                              globals()[btnName].setText("AOSHelp")
+                              globals()[btnName].clicked.connect(self.helpWindow.show)
+                              globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
+                         case 6:
+                              globals()[btnName].setText("Terminal")
+                              globals()[btnName].clicked.connect(self.atermWindow.show)
+                              globals()[btnName].clicked.connect(self.atermWindow.activateWindow)
+                         case 7:
+                              globals()[btnName].setText("Calculator")
+                              globals()[btnName].clicked.connect(self.calcWindow.show)
+                              globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
                     buttonX += buttonWidth + buttonSpaceX
 
                     # later release, make it so buttons linking to external apps possible.
@@ -267,18 +264,14 @@ class AOS(QMainWindow):
      def restart(self):
           print("Restarting...")
           QCoreApplication.quit()
-          # print(sys.executable)
           QProcess.startDetached(sys.executable, sys.argv)
 
      def setupMenuBar(self):
-          global timeMenu
+          global timeMenu,batteryMenu,cpuUsageMenu,memoryMenu,menubarSegs
           menuBar = self.menuBar()
-
           menuBar.setStyleSheet(f"background-color: {tbgcolor}; color: {ttextcolor};")
-          # cinstall.window = cinstall.Ui_camelInstaller()
 
           self.runAction = QAction("&Run...", self)
-          # self.cInstAction = QAction("&camelInstall", self)
           self.setAction = QAction("&Settings", self)
           self.restartAction = QAction("&Restart", self)
           self.exitAction = QAction("&Exit", self)
@@ -287,26 +280,49 @@ class AOS(QMainWindow):
 
           aosMenu = QMenu(f"&AOS - {username}", self)
           extrasMenu = QMenu(f"Extras", self)
-          timeMenu = QMenu(strftime('%H:%M:%S - /%m/%d/%Y'), self)
 
           menuBar.addMenu(aosMenu)
           menuSeparator = menuBar.addMenu("|")
           menuSeparator.setEnabled(False)
-          menuBar.addMenu(extrasMenu)
-          menuSeparator2 = menuBar.addMenu("|")
-          menuSeparator2.setEnabled(False)
-          menuBar.addMenu(timeMenu)
           aosMenu.addAction(self.runAction)
-          # aosMenu.addAction(self.cInstAction)
           aosMenu.addAction(self.setAction)
           aosMenu.addAction(self.restartAction)
           aosMenu.addAction(self.exitAction)
-          timeMenu.setEnabled(False)
+          menuBar.addMenu(extrasMenu)
           extrasMenu.addAction(self.scAction)
           extrasMenu.addAction(self.rscAction)
 
+          f = open("files/system/data/user/menubar.aos", "r")
+          menubarSegs = f.read().split("|")
+
+          timeMenu = QMenu(strftime('%H:%M:%S - /%m/%d/%Y'), self)
+          timeMenu.setEnabled(False)
+          batteryMenu = QMenu("100%", self)
+          batteryMenu.setEnabled(False)
+          cpuUsageMenu = QMenu("CPU: 0%", self)
+          cpuUsageMenu.setEnabled(False)
+          memoryMenu = QMenu("RAM: 0 MB", self)
+          memoryMenu.setEnabled(False)
+
+          for i in menubarSegs:
+               match i:
+                    case "Clock":
+                         menuBar.addMenu("|").setEnabled(False)
+                         menuBar.addMenu(timeMenu)
+                    case "Battery":
+                         menuBar.addMenu("|").setEnabled(False)
+                         menuBar.addMenu(batteryMenu)
+                    case "CPU Usage":
+                         menuBar.addMenu("|").setEnabled(False)
+                         menuBar.addMenu(cpuUsageMenu)
+                    case "Available Memory":
+                         menuBar.addMenu("|").setEnabled(False)
+                         menuBar.addMenu(memoryMenu)
+
+          f.close()
+
+
           self.runAction.triggered.connect(self.run)
-          # self.cInstAction.triggered.connect(cinstall.window.show)
           self.setAction.triggered.connect(self.settingsWindow.show)
           self.restartAction.triggered.connect(self.restart)
           self.exitAction.triggered.connect(QCoreApplication.quit)
@@ -325,29 +341,33 @@ class AOS(QMainWindow):
           if prgm.isspace() or prgm == "":
                pass
           else:
-               if prgm.lower() == "fs":
-                    self.fsWindow.show()
-               elif prgm.lower() == "editor":
-                    self.editWindow.show()
-               elif prgm.lower() == "settings":
-                    self.settingsWindow.show()
-               elif prgm.lower() == "aoshelp":
-                    self.helpWindow.show()
-               elif prgm.lower() == "cinstall" or prgm.lower() == "camelinstall":
-                    self.cInstWindow.show()
-               elif prgm.lower() == "aterm" or prgm.lower() == "terminal":
-                    self.atermWindow.show()
-               elif prgm.lower() == "applauncher":
-                    self.aLaunchWindow.show()
-               elif prgm.lower() == "splash":
-                    splashscreen.__init__()
-                    splashscreen.show()
-               elif prgm.lower() == "calc":
-                    self.calcWindow.show()
-               elif prgm.lower() == "about":
-                    msgBox("AOS-GUI version "+version+", created by nanobot567 on GitHub. More information can be found in AOSHelp or the GitHub repository.","About")
-               else:
-                    openApplication(prgm)
+               if prgm.lower().endswith(".py"):
+                    prgm = "".join(prgm.split(".py")[:1])
+
+               match prgm.lower():
+                    case "fs" | "filesystem":
+                         self.fsWindow.show()
+                    case "editor" | "edit":
+                         self.editWindow.show()
+                    case "settings":
+                         self.settingsWindow.show()
+                    case "aoshelp" | "help":
+                         self.helpWindow.show()
+                    case "cinstall" | "camelinstall":
+                         self.cInstWindow.show()
+                    case "aterm" | "terminal":
+                         self.atermWindow.show()
+                    case "applauncher":
+                         self.aLaunchWindow.show()
+                    case "splash":
+                         splashscreen.__init__()
+                         splashscreen.show()
+                    case "calc" | "calculator":
+                         self.calcWindow.show()
+                    case "about":
+                         msgBox("AOS-GUI version "+version+", created by nanobot567 on GitHub. More information can be found in AOSHelp or the GitHub repository.","About")
+                    case _:
+                         openApplication(prgm)
 
                self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
 
@@ -362,7 +382,6 @@ class AOS(QMainWindow):
           self.helpSC.activated.connect(self.helpWindow.show)
 
 if __name__ == '__main__':
-
      QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
      app = QApplication([])
 
@@ -371,14 +390,16 @@ if __name__ == '__main__':
           window = AOS()
           window.showFullScreen()
 
+          content = f.read()
+          content = content.split("\n")
+
           try:
-               playsound(os.getcwd().replace("\\","/")+"/files/system/data/silence.wav")
-               playsound(os.getcwd().replace("\\","/")+"/files/system/data/AOS.wav")
+               if content[13] == "True":
+                    playsound(os.getcwd().replace("\\","/")+"/files/system/data/silence.wav")
+                    playsound(os.getcwd().replace("\\","/")+"/files/system/data/AOS.wav")
           except:
                pass
 
-          content = f.read()
-          content = content.split("\n")
           if content[1] != "":
                passwordInput = ""
                while passwordInput != content[1]:
@@ -391,17 +412,30 @@ if __name__ == '__main__':
           f.close()
 
           timer = QTimer()
-          if clockMode == "True":
-               timer.timeout.connect(lambda: timeMenu.setTitle(strftime('%H:%M:%S - %m/%d/%Y')))
-          else:
-               timer.timeout.connect(lambda: timeMenu.setTitle(strftime('%I:%M:%S - %m/%d/%Y')))
+
+          for i in menubarSegs:
+               match i:
+                    case "Clock":
+                         if clockMode == "True":
+                              timer.timeout.connect(lambda: timeMenu.setTitle(strftime('%H:%M:%S - %m/%d/%Y')))
+                         else:
+                              timer.timeout.connect(lambda: timeMenu.setTitle(strftime('%I:%M:%S - %m/%d/%Y')))
+                    case "Battery":
+                         timer.timeout.connect(lambda: batteryMenu.setTitle(str(psutil.sensors_battery().percent)+"%"))
+                    case "CPU Usage":
+                         timer.timeout.connect(lambda: cpuUsageMenu.setTitle("CPU: "+str(psutil.cpu_percent())+"%"))
+                    case "Available Memory":
+                         timer.timeout.connect(lambda: memoryMenu.setTitle("RAM: "+str(round(psutil.virtual_memory().available / 1000000))+" MB"))
+
           timer.start(1000)
+
           app.setStyle(guiTheme)
           
      except Exception as e:
           if not str(e).startswith("[Errno 2] No such file or directory: 'files/system/data/user/data.aos'"):
                print("ERR: "+e)
           else:
+               app.setStyle("Windows")
                window = setupAOS.installform()
                window.show()
     
@@ -421,8 +455,6 @@ if __name__ == '__main__':
           palette.setColor(QPalette.Highlight, QColor(bbgcolor))
           palette.setColor(QPalette.HighlightedText, QColor(textcolor))
           QGuiApplication.setPalette(palette)
-     except NameError:
-          pass
      except NameError:
           pass
 

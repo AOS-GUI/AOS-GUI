@@ -71,7 +71,7 @@
     </rect>
    </property>
    <property name="text">
-    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;0.2 &lt;span style=&quot; color:#ff0000;&quot;&gt;alpha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;0.2 &lt;span style=&quot; color:#ff0000;&quot;&gt;beta&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="createdby">

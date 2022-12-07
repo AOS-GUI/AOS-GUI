@@ -20,7 +20,7 @@ AOS-GUI functions correctly on Linux, and fully supports AOS.
 
 The menubar is located at the top of your screen.
 
-Contained within it is the main menu, which you can access by clicking on `AOS - (username)`. Inside of this menu are the actions `Run...`, `Settings`, `Restart`, and `Exit`. It also contains the clock.
+Contained within it is the main menu, which you can access by clicking on `AOS - (username)`. Inside of this menu are the actions `Run...`, `Settings`, `Restart`, and `Exit`. Alongside this is the extras menu, and the menubar widgets that you have chosen to add to the menubar in settings (clock, cpu usage, etc.).
 
 ### menubar actions
 
@@ -34,6 +34,8 @@ Contained within it is the main menu, which you can access by clicking on `AOS -
 ### desktop
 
 The desktop is what contains all of the buttons that link to applications. You can customize which buttons are on the desktop in the `settings` app. To customize the locations of each button, simply drag and drop a button to the new location.
+
+If you would like to create a shortcut to an external app, click on the `Extras` menu in the menu bar and click `Create Shortcut...`, then type the name of the app you would like to add to the desktop and press OK. To remove this shortcut, click on `Remove Shortcut...`, type the text displayed on the button you would like to remove, and click OK.
 
 While focusing on the desktop, shortcuts that you have bound in `settings` can be called by pressing the key combos you have set. The default keybinds are:
 
@@ -60,10 +62,6 @@ This app launches external apps that you have downloaded via camelInstall.
 |------|------------|
 |Launch App| Run the selected app|
 |Refresh|Refresh the app list|
-
-### aterm / terminal
-
-AOS terminal. Commands are listed in-app by typing `help` and pressing enter.
 
 ### calculator
 
@@ -104,3 +102,7 @@ AOS filesystem viewer. Here you can view all of the folders and files within the
 ### settings
 
 AOS settings. Here you can change all of AOS's settings (surprising, I know).
+
+### terminal
+
+AOS terminal. Commands are listed in-app by typing `help` and pressing enter.

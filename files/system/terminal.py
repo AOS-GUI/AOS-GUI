@@ -1,16 +1,19 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os import listdir,path,getcwd,remove,rmdir,mkdir
+from os import listdir,path,getcwd,remove,mkdir
+from shutil import rmtree
 from files.system.sdk.sdk import *
 from playsound import playsound
 
+filesPath = getAOSdir()
+
 dir = "/home"
-terminalVer = 1.3
+terminalVer = 1.4
 helpText = {"help":"aos help (syntax: help {command})",
             "clear":"clears the screen (syntax: clear)",
             "echo":"echoes text (syntax: echo [text] {| [color]})",
-            "rm":"removes a file (syntax: rm [path from /])",
+            "rm":"removes a file or folder (syntax: rm [path from /])",
             "dir":"lists the files and directories inside a directory (syntax: dir [path] {-notypes})",
             "read":"reads a file's contents (syntax: read [file])",
             "script":"runs a script (syntax: script [file] {-v | -verbose})",
@@ -19,7 +22,8 @@ helpText = {"help":"aos help (syntax: help {command})",
             "beep":"plays the current AOS startup sound (syntax: beep)",
             "mkdir":"creates a directory (syntax: mkdir [path])",
             "exec":"executes an app. by default looks in /files/apps. (syntax: exec [file] {path}",
-            "restart":"restarts AOS (syntax: restart)"}
+            "restart":"restarts AOS (syntax: restart)",
+            "mkfile":"creates a file. (syntax: mkfile [path/filename] {contents})"}
 
 class aterm(QWidget):
     def __init__(self):
@@ -66,6 +70,7 @@ class aterm(QWidget):
             self.lineEdit.setText("")
 
             splitUnneededSlash = False
+            
             if lowcommand.startswith("echo"):
                 final = self.splitParams(command)[0]
 
@@ -82,23 +87,22 @@ class aterm(QWidget):
                     param = param.split("/",1)
                     param = param[1]
                     
-                if param.startswith("support"):
-                    retval = msgBox(f"'{param}' is a child of or is the 'support' folder, which contains vital system files. Are you sure you want to delete it?","Are you sure?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+                if param.startswith("system"):
+                    retval = msgBox(f"'{param}' is a child of or is the 'system' folder, which contains vital system files. Are you sure you want to delete it?","Are you sure?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
                     if retval != 16384:
                         ok = False
 
                 if param.endswith("/"):
                     if ok == True:
                         try:
-                            rmdir((getcwd().replace("\\","/")+"/files/"+param))
+                            rmtree((filesPath+param))
                         except FileNotFoundError:
                             self.echo("ERR: The directory doesn't exist!",True)
-                        except OSError:
-                            self.echo(f"ERR: The directory isn't empty or doesn't exist!",True)
+
                 else:
                     if ok == True:
                         try:
-                            remove((getcwd().replace("\\","/")+"/files/"+param+"/"))
+                            remove((filesPath+param))
                         except FileNotFoundError:
                             self.echo("ERR: The file or directory doesn't exist!",True)
                         except NotADirectoryError:
@@ -120,17 +124,17 @@ class aterm(QWidget):
                         self.echo("List of files/directories in "+param+":")
                         self.echo()
 
-                        for _ in listdir(getcwd().replace("\\","/")+"/files/"+param):
+                        for _ in listdir(filesPath+param):
                             if lowcommand.__contains__("-notypes"):
                                 self.echo(_)
                             else:
-                                if path.isdir(getcwd().replace("\\","/")+"/files/"+param+_):
+                                if path.isdir(filesPath+param+_):
                                     self.echo(_+" [DIR]")
-                                elif path.isfile(getcwd().replace("\\","/")+"/files/"+param+_):
+                                elif path.isfile(filesPath+param+_):
                                     self.echo(_+" [FILE]")
-                                elif path.islink(getcwd().replace("\\","/")+"/files/"+param+_):
+                                elif path.islink(filesPath+param+_):
                                     self.echo(_+" [LINK]")
-                                elif path.ismount(getcwd().replace("\\","/")+"/files/"+param+_):
+                                elif path.ismount(filesPath+param+_):
                                     self.echo(_+" [MNT]")
                         self.echo()
                     except FileNotFoundError:
@@ -149,7 +153,7 @@ class aterm(QWidget):
                     curline = 0
 
                     self.echo(f"[READ] Reading {param}...")
-                    f = open(getcwd().replace("\\","/")+"/files/"+param,"r")
+                    f = open(filesPath+param,"r")
                     textInFile = f.readlines()
                     self.echo(f"[READ] Got {len(textInFile)} lines!")
                     self.echo()
@@ -196,7 +200,7 @@ class aterm(QWidget):
                 self.echo()
 
                 try:
-                    script = open(getcwd().replace("\\","/")+"/files/"+param,"r")
+                    script = open(filesPath+param,"r")
                     script = script.read()
                     script = script.split("\n")
 
@@ -222,7 +226,7 @@ class aterm(QWidget):
                 param = self.splitParams(command)[0]
 
                 try:
-                    mkdir(getcwd().replace("\\","/")+"/files/"+param)
+                    mkdir(filesPath+param)
                     self.echo("Created directory "+param,True)
                 except FileExistsError:
                     self.echo("ERR: Directory already exists!",True)
@@ -235,6 +239,18 @@ class aterm(QWidget):
                     openApplication(params[0])
             elif lowcommand.startswith("restart"):
                 restart()
+            elif lowcommand.startswith("mkfile"):
+                params = self.splitParams(command)
+
+                try:
+                    f = open(filesPath+params[0],"w+")
+                    f.write(" ".join(params[1:]))
+                    f.close()
+                except IndexError:
+                    f = open(filesPath+params[0],"w+")
+                    f.close()
+                
+                self.echo("Created file "+params[0],True)
             else:
                 self.echo("ERR: Unknown command "+lowcommand,True)
                 

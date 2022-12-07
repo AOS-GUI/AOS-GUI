@@ -191,39 +191,40 @@ class calculator(QWidget):
         self.ans.setText(text[:len(text)-1])
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_1:
-            self.action1()
-        elif event.key() == Qt.Key_2:
-            self.action2()
-        elif event.key() == Qt.Key_3:
-            self.action3()
-        elif event.key() == Qt.Key_4:
-            self.action4()
-        elif event.key() == Qt.Key_5:
-            self.action5()
-        elif event.key() == Qt.Key_6:
-            self.action6()
-        elif event.key() == Qt.Key_7:
-            self.action7()
-        elif event.key() == Qt.Key_8:
-            self.action8()
-        elif event.key() == Qt.Key_9:
-            self.action9()
-        elif event.key() == Qt.Key_0:
-            self.action0()
-        elif event.key() == Qt.Key_Plus:
-            self.action_plus()
-        elif event.key() == Qt.Key_Minus:
-            self.action_minus()
-        elif event.key() == Qt.Key_Asterisk:
-            self.action_mul()
-        elif event.key() == Qt.Key_Slash:
-            self.action_div()
-        elif event.key() == Qt.Key_Return:
-            self.action_equal()
-        elif event.key() == Qt.Key_Backspace:
-            self.action_del()
-        elif event.key() == Qt.Key_Period:
-            self.action_point()
-        elif event.key() == Qt.Key_Escape:
-            self.action_clear()
+        match event.key():
+            case Qt.Key_1:
+                self.action1()
+            case Qt.Key_2:
+                self.action2()
+            case Qt.Key_3:
+                self.action3()
+            case Qt.Key_4:
+                self.action4()
+            case Qt.Key_5:
+                self.action5()
+            case Qt.Key_6:
+                self.action6()
+            case Qt.Key_7:
+                self.action7()
+            case Qt.Key_8:
+                self.action8()
+            case Qt.Key_9:
+                self.action9()
+            case Qt.Key_0:
+                self.action0()
+            case Qt.Key_Plus:
+                self.action_plus()
+            case Qt.Key_Minus:
+                self.action_minus()
+            case Qt.Key_Asterisk:
+                self.action_mul()
+            case Qt.Key_Slash:
+                self.action_div()
+            case Qt.Key_Return:
+                self.action_equal()
+            case Qt.Key_Backspace:
+                self.action_del()
+            case Qt.Key_Period:
+                self.action_point()
+            case Qt.Key_Escape:
+                self.action_clear()
