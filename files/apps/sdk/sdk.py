@@ -78,6 +78,26 @@ def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessage
 
     return retval
 
+def getPalette():
+    theme = userTheme()
+
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(theme[6]))
+    palette.setColor(QPalette.WindowText, QColor(theme[0]))
+    palette.setColor(QPalette.Base, QColor(theme[1]))
+    palette.setColor(QPalette.AlternateBase, QColor(theme[6]))
+    palette.setColor(QPalette.ToolTipBase, QColor(theme[1]))
+    palette.setColor(QPalette.ToolTipText, QColor(theme[0]))
+    palette.setColor(QPalette.Text, QColor(theme[0]))
+    palette.setColor(QPalette.Button, QColor(theme[1]))
+    palette.setColor(QPalette.ButtonText, QColor(theme[5]))
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    palette.setColor(QPalette.Highlight, QColor(theme[4]))
+    palette.setColor(QPalette.HighlightedText, QColor(theme[0]))
+
+    return palette
+
 def aosVersion():
     return version
 

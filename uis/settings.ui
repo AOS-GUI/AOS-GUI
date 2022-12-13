@@ -336,7 +336,7 @@
         <x>220</x>
         <y>20</y>
         <width>171</width>
-        <height>131</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
@@ -346,7 +346,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>30</y>
+         <y>20</y>
          <width>131</width>
          <height>22</height>
         </rect>
@@ -359,7 +359,7 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>60</y>
+         <y>50</y>
          <width>93</width>
          <height>28</height>
         </rect>
@@ -372,7 +372,7 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>90</y>
+         <y>80</y>
          <width>93</width>
          <height>28</height>
         </rect>
@@ -381,12 +381,25 @@
         <string notr="true">Save</string>
        </property>
       </widget>
+      <widget class="QCheckBox" name="appsUseTheme">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>120</y>
+         <width>231</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string notr="true">Use in apps</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="guiThemes">
       <property name="geometry">
        <rect>
         <x>220</x>
-        <y>170</y>
+        <y>180</y>
         <width>171</width>
         <height>51</height>
        </rect>

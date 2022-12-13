@@ -58,17 +58,18 @@ window.show()
 
 ## sdk
 
-If you would like some shorthand functions for actions in AOS, add the line `from files.system.sdk.sdk import *` to the top of the file. All functions within this "SDK" are documented below.
+If you would like some shorthand functions for actions in AOS, add the line `from sdk.sdk import *` to the top of the file. All functions within this "SDK" are documented below.
 
 | Function | Action |
 |----------|--------|
-| `aosVersion()` | Returns the current AOS version as a string. |
-| `DraggableButton(QPushButton)` | Creates a new QPushButton object, but the button is draggable. |
-| `getAOSdirectory()` | Returns the current working AOS directory. |
-| `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None)` | Creates a message box. Returns a return value of type int. Refer to Qt5 manual to see what each return int stands for. |
+| `aosVersion() -> str` | Returns the current AOS version. |
+| `DraggableButton(QPushButton) -> DraggableButton object` | Creates a new QPushButton object, but the button is draggable. |
+| `getAOSdir() -> str` | Returns the current working AOS directory. |
+| `getPalette() -> QPalette` | Returns the current QPalette. |
+| `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None) -> int` | Creates a message box. Refer to Qt5 manual to see what each return int stands for. |
 | `openApplication(app, path="files/apps/")` | Opens an external application. By default checks in files/apps/ for the app.
-| `userSettings()`| Returns contents of `data.aos` as a list (data.aos splitted by newlines) |
-| `userTheme()` | Returns the current theme colors as a list. |
+| `userSettings() -> list`| Returns contents of `data.aos` (data.aos splitted by newlines) |
+| `userTheme() -> list` | Returns the current theme colors.|
 
 ## publishing your app
 

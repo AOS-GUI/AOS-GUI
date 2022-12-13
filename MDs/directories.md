@@ -9,6 +9,9 @@ Contains external applications installed using camelInstall.
 ## /apps/assets/
 Contains assets used within external applications.
 
+## /apps/sdk/
+Contains files in the AOS SDK.
+
 ## /home/
 Contains files created by the user.
 
@@ -23,9 +26,6 @@ Contains user data such as themes and settings.
 
 ## /system/data/user/themes/
 Contains AOS theme files.
-
-## /system/sdk/
-Contains files in the AOS SDK.
 
 ## /system/setup/
 Contains files used in setup.

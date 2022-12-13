@@ -42,4 +42,4 @@
 
 <br>
 <h1 align="center">License?</h1>
-<h3 align="center">If AOS-GUI ever becomes a massive project, then I'll probably add a license, but for now you can copy as much code as you want! If you take a big chunk of the code for one of your own projects, though, I would appreciate it if you gave credit!
+<h3 align="center">This project is under the MIT License.</h3>

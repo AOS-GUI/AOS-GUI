@@ -5,7 +5,7 @@ from os.path import exists
 from os import listdir,getcwd
 import sys
 
-from files.system.sdk.sdk import msgBox
+from files.apps.sdk.sdk import msgBox
 
 titleText = u"welcome to AOS-GUI!"
 endButtonText = u"Setup AOS-GUI"
@@ -121,23 +121,27 @@ class installform(QMainWindow):
         self.cLE_6.setGeometry(QRect(130, 180, 81, 22))
         self.themes = QGroupBox(self.colors)
         self.themes.setObjectName(u"themes")
-        self.themes.setGeometry(QRect(220, 20, 171, 131))
+        self.themes.setGeometry(QRect(220, 20, 171, 151))
         self.themes.setTitle(u"Color Theme")
         self.themeCB = QComboBox(self.themes)
         self.themeCB.setObjectName(u"themeCB")
-        self.themeCB.setGeometry(QRect(20, 30, 131, 22))
+        self.themeCB.setGeometry(QRect(20, 20, 131, 22))
         self.themeCB.setCurrentText(u"")
         self.tApply = QPushButton(self.themes)
         self.tApply.setObjectName(u"tApply")
-        self.tApply.setGeometry(QRect(40, 60, 93, 28))
+        self.tApply.setGeometry(QRect(40, 50, 93, 28))
         self.tApply.setText(u"Apply")
         self.tSave = QPushButton(self.themes)
         self.tSave.setObjectName(u"tSave")
-        self.tSave.setGeometry(QRect(40, 90, 93, 28))
+        self.tSave.setGeometry(QRect(40, 80, 93, 28))
         self.tSave.setText(u"Save")
+        self.appsUseTheme = QCheckBox(self.themes)
+        self.appsUseTheme.setObjectName(u"appsUseTheme")
+        self.appsUseTheme.setGeometry(QRect(40, 120, 231, 21))
+        self.appsUseTheme.setText(u"Use in apps")
         self.guiThemes = QGroupBox(self.colors)
         self.guiThemes.setObjectName(u"guiThemes")
-        self.guiThemes.setGeometry(QRect(220, 170, 171, 51))
+        self.guiThemes.setGeometry(QRect(220, 180, 171, 51))
         self.guiThemes.setTitle(u"GUI Style")
         self.guiThemeCB = QComboBox(self.guiThemes)
         self.guiThemeCB.setObjectName(u"guiThemeCB")
@@ -151,7 +155,7 @@ class installform(QMainWindow):
         self.cLE_7.setGeometry(QRect(130, 210, 81, 22))
         self.showOnDesktop = QGroupBox(self.customization)
         self.showOnDesktop.setObjectName(u"showOnDesktop")
-        self.showOnDesktop.setGeometry(QRect(10, 250, 101, 201))
+        self.showOnDesktop.setGeometry(QRect(10, 250, 131, 201))
         self.showOnDesktop.setTitle(u"Show On Desktop")
         self.dCHB = QCheckBox(self.showOnDesktop)
         self.dCHB.setObjectName(u"dCHB")
@@ -191,7 +195,7 @@ class installform(QMainWindow):
         self.eBc.setText(u"Ok")
         self.font = QGroupBox(self.customization)
         self.font.setObjectName(u"font")
-        self.font.setGeometry(QRect(120, 250, 151, 51))
+        self.font.setGeometry(QRect(150, 250, 151, 51))
         self.font.setTitle(u"Font")
         self.fSB = QSpinBox(self.font)
         self.fSB.setObjectName(u"fSB")
@@ -203,7 +207,7 @@ class installform(QMainWindow):
         self.fL.setText(u"Font Size")
         self.btnSizeBox = QGroupBox(self.customization)
         self.btnSizeBox.setObjectName(u"btnSizeBox")
-        self.btnSizeBox.setGeometry(QRect(120, 300, 151, 151))
+        self.btnSizeBox.setGeometry(QRect(150, 300, 151, 151))
         self.btnSizeBox.setTitle(u"Buttons")
         self.btnW = QSpinBox(self.btnSizeBox)
         self.btnW.setObjectName(u"btnW")
@@ -284,7 +288,7 @@ class installform(QMainWindow):
         self.KS_2 = QKeySequenceEdit(self.sDesktop)
         self.KS_2.setObjectName(u"KS_2")
         self.KS_2.setGeometry(QRect(90, 60, 113, 22))
-        self.KS_2.setKeySequence(u"Ctrl+T")
+        self.KS_2.setKeySequence(u"Ctrl+R")
         self.sL_2 = QLabel(self.sDesktop)
         self.sL_2.setObjectName(u"sL_2")
         self.sL_2.setGeometry(QRect(20, 60, 55, 16))
@@ -367,6 +371,7 @@ class installform(QMainWindow):
         self.btnY.setValue(25)
         self.playStartupSound.setChecked(True)
         self.segments.addItems(["Clock","Battery","CPU Usage","Available Memory"])
+        self.appsUseTheme.setChecked(True)
 
     def applyTheme(self):
         tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -449,7 +454,8 @@ class installform(QMainWindow):
         f.write(self.guiThemeCB.currentText()+"\n")
         f.write(str(self.clockMode.isChecked())+"\n")
         f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value())+"\n")
-        f.write(str(self.playStartupSound.isChecked()))
+        f.write(str(self.playStartupSound.isChecked())+"\n")
+        f.write(str(self.appsUseTheme.isChecked()))
         f.close()
 
         f = open("files/system/data/user/menubar.aos","w")

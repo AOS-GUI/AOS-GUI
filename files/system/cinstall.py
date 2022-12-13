@@ -9,7 +9,7 @@ from shutil import rmtree
 
 import requests
 
-from files.system.sdk.sdk import *
+from files.apps.sdk.sdk import *
 
 class camelInstall(QWidget):
     def __init__(self):
@@ -196,7 +196,7 @@ class camelInstall(QWidget):
                     newUrl = ""
                     if url.startswith("db/"):
                         url = url.split("db/")[1]
-                        url = "https://nanobot567.github.io/cInstall/dl/"+url
+                        url = "https://aos-gui.github.io/cInstall/dl/"+url
 
                         r = requests.get(url)
                         url = url.split("/")[5:]
@@ -206,7 +206,7 @@ class camelInstall(QWidget):
 
                     elif url.startswith("assets/"):
                         url = url.split("assets/")[1]
-                        url = "https://nanobot567.github.io/cInstall/dl/assets/"+self.dbTable.item(self.dbTable.currentRow(),0).text().split(".py")[0]+"/"+url
+                        url = "https://aos-gui.github.io/cInstall/dl/assets/"+self.dbTable.item(self.dbTable.currentRow(),0).text().split(".py")[0]+"/"+url
 
                         r = requests.get(url)
                         url = url.split("/")[5:]
@@ -245,7 +245,7 @@ class camelInstall(QWidget):
             url = self.dbTable.item(self.dbTable.currentRow(),3).text()
             if url.startswith("db/"):
                 url = url.split("db/")[1]
-                url = "https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/"+url
+                url = "https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/"+url
             r = requests.get(url)
             msgBox(r.text,"Source")
         except AttributeError:
