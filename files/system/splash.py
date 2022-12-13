@@ -56,7 +56,7 @@ class splashScreen(QWidget):
         self.createdby.setOpenExternalLinks(True)
         self.dontshowagain = QCheckBox(self)
         self.dontshowagain.setObjectName(u"dontshowagain")
-        self.dontshowagain.setGeometry(QRect(165, 280, 150, 20))
+        self.dontshowagain.setGeometry(QRect(155, 280, 150, 20))
         self.dontshowagain.setText(u"Don't show this again")
         self.splashTextLabel = QLabel(self)
         self.splashTextLabel.setObjectName(u"splashTextLabel")

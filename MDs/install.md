@@ -10,7 +10,6 @@
 - The latest version of [pip](https://pip.pypa.io/en/stable/installation/)
 - The latest version of AOS-GUI
 - Any terminal emulator (for example, Terminal for Mac OS or Command Prompt for Windows)
-
 - At least 60 MB of space on your hard drive (this is for PyQt5 and other modules that are required)
 
 ## instructions

@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 
 from os import getcwd
 
-from files.system.sdk.sdk import msgBox
+from files.apps.sdk.sdk import msgBox
 
 filePath = ""
 currentlyOpenFile = "Untitled"

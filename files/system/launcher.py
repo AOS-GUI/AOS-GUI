@@ -2,12 +2,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from files.system.sdk.sdk import *
+from files.apps.sdk.sdk import *
 
 from os import listdir,path
 
 class launcher(QWidget):
-    # this can be your normal PyQt5 code, go crazy!
     def __init__(self):
         super(launcher, self).__init__()
 
@@ -21,7 +20,7 @@ class launcher(QWidget):
         self.launchButton.setObjectName(u"launchButton")
         self.launchButton.setGeometry(QRect(100, 270, 81, 23))
         self.launchButton.setText(u"Launch App")
-        self.launchButton.clicked.connect(self.launchExtApp)
+        self.launchButton.clicked.connect(lambda: openApplication(self.appList.currentItem().text().split(".py")[0]))
         self.refreshButton = QPushButton(self)
         self.refreshButton.setObjectName(u"refreshButton")
         self.refreshButton.setGeometry(QRect(220, 270, 75, 23))
@@ -29,10 +28,6 @@ class launcher(QWidget):
         self.refreshButton.clicked.connect(self.grabExtApps)
 
         self.grabExtApps()
-
-    def launchExtApp(self):
-        prgm = self.appList.currentItem().text().split(".py")[0]
-        openApplication(prgm)
 
     def grabExtApps(self):
         self.appList.clear()

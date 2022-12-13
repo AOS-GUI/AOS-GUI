@@ -8,8 +8,6 @@
 # ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
 # by nanobot567
 
-# feel free to use any of this code, but if you take a sizable chunk of it i would appreciate it if you gave credit! thanks :)
-
 try:
     from pip import main as pipmain
 except ImportError:
@@ -39,7 +37,7 @@ except:
 
 from files.system import aoshelp,calc,cinstall,edit,fs,launcher,settings,splash, terminal
 from files.system.setup import setupAOS
-from files.system.sdk.sdk import *
+from files.apps.sdk.sdk import *
 
 from time import sleep,strftime
 import importlib
@@ -440,22 +438,9 @@ if __name__ == '__main__':
                window.show()
     
      try:
-          palette = QPalette()
-          palette.setColor(QPalette.Window, QColor(windowcolor))
-          palette.setColor(QPalette.WindowText, QColor(textcolor))
-          palette.setColor(QPalette.Base, QColor(bgcolor))
-          palette.setColor(QPalette.AlternateBase, QColor(windowcolor))
-          palette.setColor(QPalette.ToolTipBase, QColor(bgcolor))
-          palette.setColor(QPalette.ToolTipText, QColor(textcolor))
-          palette.setColor(QPalette.Text, QColor(textcolor))
-          palette.setColor(QPalette.Button, QColor(bgcolor))
-          palette.setColor(QPalette.ButtonText, QColor(btextcolor))
-          palette.setColor(QPalette.BrightText, Qt.red)
-          palette.setColor(QPalette.Link, QColor(42, 130, 218))
-          palette.setColor(QPalette.Highlight, QColor(bbgcolor))
-          palette.setColor(QPalette.HighlightedText, QColor(textcolor))
-          QGuiApplication.setPalette(palette)
-     except NameError:
+          if userSettings()[len(userSettings())-1] == "True":
+               QGuiApplication.setPalette(getPalette())
+     except FileNotFoundError or NameError:
           pass
 
      # window = MainWindow()
