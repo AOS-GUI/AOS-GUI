@@ -6,7 +6,7 @@
     <i>the definitive version of AOS, now in open beta!</i>
 </p>
 <p align="center">
-    <img src="https://img.shields.io/github/v/release/nanobot567/AOS-GUI">
+    <img src="https://img.shields.io/github/v/release/AOS-GUI/AOS-GUI">
     <img src="https://img.shields.io/github/stars/nanobot567/AOS-GUI?color=darkred&label=stars&logo=github&style=flat">
     <img src="https://img.shields.io/github/downloads/nanobot567/AOS-GUI/total?color=darkred">
     <img src="https://img.shields.io/badge/platform-windows%20|%20macos%20(ish)%20|%20linux-darkred">
