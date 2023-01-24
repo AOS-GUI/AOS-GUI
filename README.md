@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/github/v/release/AOS-GUI/AOS-GUI">
     <img src="https://img.shields.io/github/stars/nanobot567/AOS-GUI?color=darkred&label=stars&logo=github&style=flat">
     <img src="https://img.shields.io/github/downloads/nanobot567/AOS-GUI/total?color=darkred">
-    <img src="https://img.shields.io/badge/platform-windows%20|%20macos%20(ish)%20|%20linux-darkred">
+    <img src="https://img.shields.io/badge/platform-windows%20|%20macos%20(ish)%20|%20linux%20(ish)-darkred">
 </p>
 
 <h2 align="center"><a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/install.md">installation</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/manual.md">manual</a> | <a href="https://github.com/nanobot567/AOS-GUI/blob/main/MDs/dev.md">dev guide</a></h2>
