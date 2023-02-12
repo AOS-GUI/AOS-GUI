@@ -144,7 +144,7 @@ class camelInstall(QWidget):
         
 
         try:
-            r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt",timeout=5)
+            r = requests.get("https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/appList.txt",timeout=5)
             filesOnline = r.text.splitlines(False)
         except:
             print("[WARN] It seems like you aren't connected to the internet, not gathering camelInstall list for now.")
