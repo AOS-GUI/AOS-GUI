@@ -1,3 +1,4 @@
+<a href="MDs/help.md">back</a>
 # AOS-GUI user manual
 
 Welcome to the USER MANUAL!
@@ -106,3 +107,45 @@ AOS settings. Here you can change all of AOS's settings (surprising, I know).
 ### terminal
 
 AOS terminal. Commands are listed in-app by typing `help` and pressing enter.
+
+## other useful information
+
+### `.aos` files
+`.aos` files contain data used in AOS frequently. Below is information on how each of these files are formatted.
+
+- `data.aos`
+    - each value in `data.aos` is separated by a newline
+    - corresponding keys (by line)
+        1. username
+        2. password
+        3. color theme
+        4. font size
+        5. shortcut to run...
+        6. shortcut to terminal
+        7. shortcut to settings
+        8. shortcut to help
+        9. system apps shown on desktop, separated by pipes
+        10. show splash screen
+        11. gui theme
+        12. clock mode (true = 24 hour)
+        13. button dimensions
+        14. play startup sound
+        15. use color theme within apps
+- `desktop.aos`
+    - stores desktop shortcuts. each shortcut is separated by a pipe.
+- `menubar.aos`
+    - stores each item in the menubar. each item is separated by a pipe.
+- `autorun.aos`
+    - stores apps to be executed on startup. each item is separated by a pipe.
+
+### `.theme` files
+`.theme` files contain information about color themes in AOS. every value is separated by a newline.
+
+corresponding keys (by line)
+1. text color
+2. desktop background color
+3. taskbar text color
+4. taskbar background color
+5. button text color
+6. button background color
+7. window background color

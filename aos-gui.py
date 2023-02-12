@@ -216,35 +216,35 @@ class AOS(QMainWindow):
                     match btnName:
                          case 0:
                               globals()[btnName].setText("Settings")
-                              globals()[btnName].clicked.connect(self.settingsWindow.show)
+                              globals()[btnName].clicked.connect(self.settingsWindow.showNormal)
                               globals()[btnName].clicked.connect(self.settingsWindow.activateWindow)
                          case 1:
                               globals()[btnName].setText("appLauncher")
-                              globals()[btnName].clicked.connect(self.aLaunchWindow.show)
+                              globals()[btnName].clicked.connect(self.aLaunchWindow.showNormal)
                               globals()[btnName].clicked.connect(self.aLaunchWindow.activateWindow)
                          case 2:
                               globals()[btnName].setText("FileSystem")
-                              globals()[btnName].clicked.connect(self.fsWindow.show)
+                              globals()[btnName].clicked.connect(self.fsWindow.showNormal)
                               globals()[btnName].clicked.connect(self.fsWindow.activateWindow)
                          case 3:
                               globals()[btnName].setText("camelInstall")
-                              globals()[btnName].clicked.connect(self.cInstWindow.show)
+                              globals()[btnName].clicked.connect(self.cInstWindow.showNormal)
                               globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
                          case 4:
                               globals()[btnName].setText("Edit")
-                              globals()[btnName].clicked.connect(self.editWindow.show)
+                              globals()[btnName].clicked.connect(self.editWindow.showNormal)
                               globals()[btnName].clicked.connect(self.editWindow.activateWindow)
                          case 5:
                               globals()[btnName].setText("AOSHelp")
-                              globals()[btnName].clicked.connect(self.helpWindow.show)
+                              globals()[btnName].clicked.connect(self.helpWindow.showNormal)
                               globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
                          case 6:
                               globals()[btnName].setText("Terminal")
-                              globals()[btnName].clicked.connect(self.atermWindow.show)
+                              globals()[btnName].clicked.connect(self.atermWindow.showNormal)
                               globals()[btnName].clicked.connect(self.atermWindow.activateWindow)
                          case 7:
                               globals()[btnName].setText("Calculator")
-                              globals()[btnName].clicked.connect(self.calcWindow.show)
+                              globals()[btnName].clicked.connect(self.calcWindow.showNormal)
                               globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
                     buttonX += buttonWidth + buttonSpaceX
 
@@ -379,12 +379,37 @@ class AOS(QMainWindow):
           self.setSC.activated.connect(self.settingsWindow.show)
           self.helpSC.activated.connect(self.helpWindow.show)
 
+     def showEvent(self, event):
+          f = open("files/system/data/user/autorun.aos","r")
+          for i in f.read().split("|"):
+               if i:
+                    if openApplication(i, silentFail=True) == -1:
+                         match i:
+                              case "aoshelp":
+                                   self.helpWindow.show()
+                              case "calc":
+                                   self.calcWindow.show()
+                              case "cinstall":
+                                   self.cInstWindow.show()
+                              case "edit":
+                                   self.editWindow.show()
+                              case "fs":
+                                   self.fsWindow.show()
+                              case "launcher":
+                                   self.aLaunchWindow.show()
+                              case "settings":
+                                   self.settingsWindow.show()
+                              case "terminal":
+                                   self.atermWindow.show()
+          super().showEvent(event)
+
 if __name__ == '__main__':
      QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
      app = QApplication([])
 
      try:
           f = open("files/system/data/user/data.aos", "r")
+
           window = AOS()
           window.showFullScreen()
 
@@ -401,7 +426,7 @@ if __name__ == '__main__':
           if content[1] != "":
                passwordInput = ""
                while passwordInput != content[1]:
-                    passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password:", QLineEdit.Normal, "")
+                    passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password.", QLineEdit.Normal, "")
           
           if content[9] == "False" or content[9] == "":
                splashscreen = splash.splashScreen()

@@ -23,6 +23,7 @@ class editApp(QWidget):
         textEdit = QTextEdit(self)
         textEdit.setObjectName(u"textEdit")
         textEdit.setGeometry(QRect(10, 40, 621, 431))
+        textEdit.setFontFamily("monospace")
         textEdit.textChanged.connect(self.updateStatus)
         self.open = QPushButton(self)
         self.open.setObjectName(u"open")
@@ -51,9 +52,20 @@ class editApp(QWidget):
         self.formatBox.setObjectName(u"formatBox")
         self.formatBox.setGeometry(QRect(490, 10, 141, 21))
         self.formatBox.activated.connect(self.updateText)
+        self.fontSize = QDoubleSpinBox(self)
+        self.fontSize.setObjectName(u"fontSize")
+        self.fontSize.setGeometry(QRect(440, 10, 41, 21))
+        self.fontSize.setSuffix(u"pt")
+        self.fontSize.setValue(12.0)
+        self.fontSize.valueChanged.connect(self.updateText)
+
+        textEdit.setFontPointSize(self.fontSize.value())
+        textEdit.setFontFamily("Courier New")
         
     def updateStatus(self):
         self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}*")
+        textEdit.setFontPointSize(self.fontSize.value())
+        textEdit.setFontFamily("Courier New")
 
     def updateText(self):
         if self.formatBox.currentText() == "Plaintext":

@@ -1,3 +1,4 @@
+from time import sleep
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -61,7 +62,7 @@ class camelInstall(QWidget):
         self.dbTable.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.install = QPushButton(self.database)
         self.install.setObjectName(u"install")
-        self.install.setGeometry(QRect(480, 70, 93, 28))
+        self.install.setGeometry(QRect(480, 70, 85, 28))
         self.install.setText("Install")
         self.install.clicked.connect(self.installApp)
         # self.viewSource = QPushButton(self.database)
@@ -79,6 +80,12 @@ class camelInstall(QWidget):
         self.searchEdit.setGeometry(QRect(420, 220, 141, 28))
         self.tabWidget.addTab(self.database, "")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.database), u"app database")
+
+        self.status = QLabel(self.database)
+        self.status.setObjectName(u"status")
+        self.status.setGeometry(QRect(400, 320, 230, 20))
+        self.status.setText(u"")
+        self.status.setAlignment(Qt.AlignCenter)
 
         nameItem = QTableWidgetItem()
         nameItem.setText("name")
@@ -192,6 +199,10 @@ class camelInstall(QWidget):
             if ret == 16384:
                 urls = self.dbTable.item(self.dbTable.currentRow(),3).text()
                 for url in urls.split(";"):
+                    self.status.setText("download: "+url.split("/")[-1])
+                    self.update()
+                    self.repaint()
+
                     newUrl = ""
                     if url.startswith("db/"):
                         url = url.split("db/")[1]
@@ -225,9 +236,15 @@ class camelInstall(QWidget):
                     
                         f.write(r.content)
                         f.close()
-                        
+
+                    self.status.setText("downloaded: "+newUrl.split("/")[-1])
+                    self.update()
+                    self.repaint()
+                
+                self.status.setText("installed: "+self.dbTable.item(self.dbTable.currentRow(),0).text())
                 msgBox(f"Installed \"{self.dbTable.item(self.dbTable.currentRow(),0).text()}\"!","Installed!",QMessageBox.Information,QMessageBox.Ok)
                 self.refreshApps()
+            self.status.setText("")
         except AttributeError:
             pass
 
