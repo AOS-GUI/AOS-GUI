@@ -320,7 +320,7 @@ class aterm(QWidget):
                     params = self.splitParams(command)
 
                     if updatedCamel == False:
-                        r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt",timeout=5)
+                        r = requests.get("https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/appList.txt",timeout=5)
                         filesOnline = r.text.splitlines(False)
 
                         filesOnlineNames = []
@@ -342,7 +342,7 @@ class aterm(QWidget):
                     
                     if updatedCamel:
                         if params[0] == "update":
-                            r = requests.get("https://raw.githubusercontent.com/Nanobot567/cInstall/main/dl/appList.txt",timeout=5)
+                            r = requests.get("https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/appList.txt",timeout=5)
                             filesOnline = r.text.splitlines(False)
 
                             filesOnlineNames = []
