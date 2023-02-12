@@ -48,7 +48,7 @@ def restart():
     # print(sys.executable)
     QProcess.startDetached(executable, argv)
 
-def openApplication(app, path="files/apps/"):
+def openApplication(app, path="files/apps/", silentFail=False):
     if app.endswith(".py"):
         app = app.split(".py")[0]
         
@@ -60,10 +60,15 @@ def openApplication(app, path="files/apps/"):
             modulePrgm = importlib.import_module(path.replace("/",".")+app)
             importlib.reload(modulePrgm)
         f.close()
+        return 1
     except ModuleNotFoundError:
-        msgBox(f"No app called \"{app}\" found in {path}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+        if silentFail == False:
+            msgBox(f"No app called \"{app}\" found in {path}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+        return -1
     except Exception as err:
-        msgBox(f"Critical error in app \"{app}\": {err}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+        if silentFail == False:
+            msgBox(f"Critical error in app \"{app}\": {err}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+        return -1
 
 def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessageBox.Ok, x=None,y=None):
     msg = QMessageBox()
@@ -107,8 +112,6 @@ def userSettings():
     content = content.split("\n")
     f.close()
 
-    content[1] = "NO PERMS"
-
     return content
 
 def userTheme():
@@ -120,7 +123,7 @@ def userTheme():
     try:
         themeText = open("files/system/data/user/themes/"+content[2]+".theme","r")
     except FileNotFoundError:
-        print("!! WARNING: Theme "+content[2]+" not found, going to default-dark...")
+        print("!! WARNING: Theme "+content[2]+" not found, using default-dark...")
         themeText = open("files/system/data/user/themes/default-dark.theme","r")
 
     themeTextStr = themeText.read()

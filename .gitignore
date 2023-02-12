@@ -1,2 +1,9 @@
 /dontinclude
 /.VSCodeCounter
+/files/apps/*.py
+/files/apps/assets
+/files/apps/__pycache__
+/files/apps/sdk/__pycache__
+/files/system/__pycache__
+/files/system/setup/__pycache__
+/files/home

@@ -288,7 +288,7 @@ class installform(QMainWindow):
         self.KS_2 = QKeySequenceEdit(self.sDesktop)
         self.KS_2.setObjectName(u"KS_2")
         self.KS_2.setGeometry(QRect(90, 60, 113, 22))
-        self.KS_2.setKeySequence(u"Ctrl+R")
+        self.KS_2.setKeySequence(u"Ctrl+T")
         self.sL_2 = QLabel(self.sDesktop)
         self.sL_2.setObjectName(u"sL_2")
         self.sL_2.setGeometry(QRect(20, 60, 55, 16))

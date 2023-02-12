@@ -1,3 +1,4 @@
+<a href="MDs/help.md">back</a>
 # app development guide
 
 If you're here, it probably means that you want to make an app for AOS-GUI!
@@ -58,7 +59,7 @@ window.show()
 
 ## sdk
 
-If you would like some shorthand functions for actions in AOS, add the line `from sdk.sdk import *` to the top of the file. All functions within this "SDK" are documented below.
+If you would like some shorthand functions for actions in AOS, add the line `from sdk.sdk import *` to the top of the file (if your app is a QWidget, use `files.apps.sdk.sdk` instead). All functions within this "SDK" are documented below.
 
 | Function | Action |
 |----------|--------|
@@ -67,7 +68,7 @@ If you would like some shorthand functions for actions in AOS, add the line `fro
 | `getAOSdir() -> str` | Returns the current working AOS directory. |
 | `getPalette() -> QPalette` | Returns the current QPalette. |
 | `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None) -> int` | Creates a message box. Refer to Qt5 manual to see what each return int stands for. |
-| `openApplication(app, path="files/apps/")` | Opens an external application. By default checks in files/apps/ for the app.
+| `openApplication(app, path="files/apps/", silentFail=False) -> int` | Opens an external application. By default checks in files/apps/ for the app. If silentFail is true, no messagebox will appear on fail. Returns -1 on fail and 1 on success.
 | `userSettings() -> list`| Returns contents of `data.aos` (data.aos splitted by newlines) |
 | `userTheme() -> list` | Returns the current theme colors.|
 

@@ -64,8 +64,6 @@ class splashScreen(QWidget):
         self.splashTextLabel.setText(u"<html><head/><body><p align=\"center\"><span style=\" font-size:11pt;\">"+choice(splashTexts)+"</span></p></body></html>")
 
         QMetaObject.connectSlotsByName(self)
-
-        
     
     def letsgo(self):
         f = open("files/system/data/user/data.aos","r")
