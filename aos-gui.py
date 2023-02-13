@@ -453,19 +453,18 @@ if __name__ == '__main__':
           timer.start(1000)
 
           app.setStyle(guiTheme)
-          
+
+     except FileNotFoundError as  err:
+          app.setStyle("Windows")
+          window = setupAOS.installform()
+          window.show()
      except Exception as e:
-          if not str(e).startswith("[Errno 2] No such file or directory: 'files/system/data/user/data.aos'"):
-               print("ERR: "+e)
-          else:
-               app.setStyle("Windows")
-               window = setupAOS.installform()
-               window.show()
-    
+          print("ERR: " + str(e))
+
      try:
           if userSettings()[len(userSettings())-1] == "True":
                QGuiApplication.setPalette(getPalette())
-     except FileNotFoundError or NameError:
+     except (FileNotFoundError, NameError):
           pass
 
      # window = MainWindow()
