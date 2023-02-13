@@ -65,7 +65,11 @@ class AOS(QMainWindow):
      def __init__(self):
           super(AOS, self).__init__()
           self.setContextMenuPolicy(Qt.ActionsContextMenu)
-          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight,buttonSpaceX,buttonSpaceY
+
+          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor, \
+              windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize, \
+              buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight, \
+              buttonSpaceX,buttonSpaceY \
 
           f = open("files/system/data/user/data.aos","r")
           content = f.read()
@@ -453,19 +457,18 @@ if __name__ == '__main__':
           timer.start(1000)
 
           app.setStyle(guiTheme)
-          
+
+     except FileNotFoundError as  err:
+          app.setStyle("Windows")
+          window = setupAOS.installform()
+          window.show()
      except Exception as e:
-          if not str(e).startswith("[Errno 2] No such file or directory: 'files/system/data/user/data.aos'"):
-               print("ERR: "+e)
-          else:
-               app.setStyle("Windows")
-               window = setupAOS.installform()
-               window.show()
-    
+          print("ERR: " + str(e))
+
      try:
           if userSettings()[len(userSettings())-1] == "True":
                QGuiApplication.setPalette(getPalette())
-     except FileNotFoundError or NameError:
+     except (FileNotFoundError, NameError):
           pass
 
      # window = MainWindow()
