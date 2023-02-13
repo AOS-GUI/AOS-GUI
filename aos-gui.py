@@ -65,7 +65,11 @@ class AOS(QMainWindow):
      def __init__(self):
           super(AOS, self).__init__()
           self.setContextMenuPolicy(Qt.ActionsContextMenu)
-          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor,windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize,buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight,buttonSpaceX,buttonSpaceY
+
+          global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor, \
+              windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize, \
+              buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight, \
+              buttonSpaceX,buttonSpaceY \
 
           f = open("files/system/data/user/data.aos","r")
           content = f.read()
