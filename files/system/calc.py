@@ -1,3 +1,5 @@
+import string
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -191,40 +193,20 @@ class calculator(QWidget):
         self.ans.setText(text[:len(text)-1])
 
     def keyPressEvent(self, event):
-        match event.key():
-            case Qt.Key_1:
-                self.action1()
-            case Qt.Key_2:
-                self.action2()
-            case Qt.Key_3:
-                self.action3()
-            case Qt.Key_4:
-                self.action4()
-            case Qt.Key_5:
-                self.action5()
-            case Qt.Key_6:
-                self.action6()
-            case Qt.Key_7:
-                self.action7()
-            case Qt.Key_8:
-                self.action8()
-            case Qt.Key_9:
-                self.action9()
-            case Qt.Key_0:
-                self.action0()
-            case Qt.Key_Plus:
-                self.action_plus()
-            case Qt.Key_Minus:
-                self.action_minus()
-            case Qt.Key_Asterisk:
-                self.action_mul()
-            case Qt.Key_Slash:
-                self.action_div()
-            case Qt.Key_Return:
-                self.action_equal()
-            case Qt.Key_Backspace:
-                self.action_del()
-            case Qt.Key_Period:
-                self.action_point()
-            case Qt.Key_Escape:
-                self.action_clear()
+        """Handle key events on the Calculator."""
+        special_cases = {
+            Qt.Key_Return: self.action_equal,
+            Qt.Key_Enter: self.action_equal,
+            Qt.Key_Backspace: self.action_del,
+            Qt.Key_Delete: self.action_del,
+            Qt.Key_Escape: self.action_clear,
+        }
+
+        # Redirect execution flow for special characters...
+        if special_cases.get(event.key(), None):
+            special_cases[event.key()]()
+        # Only digits and operators ara vaild inputs...
+        elif event.text() in string.digits + '+-*/':
+            self.ans.setText(
+                self.ans.text() + event.text()
+            )
