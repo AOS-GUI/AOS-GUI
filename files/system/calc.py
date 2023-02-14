@@ -1,11 +1,16 @@
 import string
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QRect
+from PyQt5.QtWidgets import (
+    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout
+)
+from PyQt5.QtCore import Qt
+
 
 num = 0
 waitingForNum = False
+
 
 class calculator(QWidget):
     def __init__(self):
