@@ -1,10 +1,9 @@
+import typing as ty
 import string
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import (
-    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout,
-    QSpacerItem, QSizePolicy
+    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
 )
 from PyQt5.QtCore import Qt
 
@@ -15,7 +14,7 @@ class calculator(QWidget):
         self.setWindowTitle("AOS-GUI/calc")
         self.setFixedSize(270, 340)
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
-        self.setLayout(QGridLayout())
+        self.setLayout(QVBoxLayout())
         self.ui()
 
     def ui(self):
@@ -27,15 +26,15 @@ class calculator(QWidget):
         self.ans.setReadOnly(True)
         self.ans.setFont(QFont('Arial', 15))
         self.ans.setFixedHeight(50)
-        self.layout().addWidget(self.ans, 0, 0, 1, 2)
+        self.layout().addWidget(self.ans)
 
-        # Special_buttons
-        self.layout().addWidget(QPushButton('Clear', clicked=self.ans.clear),
-                                1, 0)
-        self.layout().addWidget(QPushButton('Del', clicked=self.ans.backspace),
-                                1, 1)
+        # Special_buttons Layout
+        top_btn_layout = QHBoxLayout()
+        top_btn_layout.addWidget(QPushButton('Clear', clicked=self.ans.clear))
+        top_btn_layout.addWidget(QPushButton('Del', clicked=self.ans.backspace))
+        self.layout().addLayout(top_btn_layout)
 
-        # Pad numbers and operators
+        # Grid Pad numbers and operators
         pad_layout = QGridLayout()
         pad_layout.setSpacing(5)
         max_coluns = 4
@@ -51,25 +50,46 @@ class calculator(QWidget):
         ]
 
         for index, btn in enumerate(buttons):
-            # Skip cells
-            if btn is None:
+            widget = self.create_widget(
+                btn, (index % max_coluns == max_coluns - 1), pad_layout
+            )
+            if not widget:
                 continue
-            # Predefined buttons
-            if isinstance(btn, QPushButton):
-                widget = btn
-            # Dynamically Generated buttons
-            else:
-                widget = QPushButton(
-                    btn, clicked=self._push_text(btn)
-                )
-                widget.setMinimumHeight(int(widget.sizeHint().height() * 1.75))
-            if index % max_coluns == max_coluns - 1:
-                widget.setMinimumHeight(int(widget.sizeHint().height() * 1.95))
             if index % max_coluns == 0:
                 curr_row += 1
             pad_layout.addWidget(widget, curr_row, int(index % max_coluns))
 
-        self.layout().addLayout(pad_layout, 2, 0, 3, 2)
+        self.layout().addLayout(pad_layout)
+
+    def create_widget(
+        self, btn: ty.Union[str, None, QPushButton], operator: bool,
+        pad_layout: QGridLayout
+    ) -> ty.Optional[QPushButton]:
+        """Create QPushButton for PadLayout dynamically."""
+
+        if not btn:
+            return None
+
+        if isinstance(btn, QPushButton):
+            widget = btn
+        else:
+            widget = QPushButton(
+                btn, clicked=self._push_text(btn)
+            )
+            widget.setMinimumHeight(int(widget.sizeHint().height() * 1.70))
+
+        if operator:
+            widget.setMinimumHeight(int(widget.sizeHint().height() * 1.95))
+            # Custom style for the Operators buttons, if needed...
+            #  if not widget.styleSheet():
+            #      widget.setStyleSheet(
+            #          'background-color:#020202;'
+            #          'border-color: white;'
+            #          'border-style: solid;'
+            #          'border-width: 1px;'
+            #          'color: white;'
+            #      )
+        return widget
 
     def _push_text(self, text):
         """Cloujure for buttons click action.
