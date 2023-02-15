@@ -1,4 +1,4 @@
-#! /bin/python
+#! /bin/python3
 
 #  █████╗  ██████╗ ███████╗       ██████╗ ██╗   ██╗██╗
 # ██╔══██╗██╔═══██╗██╔════╝      ██╔════╝ ██║   ██║██║
@@ -44,6 +44,7 @@ import importlib
 import sys
 import os
 import psutil
+import configparser
 
 fontSize = 11
 buttonFontSize = f"font-size:{fontSize}px"
@@ -61,6 +62,20 @@ sysApps = ["Settings","appLauncher","FileSystem","camelInstall","Edit","AOSHelp"
 
 kSeqs = []
 
+config = configparser.ConfigParser()
+config.read("files/system/data/user/data.aos")
+
+try:
+     with open("files/system/data/user/data.aos") as f:
+          config.read(f)
+except:
+     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+     app = QApplication([])
+     app.setStyle("Windows")
+     window = setupAOS.installform()
+     window.show()
+     exit(app.exec_())
+
 class AOS(QMainWindow):
      def __init__(self):
           super(AOS, self).__init__()
@@ -71,19 +86,14 @@ class AOS(QMainWindow):
               buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight, \
               buttonSpaceX,buttonSpaceY \
 
-          f = open("files/system/data/user/data.aos","r")
-          content = f.read()
-          content = content.split("\n")
-          f.close()
-
           themeColors = userTheme()
 
-          username = content[0]
-          password = content[1]
-          fontSize = content[3]
+          username = config["userinfo"]["name"]
+          password = config["userinfo"]["pass"]
+          fontSize = config.getint("fontsize","size")
           buttonFontSize = f"font-size:{fontSize}px"
-          for i in range(4,8):
-               kSeqs.append(content[i])
+          for i in config["shortcuts"]:
+               kSeqs.append(i)
           textcolor = themeColors[0]
           bgcolor = themeColors[1]
           ttextcolor = themeColors[3]
@@ -91,17 +101,20 @@ class AOS(QMainWindow):
           btextcolor = themeColors[5]
           bbgcolor = themeColors[4]
           windowcolor = themeColors[6]
-          
-          buttonsShown = content[8].split("|")
 
-          guiTheme = content[10]
+          buttonsShown = []
 
-          clockMode = content[11]
+          for i in config["desktopApps"].values():
+               buttonsShown.append(i)
 
-          buttonWidth = int(content[12].split("|")[0])
-          buttonHeight = int(content[12].split("|")[1])
-          buttonSpaceX = int(content[12].split("|")[2])
-          buttonSpaceY = int(content[12].split("|")[3])
+          guiTheme = config["guitheme"]
+
+          clockMode = config.getboolean("24hrclock","24hour")
+
+          buttonWidth = config.getint("buttonDims","w")
+          buttonHeight = config.getint("buttonDims","h")
+          buttonSpaceX = config.getint("buttonDims","x")
+          buttonSpaceY = config.getint("buttonDims","y")
 
           print("\nStarting up AOS-GUI, please wait...")
           print("Setting up system apps...")
@@ -412,27 +425,22 @@ if __name__ == '__main__':
      app = QApplication([])
 
      try:
-          f = open("files/system/data/user/data.aos", "r")
-
           window = AOS()
           window.showFullScreen()
 
-          content = f.read()
-          content = content.split("\n")
-
           try:
-               if content[13] == "True":
+               if config["startupSound"]["play"] == "True":
                     playsound(os.getcwd().replace("\\","/")+"/files/system/data/silence.wav")
                     playsound(os.getcwd().replace("\\","/")+"/files/system/data/AOS.wav")
           except:
                pass
 
-          if content[1] != "":
+          if config["userinfo"]["pass"] != "":
                passwordInput = ""
-               while passwordInput != content[1]:
+               while passwordInput != config["userinfo"]["pass"]:
                     passwordInput, z = QInputDialog.getText(window, "Password","Please enter your password.", QLineEdit.Normal, "")
           
-          if content[9] == "False" or content[9] == "":
+          if config["splash"]["show"] == "False" or config["splash"]["show"] == "":
                splashscreen = splash.splashScreen()
                splashscreen.show()
 
@@ -456,17 +464,17 @@ if __name__ == '__main__':
 
           timer.start(1000)
 
-          app.setStyle(guiTheme)
+          app.setStyle(config["guitheme"]["theme"])
 
-     except FileNotFoundError as  err:
+     except FileNotFoundError as err:
           app.setStyle("Windows")
           window = setupAOS.installform()
           window.show()
-     except Exception as e:
-          print("ERR: " + str(e))
+     # except Exception as e:
+     #      print("ERR: " + str(e))
 
      try:
-          if userSettings()[len(userSettings())-1] == "True":
+          if config["inAppTheme"]["use"] == "True":
                QGuiApplication.setPalette(getPalette())
      except (FileNotFoundError, NameError):
           pass

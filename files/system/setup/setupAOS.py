@@ -2,13 +2,17 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from os.path import exists
-from os import listdir,getcwd
+from os import listdir,getcwd,path
 import sys
+import configparser
 
 from files.apps.sdk.sdk import msgBox
 
 titleText = u"welcome to AOS-GUI!"
 endButtonText = u"Setup AOS-GUI"
+
+config = configparser.ConfigParser()
+config.read("files/system/data/user/data.aos")
 
 class installform(QMainWindow):
     def __init__(self):
@@ -400,9 +404,24 @@ class installform(QMainWindow):
             themeFile.close()
 
     def getmeout(self):
+        if not path.exists("files/system/data/user/data.aos"):
+            config.write(open("files/system/data/user/data.aos", 'w'))
+
+        config["userinfo"] = {"name":"","pass":""}
+        config["theme"] = {"name":""}
+        config["fontsize"] = {"size":""}
+        config["shortcuts"] = {"run":"","terminal":"","settings":"","help":""}
+        config["desktopApps"] = {"settings":"","launcher":"","fs":"","camel":"","edit":"","help":"","terminal":"","calc":""}
+        config["splash"] = {"show":""}
+        config["guitheme"] = {"theme":""}
+        config["24hrclock"] = {"24hour":""}
+        config["buttonDims"] = {"w":"","h":"","x":"","y":""}
+        config["startupSound"] = {"play":""}
+        config["inAppTheme"] = {"use":""}
+
+
         retval = 0
 
-        f = open("files/system/data/user/data.aos","w")
         themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
         tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
@@ -413,9 +432,9 @@ class installform(QMainWindow):
         if currentColors != tFsplit:
             tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
-            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?","Save?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
+            retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
-            if retval == 16384:
+            if retval == 16384: # yes value
                 tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
@@ -427,42 +446,48 @@ class installform(QMainWindow):
 
                     themeFile.close()
 
-
-        f.write(self.uLE.text()+"\n")
-        f.write(self.pLE.text()+"\n")
+        config["userinfo"]["name"] = self.uLE.text()
+        config["userinfo"]["pass"] = self.pLE.text()
         if retval == 16384:
             tFile = tFile.split("/")
             tFile = tFile[len(tFile)-1].split(".")
             tFile = tFile[0]
-            f.write(tFile+"\n")
+            config["theme"]["name"] = tFile
         else:
-            f.write(self.themeCB.currentText()+"\n")
-        f.write(str(self.fSB.value())+"\n")
-        f.write(self.KS.keySequence().toString()+"\n")
-        f.write(self.KS_2.keySequence().toString()+"\n")
-        f.write(self.KS_3.keySequence().toString()+"\n")
-        f.write(self.KS_4.keySequence().toString()+"\n")
-        f.write(str(self.dCHB.isChecked())+"|")
-        f.write(str(self.dCHB_2.isChecked())+"|")
-        f.write(str(self.dCHB_3.isChecked())+"|")
-        f.write(str(self.dCHB_4.isChecked())+"|")
-        f.write(str(self.dCHB_5.isChecked())+"|")
-        f.write(str(self.dCHB_6.isChecked())+"|")
-        f.write(str(self.dCHB_7.isChecked())+"|")
-        f.write(str(self.dCHB_8.isChecked())+"\n")
-        f.write(str(not self.showSplashOnStartup.isChecked())+"\n")
-        f.write(self.guiThemeCB.currentText()+"\n")
-        f.write(str(self.clockMode.isChecked())+"\n")
-        f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value())+"\n")
-        f.write(str(self.playStartupSound.isChecked())+"\n")
-        f.write(str(self.appsUseTheme.isChecked()))
-        f.close()
+            config["theme"]["name"] = self.themeCB.currentText()
+        config["fontsize"]["size"] = str(self.fSB.value())
+        config["shortcuts"]["run"] = self.KS.keySequence().toString()
+        config["shortcuts"]["terminal"] = self.KS_2.keySequence().toString()
+        config["shortcuts"]["settings"] = self.KS_3.keySequence().toString()
+        config["shortcuts"]["help"] = self.KS_4.keySequence().toString()
+
+        config["desktopApps"]["settings"] = str(self.dCHB.isChecked())
+        config["desktopApps"]["launcher"] = str(self.dCHB_2.isChecked())
+        config["desktopApps"]["fs"] = str(self.dCHB_3.isChecked())
+        config["desktopApps"]["camel"] = str(self.dCHB_4.isChecked())
+        config["desktopApps"]["edit"] = str(self.dCHB_5.isChecked())
+        config["desktopApps"]["help"] = str(self.dCHB_6.isChecked())
+        config["desktopApps"]["terminal"] = str(self.dCHB_7.isChecked())
+        config["desktopApps"]["calc"] = str(self.dCHB_8.isChecked())
+
+        config["splash"]["show"] = str(not self.showSplashOnStartup.isChecked())
+        config["guitheme"]["theme"] = self.guiThemeCB.currentText()
+        config["24hrclock"]["24hour"] = str(self.clockMode.isChecked())
+        config["buttonDims"]["w"] = str(self.btnW.value())
+        config["buttonDims"]["h"] = str(self.btnH.value())
+        config["buttonDims"]["x"] = str(self.btnX.value())
+        config["buttonDims"]["y"] = str(self.btnY.value())
+        config["startupSound"]["play"] = str(self.playStartupSound.isChecked())
+        config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
+
+        with open('files/system/data/user/data.aos', 'w') as configfile:
+            config.write(configfile)
 
         f = open("files/system/data/user/menubar.aos","w")
         for i in range(self.menubarSegments.count()):
             f.write(self.menubarSegments.item(i).text()+"|")
         f.close()
 
-        msgBox("Your settings have been applied! Restarting AOS...","Settings set!",QMessageBox.Information,QMessageBox.Ok)
+        msgBox("Your settings have been applied! Please restart AOS-GUI to see your changes to the desktop.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         QCoreApplication.quit()
         QProcess.startDetached(sys.executable, sys.argv)

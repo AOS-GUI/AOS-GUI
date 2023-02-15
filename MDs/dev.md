@@ -68,7 +68,8 @@ If you would like some shorthand functions for actions in AOS, add the line `fro
 | `getAOSdir() -> str` | Returns the current working AOS directory. |
 | `getPalette() -> QPalette` | Returns the current QPalette. |
 | `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None) -> int` | Creates a message box. Refer to Qt5 manual to see what each return int stands for. |
-| `openApplication(app, path="files/apps/", silentFail=False) -> int` | Opens an external application. By default checks in files/apps/ for the app. If silentFail is true, no messagebox will appear on fail. Returns -1 on fail and 1 on success.
+| `openApplication(app, path="files/apps/", silentFail=False) -> int` | Opens an external application. By default checks in files/apps/ for the app. If silentFail is true, no messagebox will appear on fail. Returns -1 on fail and 1 on success.|
+| `toBool(str="") -> bool` | converts a string to a boolean. Returns `True` if string is "True", false otherwise|
 | `userSettings() -> list`| Returns contents of `data.aos` (data.aos splitted by newlines) |
 | `userTheme() -> list` | Returns the current theme colors.|
 

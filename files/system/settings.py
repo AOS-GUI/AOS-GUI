@@ -5,10 +5,14 @@ from PyQt5.QtCore import *
 from os import listdir,getcwd,remove,mkdir
 from time import sleep
 from shutil import rmtree
+import configparser
 
 from files.apps.sdk.sdk import *
 
 standardSegs = ["Clock","Battery","CPU Usage","Available Memory"]
+
+config = configparser.ConfigParser()
+config.read("files/system/data/user/data.aos")
 
 class settingsWidget(QWidget):
     def __init__(self):
@@ -378,24 +382,16 @@ class settingsWidget(QWidget):
         f.close()
         msgBox("AOS has been factory reset.","Done.",QMessageBox.Information,QMessageBox.Ok)
         exit()
-
-    def toBool(self, string):
-        if string == "True":
-            return True
-        elif string == "False":
-            return False
         
     # retranslateUi
     def getCurrentSettings(self):
         global standardSegs
-        # pass
 
-        f = open("files/system/data/user/data.aos","r")
-        content = f.read()
-        content = content.split("\n")
+        config = configparser.ConfigParser()
+        config.read("files/system/data/user/data.aos")
 
         try:
-            themeText = open("files/system/data/user/themes/"+content[2]+".theme","r")
+            themeText = open("files/system/data/user/themes/"+config["theme"]["name"]+".theme","r")
         except FileNotFoundError:
             themeText = open("files/system/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
@@ -407,9 +403,9 @@ class settingsWidget(QWidget):
         for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
-        self.uLE.setText(content[0])
-        self.pLE.setText(content[1])
-        self.themeCB.setCurrentText(content[2])
+        self.uLE.setText(config["userinfo"]["name"])
+        self.pLE.setText(config["userinfo"]["pass"])
+        self.themeCB.setCurrentText(config["theme"]["name"])
         self.cLE.setText(themeColors[0])
         self.cLE_2.setText(themeColors[1])
         self.cLE_3.setText(themeColors[2])
@@ -417,40 +413,43 @@ class settingsWidget(QWidget):
         self.cLE_5.setText(themeColors[4])
         self.cLE_6.setText(themeColors[5])
         self.cLE_7.setText(themeColors[6])
-        self.fSB.setValue(int(content[3]))
-        self.KS.setKeySequence(content[4])
-        self.KS_2.setKeySequence(content[5])
-        self.KS_3.setKeySequence(content[6])
-        self.KS_4.setKeySequence(content[7])
+        self.fSB.setValue(config.getint("fontsize","size"))
+        self.KS.setKeySequence(config["shortcuts"]["run"])
+        self.KS_2.setKeySequence(config["shortcuts"]["terminal"])
+        self.KS_3.setKeySequence(config["shortcuts"]["settings"])
+        self.KS_4.setKeySequence(config["shortcuts"]["help"])
 
-        desktopCheckmarkVals = content[8].split("|")
+        desktopCheckmarkVals = []
 
-        self.dCHB.setChecked(self.toBool(desktopCheckmarkVals[0]))
-        self.dCHB_2.setChecked(self.toBool(desktopCheckmarkVals[1]))
-        self.dCHB_3.setChecked(self.toBool(desktopCheckmarkVals[2]))
-        self.dCHB_4.setChecked(self.toBool(desktopCheckmarkVals[3]))
-        self.dCHB_5.setChecked(self.toBool(desktopCheckmarkVals[4]))
-        self.dCHB_6.setChecked(self.toBool(desktopCheckmarkVals[5]))
-        self.dCHB_7.setChecked(self.toBool(desktopCheckmarkVals[6]))
-        self.dCHB_8.setChecked(self.toBool(desktopCheckmarkVals[7]))
+        for i in config["desktopApps"].values():
+            desktopCheckmarkVals.append(i)
 
-        self.showSplashOnStartup.setChecked(not self.toBool(content[9]))
+        self.dCHB.setChecked(toBool(desktopCheckmarkVals[0]))
+        self.dCHB_2.setChecked(toBool(desktopCheckmarkVals[1]))
+        self.dCHB_3.setChecked(toBool(desktopCheckmarkVals[2]))
+        self.dCHB_4.setChecked(toBool(desktopCheckmarkVals[3]))
+        self.dCHB_5.setChecked(toBool(desktopCheckmarkVals[4]))
+        self.dCHB_6.setChecked(toBool(desktopCheckmarkVals[5]))
+        self.dCHB_7.setChecked(toBool(desktopCheckmarkVals[6]))
+        self.dCHB_8.setChecked(toBool(desktopCheckmarkVals[7]))
+
+        self.showSplashOnStartup.setChecked(not toBool(config["splash"]["show"]))
         
         for i in QStyleFactory.keys():
             if i != "windowsvista":
                 self.guiThemeCB.addItem(i)
         
-        self.guiThemeCB.setCurrentText(content[10])
+        self.guiThemeCB.setCurrentText(config["guitheme"]["theme"])
 
-        self.clockMode.setChecked(self.toBool(content[11]))
+        self.clockMode.setChecked(config.getboolean("24hrclock","24hour"))
 
-        self.btnW.setValue(int(content[12].split("|")[0]))
-        self.btnH.setValue(int(content[12].split("|")[1]))
-        self.btnX.setValue(int(content[12].split("|")[2]))
-        self.btnY.setValue(int(content[12].split("|")[3]))
+        self.btnW.setValue(config.getint("buttonDims","w"))
+        self.btnH.setValue(config.getint("buttonDims","h"))
+        self.btnX.setValue(config.getint("buttonDims","x"))
+        self.btnY.setValue(config.getint("buttonDims","y"))
 
-        self.playStartupSound.setChecked(self.toBool(content[13]))
-        self.appsUseTheme.setChecked(self.toBool(content[14]))
+        self.playStartupSound.setChecked(config.getboolean("startupSound","play"))
+        self.appsUseTheme.setChecked(config.getboolean("inAppTheme","use"))
 
         f = open("files/system/data/user/menubar.aos","r")
         menubarSegs = f.read()
@@ -516,7 +515,6 @@ class settingsWidget(QWidget):
     def getmeout(self):
         retval = 0
 
-        f = open("files/system/data/user/data.aos","w")
         themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
         tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
@@ -541,35 +539,42 @@ class settingsWidget(QWidget):
 
                     themeFile.close()
 
-        f.write(self.uLE.text()+"\n")
-        f.write(self.pLE.text()+"\n")
+        config["userinfo"]["name"] = self.uLE.text()
+        config["userinfo"]["pass"] = self.pLE.text()
         if retval == 16384:
             tFile = tFile.split("/")
             tFile = tFile[len(tFile)-1].split(".")
             tFile = tFile[0]
-            f.write(tFile+"\n")
+            config["theme"]["name"] = tFile
         else:
-            f.write(self.themeCB.currentText()+"\n")
-        f.write(str(self.fSB.value())+"\n")
-        f.write(self.KS.keySequence().toString()+"\n")
-        f.write(self.KS_2.keySequence().toString()+"\n")
-        f.write(self.KS_3.keySequence().toString()+"\n")
-        f.write(self.KS_4.keySequence().toString()+"\n")
-        f.write(str(self.dCHB.isChecked())+"|")
-        f.write(str(self.dCHB_2.isChecked())+"|")
-        f.write(str(self.dCHB_3.isChecked())+"|")
-        f.write(str(self.dCHB_4.isChecked())+"|")
-        f.write(str(self.dCHB_5.isChecked())+"|")
-        f.write(str(self.dCHB_6.isChecked())+"|")
-        f.write(str(self.dCHB_7.isChecked())+"|")
-        f.write(str(self.dCHB_8.isChecked())+"\n")
-        f.write(str(not self.showSplashOnStartup.isChecked())+"\n")
-        f.write(self.guiThemeCB.currentText()+"\n")
-        f.write(str(self.clockMode.isChecked())+"\n")
-        f.write(str(self.btnW.value())+"|"+str(self.btnH.value())+"|"+str(self.btnX.value())+"|"+str(self.btnY.value())+"\n")
-        f.write(str(self.playStartupSound.isChecked())+"\n")
-        f.write(str(self.appsUseTheme.isChecked()))
-        f.close()
+            config["theme"]["name"] = self.themeCB.currentText()
+        config["fontsize"]["size"] = str(self.fSB.value())
+        config["shortcuts"]["run"] = self.KS.keySequence().toString()
+        config["shortcuts"]["terminal"] = self.KS_2.keySequence().toString()
+        config["shortcuts"]["settings"] = self.KS_3.keySequence().toString()
+        config["shortcuts"]["help"] = self.KS_4.keySequence().toString()
+
+        config["desktopApps"]["settings"] = str(self.dCHB.isChecked())
+        config["desktopApps"]["launcher"] = str(self.dCHB_2.isChecked())
+        config["desktopApps"]["fs"] = str(self.dCHB_3.isChecked())
+        config["desktopApps"]["camel"] = str(self.dCHB_4.isChecked())
+        config["desktopApps"]["edit"] = str(self.dCHB_5.isChecked())
+        config["desktopApps"]["help"] = str(self.dCHB_6.isChecked())
+        config["desktopApps"]["terminal"] = str(self.dCHB_7.isChecked())
+        config["desktopApps"]["calc"] = str(self.dCHB_8.isChecked())
+
+        config["splash"]["show"] = str(not self.showSplashOnStartup.isChecked())
+        config["guitheme"]["theme"] = self.guiThemeCB.currentText()
+        config["24hrclock"]["24hour"] = str(self.clockMode.isChecked())
+        config["buttonDims"]["w"] = str(self.btnW.value())
+        config["buttonDims"]["h"] = str(self.btnH.value())
+        config["buttonDims"]["x"] = str(self.btnX.value())
+        config["buttonDims"]["y"] = str(self.btnY.value())
+        config["startupSound"]["play"] = str(self.playStartupSound.isChecked())
+        config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
+
+        with open('files/system/data/user/data.aos', 'w') as configfile:
+            config.write(configfile)
 
         f = open("files/system/data/user/menubar.aos","w")
         for i in range(self.menubarSegments.count()):
