@@ -25,6 +25,7 @@ class calculator(QWidget):
         self.ans = QLineEdit(self)
         self.ans.setReadOnly(True)
         self.ans.setFont(QFont('Arial', 15))
+        self.ans.setAlignment(Qt.AlignRight)
         self.ans.setFixedHeight(50)
         self.layout().addWidget(self.ans)
 
