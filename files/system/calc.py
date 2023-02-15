@@ -1,9 +1,12 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+import typing as ty
+import string
 
-num = 0
-waitingForNum = False
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
+)
+from PyQt5.QtCore import Qt
+
 
 class calculator(QWidget):
     def __init__(self):
@@ -11,220 +14,119 @@ class calculator(QWidget):
         self.setWindowTitle("AOS-GUI/calc")
         self.setFixedSize(270, 340)
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
+        self.setLayout(QVBoxLayout())
         self.ui()
 
     def ui(self):
+        self.layout().setContentsMargins(10, 5, 10, 20)
+        self.layout().setSpacing(20)
+
+        # Input text Box...
         self.ans = QLineEdit(self)
-        self.ans.setObjectName(u"ans")
-        self.ans.setGeometry(QRect(9, 10, 251, 40))
         self.ans.setReadOnly(True)
-        self.ans.setAlignment(Qt.AlignRight)
         self.ans.setFont(QFont('Arial', 15))
-        self.push1 = QPushButton(self)
-        self.push1.setObjectName(u"push1")
-        self.push1.setGeometry(QRect(10, 100, 51, 51))
-        self.push1.setText(u"1")
-        self.push2 = QPushButton(self)
-        self.push2.setObjectName(u"push2")
-        self.push2.setGeometry(QRect(70, 100, 51, 51))
-        self.push2.setText(u"2")
-        self.push3 = QPushButton(self)
-        self.push3.setObjectName(u"push3")
-        self.push3.setGeometry(QRect(130, 100, 51, 51))
-        self.push3.setText(u"3")
-        self.push_plus = QPushButton(self)
-        self.push_plus.setObjectName(u"add")
-        self.push_plus.setGeometry(QRect(210, 60, 51, 51))
-        self.push_plus.setText(u"+")
-        self.push4 = QPushButton(self)
-        self.push4.setObjectName(u"push4")
-        self.push4.setGeometry(QRect(10, 160, 51, 51))
-        self.push4.setText(u"4")
-        self.push5 = QPushButton(self)
-        self.push5.setObjectName(u"push5")
-        self.push5.setGeometry(QRect(70, 160, 51, 51))
-        self.push5.setText(u"5")
-        self.push6 = QPushButton(self)
-        self.push6.setObjectName(u"push6")
-        self.push6.setGeometry(QRect(130, 160, 51, 51))
-        self.push6.setText(u"6")
-        self.push_minus = QPushButton(self)
-        self.push_minus.setObjectName(u"push_minus")
-        self.push_minus.setGeometry(QRect(210, 120, 51, 51))
-        self.push_minus.setText(u"-")
-        self.push_mul = QPushButton(self)
-        self.push_mul.setObjectName(u"mult")
-        self.push_mul.setGeometry(QRect(210, 180, 51, 51))
-        self.push_mul.setText(u"*")
-        self.push_div = QPushButton(self)
-        self.push_div.setObjectName(u"div")
-        self.push_div.setGeometry(QRect(210, 240, 51, 51))
-        self.push_div.setText(u"/")
-        self.push_equal = QPushButton(self)
-        self.push_equal.setObjectName(u"equ")
-        self.push_equal.setGeometry(QRect(210, 300, 51, 31))
-        self.push_equal.setText(u"=")
-        self.push_equal.setStyleSheet("background-color:darkred;")
-        self.push7 = QPushButton(self)
-        self.push7.setObjectName(u"push7")
-        self.push7.setGeometry(QRect(10, 220, 51, 51))
-        self.push7.setText(u"7")
-        self.push8 = QPushButton(self)
-        self.push8.setObjectName(u"push8")
-        self.push8.setGeometry(QRect(70, 220, 51, 51))
-        self.push8.setText(u"8")
-        self.push9 = QPushButton(self)
-        self.push9.setObjectName(u"push9")
-        self.push9.setGeometry(QRect(130, 220, 51, 51))
-        self.push9.setText(u"9")
-        self.push0 = QPushButton(self)
-        self.push0.setObjectName(u"push0")
-        self.push0.setGeometry(QRect(70, 280, 51, 51))
-        self.push0.setText(u"0")
-        self.push_del = QPushButton(self)
-        self.push_del.setObjectName(u"push_del")
-        self.push_del.setGeometry(QRect(100, 60, 81, 23))
-        self.push_del.setText(u"Del")
-        self.push_clear = QPushButton(self)
-        self.push_clear.setObjectName(u"push_clear")
-        self.push_clear.setGeometry(QRect(10, 60, 75, 23))
-        self.push_clear.setText(u"Clear")
-        self.push_point = QPushButton(self)
-        self.push_point.setObjectName(u"push_point")
-        self.push_point.setGeometry(QRect(10, 280, 51, 51))
-        self.push_point.setText(u".")
-        self.push_minus.clicked.connect(self.action_minus)
-        self.push_equal.clicked.connect(self.action_equal)
-        self.push0.clicked.connect(self.action0)
-        self.push1.clicked.connect(self.action1)
-        self.push2.clicked.connect(self.action2)
-        self.push3.clicked.connect(self.action3)
-        self.push4.clicked.connect(self.action4)
-        self.push5.clicked.connect(self.action5)
-        self.push6.clicked.connect(self.action6)
-        self.push7.clicked.connect(self.action7)
-        self.push8.clicked.connect(self.action8)
-        self.push9.clicked.connect(self.action9)
-        self.push_div.clicked.connect(self.action_div)
-        self.push_mul.clicked.connect(self.action_mul)
-        self.push_plus.clicked.connect(self.action_plus)
-        self.push_point.clicked.connect(self.action_point)
-        self.push_clear.clicked.connect(self.action_clear)
-        self.push_del.clicked.connect(self.action_del)
+        self.ans.setFixedHeight(50)
+        self.layout().addWidget(self.ans)
 
+        # Special_buttons Layout
+        top_btn_layout = QHBoxLayout()
+        top_btn_layout.addWidget(QPushButton('Clear', clicked=self.ans.clear))
+        top_btn_layout.addWidget(QPushButton('Del', clicked=self.ans.backspace))
+        self.layout().addLayout(top_btn_layout)
 
-    def action_equal(self):
-        equation = self.ans.text()
+        # Grid Pad numbers and operators
+        pad_layout = QGridLayout()
+        pad_layout.setSpacing(5)
+        max_coluns = 4
+        curr_row = -1
 
+        equal_btn = QPushButton('=', clicked=self.evaluate_expr)
+        equal_btn.setStyleSheet('background-color:darkred;')
+        buttons = [
+            '1', '2', '3', '+',
+            '4', '5', '6', '-',
+            '7', '8', '9', '*',
+            '.', '0', None, equal_btn
+        ]
+
+        for index, btn in enumerate(buttons):
+            widget = self.create_widget(
+                btn, (index % max_coluns == max_coluns - 1), pad_layout
+            )
+            if not widget:
+                continue
+            if index % max_coluns == 0:
+                curr_row += 1
+            pad_layout.addWidget(widget, curr_row, int(index % max_coluns))
+
+        self.layout().addLayout(pad_layout)
+
+    def create_widget(
+        self, btn: ty.Union[str, None, QPushButton], operator: bool,
+        pad_layout: QGridLayout
+    ) -> ty.Optional[QPushButton]:
+        """Create QPushButton for PadLayout dynamically."""
+
+        if not btn:
+            return None
+
+        if isinstance(btn, QPushButton):
+            widget = btn
+        else:
+            widget = QPushButton(
+                btn, clicked=self._push_text(btn)
+            )
+            widget.setMinimumHeight(int(widget.sizeHint().height() * 1.70))
+
+        if operator:
+            widget.setMinimumHeight(int(widget.sizeHint().height() * 1.95))
+            # Custom style for the Operators buttons, if needed...
+            #  if not widget.styleSheet():
+            #      widget.setStyleSheet(
+            #          'background-color:#020202;'
+            #          'border-color: white;'
+            #          'border-style: solid;'
+            #          'border-width: 1px;'
+            #          'color: white;'
+            #      )
+        return widget
+
+    def _push_text(self, text):
+        """Cloujure for buttons click action.
+
+        Returns a function that will append a given text to the ans input box.
+        """
+        ans = self.ans
+
+        def inner(*args, **kwargs):
+            ans.setText(ans.text() + text)
+
+        return inner
+
+    def evaluate_expr(self):
         try:
-            ans = eval(equation)
-            self.ans.setText(str(ans))
-
+            self.ans.setText(
+                str(eval(self.ans.text()))
+            )
         except:
+            # TODO: Report the error in a log message, that the OS will handle.
             self.ans.setText("NaN")
 
-    def action_plus(self):
-        text = self.ans.text()
-        self.ans.setText(text + " + ")
-
-    def action_minus(self):
-        text = self.ans.text()
-        self.ans.setText(text + " - ")
-
-    def action_div(self):
-        text = self.ans.text()
-        self.ans.setText(text + " / ")
-
-    def action_mul(self):
-        text = self.ans.text()
-        self.ans.setText(text + " * ")
-
-    def action_point(self):
-        text = self.ans.text()
-        self.ans.setText(text + ".")
-
-    def action0(self):
-        text = self.ans.text()
-        self.ans.setText(text + "0")
-
-    def action1(self):
-        text = self.ans.text()
-        self.ans.setText(text + "1")
-
-    def action2(self):
-        text = self.ans.text()
-        self.ans.setText(text + "2")
-
-    def action3(self):
-        text = self.ans.text()
-        self.ans.setText(text + "3")
-
-    def action4(self):
-        text = self.ans.text()
-        self.ans.setText(text + "4")
-
-    def action5(self):
-        text = self.ans.text()
-        self.ans.setText(text + "5")
-
-    def action6(self):
-        text = self.ans.text()
-        self.ans.setText(text + "6")
-
-    def action7(self):
-        text = self.ans.text()
-        self.ans.setText(text + "7")
-
-    def action8(self):
-        text = self.ans.text()
-        self.ans.setText(text + "8")
-
-    def action9(self):
-        text = self.ans.text()
-        self.ans.setText(text + "9")
-
-    def action_clear(self):
-        self.ans.setText("")
-
-    def action_del(self):
-        text = self.ans.text()
-        self.ans.setText(text[:len(text)-1])
-
     def keyPressEvent(self, event):
-        match event.key():
-            case Qt.Key_1:
-                self.action1()
-            case Qt.Key_2:
-                self.action2()
-            case Qt.Key_3:
-                self.action3()
-            case Qt.Key_4:
-                self.action4()
-            case Qt.Key_5:
-                self.action5()
-            case Qt.Key_6:
-                self.action6()
-            case Qt.Key_7:
-                self.action7()
-            case Qt.Key_8:
-                self.action8()
-            case Qt.Key_9:
-                self.action9()
-            case Qt.Key_0:
-                self.action0()
-            case Qt.Key_Plus:
-                self.action_plus()
-            case Qt.Key_Minus:
-                self.action_minus()
-            case Qt.Key_Asterisk:
-                self.action_mul()
-            case Qt.Key_Slash:
-                self.action_div()
-            case Qt.Key_Return:
-                self.action_equal()
-            case Qt.Key_Backspace:
-                self.action_del()
-            case Qt.Key_Period:
-                self.action_point()
-            case Qt.Key_Escape:
-                self.action_clear()
+        """Handle key events on the Calculator."""
+        special_cases = {
+            Qt.Key.Key_Return: self.evaluate_expr,
+            Qt.Key.Key_Enter: self.evaluate_expr,
+            Qt.Key.Key_Backspace: self.ans.backspace,
+            Qt.Key.Key_Delete: self.ans.backspace,
+            Qt.Key.Key_Escape: self.ans.clear,
+        }
+
+        # Redirect execution flow for special characters...
+        if special_cases.get(event.key(), None):
+            special_cases[event.key()]()
+        # Only digits and operators ara vaild inputs...
+        elif event.text() in string.digits + '+-*/':
+            self.ans.setText(
+                self.ans.text() + event.text()
+            )
