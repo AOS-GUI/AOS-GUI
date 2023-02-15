@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRect
 
 
 class calculator(QWidget):
@@ -18,49 +18,124 @@ class calculator(QWidget):
         self.ui()
 
     def ui(self):
-        self.layout().setContentsMargins(10, 5, 10, 20)
-        self.layout().setSpacing(20)
-
-        # Input text Box...
         self.ans = QLineEdit(self)
+        self.ans.setObjectName(u"ans")
+        self.ans.setGeometry(QRect(9, 10, 251, 40))
         self.ans.setReadOnly(True)
-        self.ans.setFont(QFont('Arial', 15))
         self.ans.setAlignment(Qt.AlignRight)
-        self.ans.setFixedHeight(50)
-        self.layout().addWidget(self.ans)
+        self.ans.setFont(QFont('Arial', 15))
 
-        # Special_buttons Layout
-        top_btn_layout = QHBoxLayout()
-        top_btn_layout.addWidget(QPushButton('Clear', clicked=self.ans.clear))
-        top_btn_layout.addWidget(QPushButton('Del', clicked=self.ans.backspace))
-        self.layout().addLayout(top_btn_layout)
+        self.push1 = QPushButton(self)
+        self.push1.setObjectName(u"push1")
+        self.push1.setGeometry(QRect(10, 100, 51, 51))
+        self.push1.setText(u"1")
 
-        # Grid Pad numbers and operators
-        pad_layout = QGridLayout()
-        pad_layout.setSpacing(5)
-        max_coluns = 4
-        curr_row = -1
+        self.push2 = QPushButton(self)
+        self.push2.setObjectName(u"push2")
+        self.push2.setGeometry(QRect(70, 100, 51, 51))
+        self.push2.setText(u"2")
 
-        equal_btn = QPushButton('=', clicked=self.evaluate_expr)
-        equal_btn.setStyleSheet('background-color:darkred;')
-        buttons = [
-            '1', '2', '3', '+',
-            '4', '5', '6', '-',
-            '7', '8', '9', '*',
-            '.', '0', None, equal_btn
+        self.push3 = QPushButton(self)
+        self.push3.setObjectName(u"push3")
+        self.push3.setGeometry(QRect(130, 100, 51, 51))
+        self.push3.setText(u"3")
+
+        self.push_plus = QPushButton(self)
+        self.push_plus.setObjectName(u"add")
+        self.push_plus.setGeometry(QRect(210, 60, 51, 51))
+        self.push_plus.setText(u"+")
+
+        self.push4 = QPushButton(self)
+        self.push4.setObjectName(u"push4")
+        self.push4.setGeometry(QRect(10, 160, 51, 51))
+        self.push4.setText(u"4")
+
+        self.push5 = QPushButton(self)
+        self.push5.setObjectName(u"push5")
+        self.push5.setGeometry(QRect(70, 160, 51, 51))
+        self.push5.setText(u"5")
+
+        self.push6 = QPushButton(self)
+        self.push6.setObjectName(u"push6")
+        self.push6.setGeometry(QRect(130, 160, 51, 51))
+        self.push6.setText(u"6")
+
+        self.push_minus = QPushButton(self)
+        self.push_minus.setObjectName(u"push_minus")
+        self.push_minus.setGeometry(QRect(210, 120, 51, 51))
+        self.push_minus.setText(u"-")
+
+        self.push_mul = QPushButton(self)
+        self.push_mul.setObjectName(u"mult")
+        self.push_mul.setGeometry(QRect(210, 180, 51, 51))
+        self.push_mul.setText(u"*")
+
+        self.push_div = QPushButton(self)
+        self.push_div.setObjectName(u"div")
+        self.push_div.setGeometry(QRect(210, 240, 51, 51))
+        self.push_div.setText(u"/")
+
+        self.push_equal = QPushButton(self)
+        self.push_equal.setObjectName(u"equ")
+        self.push_equal.setGeometry(QRect(210, 300, 51, 31))
+        self.push_equal.setText(u"=")
+        self.push_equal.setStyleSheet("background-color:darkred;")
+
+        self.push7 = QPushButton(self)
+        self.push7.setObjectName(u"push7")
+        self.push7.setGeometry(QRect(10, 220, 51, 51))
+        self.push7.setText(u"7")
+
+        self.push8 = QPushButton(self)
+        self.push8.setObjectName(u"push8")
+        self.push8.setGeometry(QRect(70, 220, 51, 51))
+        self.push8.setText(u"8")
+
+        self.push9 = QPushButton(self)
+        self.push9.setObjectName(u"push9")
+        self.push9.setGeometry(QRect(130, 220, 51, 51))
+        self.push9.setText(u"9")
+
+        self.push0 = QPushButton(self)
+        self.push0.setObjectName(u"push0")
+        self.push0.setGeometry(QRect(70, 280, 51, 51))
+        self.push0.setText(u"0")
+
+        self.push_del = QPushButton(self)
+        self.push_del.setObjectName(u"push_del")
+        self.push_del.setGeometry(QRect(100, 60, 81, 23))
+        self.push_del.setText(u"Del")
+
+        self.push_clear = QPushButton(self)
+        self.push_clear.setObjectName(u"push_clear")
+        self.push_clear.setGeometry(QRect(10, 60, 75, 23))
+        self.push_clear.setText(u"Clear")
+
+        self.push_point = QPushButton(self)
+        self.push_point.setObjectName(u"push_point")
+        self.push_point.setGeometry(QRect(10, 280, 51, 51))
+        self.push_point.setText(u".")
+
+        # Overwrite some special cases...
+        self.push_equal.clicked.connect(self.evaluate_expr)
+        self.push_clear.clicked.connect(self.ans.clear)
+        self.push_del.clicked.connect(self.ans.backspace)
+
+        special_cases = [
+            self.push_equal, self.push_clear, self.push_del
         ]
 
-        for index, btn in enumerate(buttons):
-            widget = self.create_widget(
-                btn, (index % max_coluns == max_coluns - 1), pad_layout
-            )
-            if not widget:
-                continue
-            if index % max_coluns == 0:
-                curr_row += 1
-            pad_layout.addWidget(widget, curr_row, int(index % max_coluns))
+        # Grabbing all buttons in the calculator instance.
+        buttons = filter(
+            lambda attr: isinstance(attr, QPushButton),
+            vars(self).values()
+        )
 
-        self.layout().addLayout(pad_layout)
+        # Connect all buttons, except for the special_cases...
+        for btn in buttons:
+            if btn in special_cases:
+                continue
+            btn.clicked.connect(self._push_text(btn.text()))
 
     def create_widget(
         self, btn: ty.Union[str, None, QPushButton], operator: bool,

@@ -431,10 +431,41 @@ class aterm(QWidget):
                             except FileNotFoundError:
                                 self.echo("[CAMEL] "+params[1]+" doesn't exist!")
                         elif params[0] == "list":
-                            self.echo("[CAMEL] Package list:")
+                            extraThing = ""
+                            try:
+                                if params[1] == "-i" or params[1] == "--installed":
+                                    extraThing = " (local)"
+                            except IndexError:
+                                pass
+
+                            self.echo("[CAMEL] Package list"+extraThing+":")
                             self.echo("[CAMEL]")
-                            for i in filesOnlineNames:
-                                self.echo("[CAMEL] "+i+" - "+filesOnlineDescs[filesOnlineNames.index(i)])
+                            if extraThing:
+                                filepath = "files/apps/"
+                                files = []
+                                row = 0
+
+                                for file in listdir(filepath):
+                                    if path.isfile(path.join(filepath, file)):
+                                        files.append(file)
+
+                                for name in sorted(files):
+                                    f = open(f"{filepath}{name}","r")
+
+                                    try:
+                                        content = f.read()
+                                        content = content.split("#~")
+                                        pkginfo = content[1].split("|")
+                                        pkginfo[2] = pkginfo[2].split("\n")[0]
+
+                                        self.echo("[CAMEL] "+pkginfo[0]+" - "+pkginfo[1])
+                                    except:
+                                        self.echo(f"[WARN] camel couldn't find info for the app ({name}), getting info from package name")
+                                        self.echo("[CAMEL] "+name+" - "+filesOnlineDescs[filesOnlineNames.index(i)])
+                                    f.close()
+                            else:
+                                for i in filesOnlineNames:
+                                    self.echo("[CAMEL] "+i+" - "+filesOnlineDescs[filesOnlineNames.index(i)])
                         elif params[0] == "info":
                             if params[1] in filesOnlineNames:
                                 self.echo("[CAMEL] Information for package "+params[1]+":")
@@ -444,13 +475,13 @@ class aterm(QWidget):
                                 self.echo("[CAMEL] Version: "+filesOnlineVers[filesOnlineNames.index(params[1])])
 
                         elif params[0] == "help":
-                            for n in {"-- camelInstall CLI help --",
+                            for n in ["-- camelInstall CLI help --",
                                          "",
                                          "update - updates package list. this is run automatically on first command use",
                                          "install [package name] - install package",
                                          "uninstall [package name] - uninstall package",
                                          "list - lists all packages on the server",
-                                         "info [package name] - package information"}:
+                                         "info [package name] - package information"]:
                                 self.echo("[CAMEL] "+n)
 
                 else:

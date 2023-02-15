@@ -4,9 +4,11 @@ from PyQt5.QtCore import *
 from os import getcwd
 from sys import executable,argv
 import importlib
+import configparser
 
 f = open(getcwd().replace("\\","/")+"/files/system/data/version", "r")
 version = f.read()
+f.close()
 
 class DraggableButton(QPushButton):
     def mousePressEvent(self, event):
@@ -115,15 +117,13 @@ def userSettings():
     return content
 
 def userTheme():
-    f = open("files/system/data/user/data.aos","r")
-    content = f.read()
-    content = content.split("\n")
-    f.close()
+    config = configparser.ConfigParser()
+    config.read("files/system/data/user/data.aos")
 
     try:
-        themeText = open("files/system/data/user/themes/"+content[2]+".theme","r")
+        themeText = open("files/system/data/user/themes/"+config["theme"]["name"]+".theme","r")
     except FileNotFoundError:
-        print("!! WARNING: Theme "+content[2]+" not found, using default-dark...")
+        print("!! WARNING: Theme "+config["theme"]["name"]+" not found, using default-dark...")
         themeText = open("files/system/data/user/themes/default-dark.theme","r")
 
     themeTextStr = themeText.read()
@@ -132,3 +132,9 @@ def userTheme():
     themeText.close()
 
     return themeColors
+
+def toBool(str):
+     if str == "True":
+          return True
+     else:
+          return False

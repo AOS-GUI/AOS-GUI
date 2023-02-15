@@ -4,6 +4,8 @@ from PyQt5.QtCore import *
 
 from random import choice
 
+import configparser
+
 f = open("files/system/data/splashes")
 splashTexts = f.readlines()
 f.close()
@@ -12,6 +14,8 @@ f = open("files/system/data/version","r")
 version = f.read()
 f.close()
 
+config = configparser.ConfigParser()
+config.read("files/system/data/user/data.aos")
 
 class splashScreen(QWidget):
     def __init__(self):
@@ -66,13 +70,7 @@ class splashScreen(QWidget):
         QMetaObject.connectSlotsByName(self)
     
     def letsgo(self):
-        f = open("files/system/data/user/data.aos","r")
-        content = f.readlines()
-        f.close()
-        f = open("files/system/data/user/data.aos","w")
-        content[9] = str(self.dontshowagain.isChecked())+"\n"
-        for i in content:
-            if i != "":
-                f.write(i)
-        f.close()
+        config["splash"]["show"] = str(self.dontshowagain.isChecked())
+        with open('files/system/data/user/data.aos', 'w') as configfile:
+            config.write(configfile)
         self.close()
