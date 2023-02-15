@@ -3,7 +3,8 @@ import string
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
+    QPushButton, QWidget, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout,
+    QSizePolicy
 )
 from PyQt5.QtCore import Qt
 
@@ -12,14 +13,14 @@ class calculator(QWidget):
     def __init__(self):
         super(calculator, self).__init__()
         self.setWindowTitle("AOS-GUI/calc")
-        self.setFixedSize(270, 340)
+        self.setFixedSize(270, 350)
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.setLayout(QVBoxLayout())
         self.ui()
 
     def ui(self):
-        self.layout().setContentsMargins(10, 5, 10, 20)
-        self.layout().setSpacing(20)
+        self.layout().setContentsMargins(10, 5, 10, 10)
+        self.layout().setSpacing(15)
 
         # Input text Box...
         self.ans = QLineEdit(self)
@@ -27,44 +28,62 @@ class calculator(QWidget):
         self.ans.setFont(QFont('Arial', 15))
         self.ans.setAlignment(Qt.AlignRight)
         self.ans.setFixedHeight(50)
+
         self.layout().addWidget(self.ans)
 
-        # Special_buttons Layout
+        # Horizontal SubLayout: Special_buttons
         top_btn_layout = QHBoxLayout()
+
         top_btn_layout.addWidget(QPushButton('Clear', clicked=self.ans.clear))
         top_btn_layout.addWidget(QPushButton('Del', clicked=self.ans.backspace))
+        
         self.layout().addLayout(top_btn_layout)
 
-        # Grid Pad numbers and operators
+        # Horizontal SubLayout: Gridpad and Operators
+        sub_layout = QHBoxLayout()
+        sub_layout.setSpacing(5)
+
+        # -- Grid Sub-SubLayout: GridPad
         pad_layout = QGridLayout()
         pad_layout.setSpacing(5)
-        max_coluns = 4
+        max_coluns = 3
         curr_row = -1
-
-        equal_btn = QPushButton('=', clicked=self.evaluate_expr)
-        equal_btn.setStyleSheet('background-color:darkred;')
+        
         buttons = [
-            '1', '2', '3', '+',
-            '4', '5', '6', '-',
-            '7', '8', '9', '*',
-            '.', '0', None, equal_btn
+            '1', '2', '3',
+            '4', '5', '6',
+            '7', '8', '9',
+            '.', '0', None
         ]
 
         for index, btn in enumerate(buttons):
-            widget = self.create_widget(
-                btn, (index % max_coluns == max_coluns - 1), pad_layout
-            )
+            widget = self.create_widget(btn)
             if not widget:
                 continue
             if index % max_coluns == 0:
                 curr_row += 1
             pad_layout.addWidget(widget, curr_row, int(index % max_coluns))
 
-        self.layout().addLayout(pad_layout)
+        sub_layout.addLayout(pad_layout)
+
+        # -- Vertical Sub-SubLayout: Operators
+        oper_layout = QVBoxLayout()
+
+        equal_btn = QPushButton('=', clicked=self.evaluate_expr)
+        equal_btn.setStyleSheet('background-color:darkred;')
+        operators = list('+-*/') + [equal_btn]
+
+        for oper in operators:
+            widget = self.create_widget(oper)
+            widget.setMinimumHeight(40)
+            widget.sizePolicy().setVerticalPolicy(QSizePolicy.Policy.Minimum)
+            oper_layout.addWidget(widget)
+
+        sub_layout.addLayout(oper_layout)
+        self.layout().addLayout(sub_layout)
 
     def create_widget(
-        self, btn: ty.Union[str, None, QPushButton], operator: bool,
-        pad_layout: QGridLayout
+        self, btn: ty.Union[str, None, QPushButton]
     ) -> ty.Optional[QPushButton]:
         """Create QPushButton for PadLayout dynamically."""
 
@@ -78,18 +97,6 @@ class calculator(QWidget):
                 btn, clicked=self._push_text(btn)
             )
             widget.setMinimumHeight(int(widget.sizeHint().height() * 1.70))
-
-        if operator:
-            widget.setMinimumHeight(int(widget.sizeHint().height() * 1.95))
-            # Custom style for the Operators buttons, if needed...
-            #  if not widget.styleSheet():
-            #      widget.setStyleSheet(
-            #          'background-color:#020202;'
-            #          'border-color: white;'
-            #          'border-style: solid;'
-            #          'border-width: 1px;'
-            #          'color: white;'
-            #      )
         return widget
 
     def _push_text(self, text):
