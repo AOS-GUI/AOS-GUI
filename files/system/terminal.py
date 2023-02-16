@@ -478,10 +478,10 @@ class aterm(QWidget):
                             for n in ["-- camelInstall CLI help --",
                                          "",
                                          "update - updates package list. this is run automatically on first command use",
-                                         "install [package name] - install package",
-                                         "uninstall [package name] - uninstall package",
-                                         "list - lists all packages on the server",
-                                         "info [package name] - package information"]:
+                                         "install <package name> - install package",
+                                         "uninstall <package name> - uninstall package",
+                                         "list [-i / --installed] - lists all packages on the server (if -i is found, lists local packages)",
+                                         "info <package name> - package information"]:
                                 self.echo("[CAMEL] "+n)
 
                 else:
