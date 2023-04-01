@@ -6,6 +6,7 @@
 - cross-platform (ish)
 - easy to modify
 - built-in terminal, with scripting language
+- built-in text editor with syntax highlighting
 - package manager
 - lots of settings
 - SDK and documentation

@@ -14,16 +14,15 @@ variables = {}
 waitForInput = False
 waitingForVar = ""
 inVarName = False
-
 updatedCamel = False
 
 dir = "/home"
-terminalVer = 1.5
+terminalVer = 1.6
 helpText = {"help":"aos help (syntax: help {command})",
             "clear":"clears the screen (syntax: clear)",
             "echo":"echoes text (syntax: echo [text] {| [color]}). if a variable name is surrounded by graves (`), the variable's contents will be echoed.",
             "rm":"removes a file or folder (syntax: rm [path from /])",
-            "dir":"lists the files and directories inside a directory (syntax: dir [path] {-notypes})",
+            "dir":"lists the files and directories inside a directory (syntax: dir [path] {-n | --notypes})",
             "read":"reads a file's contents (syntax: read [file])",
             "script":"runs a script (syntax: script [file] {-v | -verbose})",
             "ver":"shows system and terminal version",
@@ -35,13 +34,14 @@ helpText = {"help":"aos help (syntax: help {command})",
             "mkfile":"creates a file. (syntax: mkfile [path/filename] {contents})",
             "set":"sets a value to a variable (syntax: set [var] [contents]",
             "py":"executes a python script (syntax: py [path])",
-            "camel":"camelInstall CLI. run 'camel help' for more information"}
+            "camel":"camelInstall CLI. run 'camel help' for more information",
+            "dl":"downloads the contents of a url (syntax: dl [url] {output file path} {-s | --status})"}
 
 class aterm(QWidget):
     def __init__(self):
         super(aterm, self).__init__()
 
-        theme = userTheme()
+        theme = getTheme()
 
         self.setWindowTitle("AOS-GUI/terminal")
         self.setFixedSize(620, 440)
@@ -55,7 +55,7 @@ class aterm(QWidget):
         self.listWidget = QListWidget(self)
         self.listWidget.setObjectName(u"listWidget")
         self.listWidget.setGeometry(QRect(10, 10, 601, 381))
-        self.listWidget.setStyleSheet(f"font: 8pt \"Consolas\"; color:{theme[0]}; background-color: {theme[1]}")
+        self.listWidget.setStyleSheet(f"font: 8pt \"Consolas\"; color:white; background-color: black")
         self.listWidget.setAutoScroll(False)
         self.listWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.listWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
@@ -65,7 +65,6 @@ class aterm(QWidget):
         self.go.setGeometry(QRect(540, 400, 71, 31))
         self.go.setText("Enter")
         self.go.clicked.connect(self.doCommand)
-
 
         self.echo("AOS Terminal v"+str(terminalVer), True)
         self.echo("Changed dir to /", True)
@@ -77,9 +76,11 @@ class aterm(QWidget):
                 # if self.lineEdit.text() != False:
                 command = self.lineEdit.text()
                 self.echo(text="[YOU] "+command,color="__YOU__")
+                command = self.parseString(command)
             else:
                 if silentOut == False:
                     self.echo("[SCRIPT] "+command)
+                command = self.parseString(command)
                 
             lowcommand = command.lower()
 
@@ -87,25 +88,7 @@ class aterm(QWidget):
             
             if waitForInput == False:
                 if lowcommand.startswith("echo"):
-                    varname = ""
-                    final = ""
-
-                    for i in self.splitParams(command)[0:]:
-                        for t in i:
-                            if t == "`":
-                                if inVarName == False:
-                                    inVarName = True
-                                else:
-                                    final += variables[varname]
-                                    varname = ""
-                                    inVarName = False
-                                continue
-                            else:
-                                if inVarName == True:
-                                    varname += t
-                                else:
-                                    final += t
-                        final += " "
+                    final = " ".join(self.splitParams(command)[0:])
 
                     if final:
                         self.echo(final)
@@ -158,7 +141,7 @@ class aterm(QWidget):
                             self.echo()
 
                             for _ in listdir(filesPath+param):
-                                if lowcommand.__contains__("-notypes"):
+                                if "--notypes" in lowcommand or "-n" in lowcommand:
                                     self.echo(_)
                                 else:
                                     if path.isdir(filesPath+param+_):
@@ -237,6 +220,7 @@ class aterm(QWidget):
                         script = open(filesPath+param,"r")
                         script = script.read()
                         script = script.split("\n")
+                        script = list(filter(None, script))
 
                         i = 0
                         
@@ -274,7 +258,10 @@ class aterm(QWidget):
                     params = self.splitParams(command)
 
                     try:
-                        openApplication(params[0], params[1])
+                        if not params[1].endswith("/"):
+                            params[1] = params[1]+"/"
+
+                        openApplication(params[0], "files/"+params[1])
                     except IndexError:
                         openApplication(params[0])
                 elif lowcommand.startswith("restart"):
@@ -468,22 +455,89 @@ class aterm(QWidget):
                                     self.echo("[CAMEL] "+i+" - "+filesOnlineDescs[filesOnlineNames.index(i)])
                         elif params[0] == "info":
                             if params[1] in filesOnlineNames:
+                                installed = "no"
+                                if params[1]+".py" in listdir("files/apps/"):
+                                    installed = "yes"
                                 self.echo("[CAMEL] Information for package "+params[1]+":")
                                 self.echo("[CAMEL]")
                                 self.echo("[CAMEL] Description: "+filesOnlineDescs[filesOnlineNames.index(params[1])])
                                 self.echo("[CAMEL] URL: "+filesOnlineUrls[filesOnlineNames.index(params[1])])
                                 self.echo("[CAMEL] Version: "+filesOnlineVers[filesOnlineNames.index(params[1])])
+                                self.echo("[CAMEL] Installed: "+installed)
+                            else:
+                                if params[1]+".py" in listdir("files/apps/"):
+                                    f = open(f"files/apps/{params[1]}.py","r")
+
+                                    try:
+                                        content = f.read()
+                                        content = content.split("#~")
+                                        pkginfo = content[1].split("|")
+                                        pkginfo[2] = pkginfo[2].split("\n")[0]
+                                    except:
+                                        self.echo(f"[WARN] camel couldn't find info for the app ({params[1]}), getting info from package name")
+                                    f.close()
+
+                                    self.echo("[CAMEL] Information for local package "+params[1]+":")
+                                    self.echo("[CAMEL]")
+                                    self.echo("[CAMEL] Description: "+str(pkginfo[1]))
+                                    self.echo("[CAMEL] URL: None")
+                                    self.echo("[CAMEL] Version: "+str(pkginfo[2]))
+                                    self.echo("[CAMEL] Installed: yes")
+                                else:
+                                    self.echo("[CAMEL] Package not found!")
+                        elif params[0] == "search":
+                            self.echo("[CAMEL] Searching...")
+                            results = []
+
+                            for i in filesOnlineNames:
+                                if " ".join(params[1:]) in i:
+                                    results.append(i+" - "+filesOnlineDescs[filesOnlineNames.index(i)])
+
+                            for i in filesOnlineDescs:
+                                if " ".join(params[1:]) in i:
+                                    results.append(filesOnlineNames[filesOnlineDescs.index(i)]+" - "+i)
+                            
+                            results = list(dict.fromkeys(results))
+
+                            self.echo("[CAMEL] Results:")
+                            
+                            for i in results:
+                                self.echo("[CAMEL] "+i)
 
                         elif params[0] == "help":
                             for n in ["-- camelInstall CLI help --",
                                          "",
                                          "update - updates package list. this is run automatically on first command use",
                                          "install <package name> - install package",
-                                         "uninstall <package name> - uninstall package",
+                                         "info <package name> - package information",
                                          "list [-i / --installed] - lists all packages on the server (if -i is found, lists local packages)",
-                                         "info <package name> - package information"]:
+                                         "search <package name or description> - searches for the specified package or package matching the description in the database"
+                                         "uninstall <package name> - uninstall package",
+                                         ]:
                                 self.echo("[CAMEL] "+n)
+                elif lowcommand.startswith("dl"):
+                    params = self.splitParams(command)
+                    if params[0]:
+                        if "http://" not in params[0]:
+                            params[0] = "http://"+params[0]
+                        r = requests.get(params[0])
 
+                        try:
+                            if "-s" in params or "--status" in params:
+                                self.echo("[DL] status: "+str(r.status_code))
+
+                            if params[1] == "-s" or params[1] == "--status":
+                                params[1] = params[2]
+
+                            f = open(getAOSdir()+params[1],"wb")
+                            f.write(r.content)
+                            f.close()
+                        except IndexError:
+                            try:
+                                for i in r.content.decode().split("\n"):
+                                    self.echo(i)
+                            except Exception as e:
+                                self.echo(e)
                 else:
                     self.echo("ERR: Unknown command "+lowcommand,True)
             else:
@@ -526,6 +580,32 @@ class aterm(QWidget):
 
         self.update()
         self.repaint()
+
+    def parseString(self, text):
+        varname = ""
+        final = ""
+        inVarName = False
+
+        for t in text:
+            if t == "`":
+                if inVarName == False:
+                    inVarName = True
+                else:
+                    try:
+                        final += variables[varname]
+                        varname = ""
+                        inVarName = False
+                    except KeyError:
+                        self.echo("ERR: No variable named "+varname,True)
+                continue
+            else:
+                if inVarName == True:
+                    varname += t
+                else:
+                    final += t
+        # final += " "
+
+        return final
     
     def splitParams(self, text):
         try:

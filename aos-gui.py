@@ -6,7 +6,7 @@
 # ██╔══██║██║   ██║╚════██║╚════╝██║   ██║██║   ██║██║
 # ██║  ██║╚██████╔╝███████║      ╚██████╔╝╚██████╔╝██║
 # ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
-# by nanobot567
+# by nanobot567 ( and contributors :) )
 
 try:
     from pip import main as pipmain
@@ -52,7 +52,7 @@ buttonX = 20
 buttonY = 40
 buttonSpaceX = 20
 buttonSpaceY = 40
-buttonWidth = 100
+buttonWidth = 90
 buttonHeight = 50
 buttonsShown = []
 numShortcuts = 8
@@ -80,13 +80,14 @@ class AOS(QMainWindow):
      def __init__(self):
           super(AOS, self).__init__()
           self.setContextMenuPolicy(Qt.ActionsContextMenu)
+          self.setObjectName("MainWindow")
 
           global textcolor,bgcolor,ttextcolor,tbgcolor,btextcolor,bbgcolor, \
               windowcolor,buttonsShown,theme,username,password,kSeqs,fontSize, \
               buttonFontSize,guiTheme,clockMode,buttonWidth,buttonHeight, \
               buttonSpaceX,buttonSpaceY \
 
-          themeColors = userTheme()
+          themeColors = getTheme()
 
           username = config["userinfo"]["name"]
           password = config["userinfo"]["pass"]
@@ -117,25 +118,51 @@ class AOS(QMainWindow):
           buttonSpaceY = config.getint("buttonDims","y")
 
           print("\nStarting up AOS-GUI, please wait...")
-          print("Setting up system apps...")
+          print("Setting up system apps",end="")
 
           self.settingsWindow = settings.settingsWidget()
+          print(".",end="")
           self.fsWindow = fs.FsWindow()
+          print(".",end="")
           self.cInstWindow = cinstall.camelInstall()
+          print(".",end="")
           self.editWindow = edit.editApp()
+          print(".",end="")
           self.helpWindow = aoshelp.aoshelp()
+          print(".",end="")
           self.atermWindow = terminal.aterm()
+          print(".",end="")
           self.aLaunchWindow = launcher.launcher()
+          print(".",end="")
           self.calcWindow = calc.calculator()
+          print(".")
+
+          stylesheet = f"""
+          background-color: {bgcolor};
+          color: {textcolor};
+          """
+
+          wallpaper = config["wallpaper"]["path"]
+          size = app.primaryScreen().size()
+
+          if wallpaper:
+               img = QPixmap(wallpaper)
+               img = img.scaled(QSize(size.width(),size.height()))
+               bgimgLabel = QLabel(self)
+               bgimgLabel.setPixmap(img)
+               bgimgLabel.setGeometry(0,0,size.width(),size.height())
 
           self.setWindowTitle("AOS-GUI")
           self.setWindowFlag(Qt.FramelessWindowHint)
-          self.setGeometry(0,0,700,500)
-          self.setStyleSheet(f"background-color: {bgcolor}; color: {textcolor};")
-          print("Finalizing desktop...")
+          self.setGeometry(0,0,size.width(),size.height())
+          self.setStyleSheet(stylesheet)
+          print("Finalizing desktop",end="")
           self.setupMenuBar()
+          print(".",end="")
           self.setupButtons()
+          print(".",end="")
           self.setupShortcuts()
+          print(".")
           print("Finished!")
 
      def updateDesktopFile(self):
@@ -249,12 +276,13 @@ class AOS(QMainWindow):
                               globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
                          case 4:
                               globals()[btnName].setText("Edit")
-                              globals()[btnName].clicked.connect(self.editWindow.showNormal)
-                              globals()[btnName].clicked.connect(self.editWindow.activateWindow)
+                              globals()[btnName].clicked.connect(lambda: QProcess.startDetached(sys.executable, ["files/system/edit.py"]))
+                              # globals()[btnName].clicked.connect(self.editWindow.activateWindow)
                          case 5:
                               globals()[btnName].setText("AOSHelp")
                               globals()[btnName].clicked.connect(self.helpWindow.showNormal)
                               globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
+                              globals()[btnName].clicked.connect(self.helpWindow.reset)
                          case 6:
                               globals()[btnName].setText("Terminal")
                               globals()[btnName].clicked.connect(self.atermWindow.showNormal)
@@ -264,8 +292,6 @@ class AOS(QMainWindow):
                               globals()[btnName].clicked.connect(self.calcWindow.showNormal)
                               globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
                     buttonX += buttonWidth + buttonSpaceX
-
-                    # later release, make it so buttons linking to external apps possible.
 
                btnName += 1
           
@@ -375,8 +401,11 @@ class AOS(QMainWindow):
                     case "applauncher":
                          self.aLaunchWindow.show()
                     case "splash":
+                         splashscreen = splash.splashScreen()
                          splashscreen.__init__()
                          splashscreen.show()
+                         splashscreen.setWindowState(Qt.WindowActive)
+                         splashscreen.activateWindow() # for Windows
                     case "calc" | "calculator":
                          self.calcWindow.show()
                     case "about":
@@ -442,6 +471,8 @@ if __name__ == '__main__':
           
           if config["splash"]["show"] == "False" or config["splash"]["show"] == "":
                splashscreen = splash.splashScreen()
+               splashscreen.setWindowState(Qt.WindowActive)
+               splashscreen.activateWindow() # for Windows
                splashscreen.show()
 
           f.close()

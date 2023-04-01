@@ -14,6 +14,8 @@ standardSegs = ["Clock","Battery","CPU Usage","Available Memory"]
 config = configparser.ConfigParser()
 config.read("files/system/data/user/data.aos")
 
+wallPaperPath = ""
+
 class settingsWidget(QWidget):
     def __init__(self):
         super(settingsWidget, self).__init__()
@@ -127,15 +129,11 @@ class settingsWidget(QWidget):
         self.themes.setTitle(u"Color Theme")
         self.themeCB = QComboBox(self.themes)
         self.themeCB.setObjectName(u"themeCB")
-        self.themeCB.setGeometry(QRect(20, 20, 131, 22))
+        self.themeCB.setGeometry(QRect(20, 40, 131, 22))
         self.themeCB.setCurrentText(u"")
-        self.tApply = QPushButton(self.themes)
-        self.tApply.setObjectName(u"tApply")
-        self.tApply.setGeometry(QRect(40, 50, 93, 28))
-        self.tApply.setText(u"Apply")
         self.tSave = QPushButton(self.themes)
         self.tSave.setObjectName(u"tSave")
-        self.tSave.setGeometry(QRect(40, 80, 93, 28))
+        self.tSave.setGeometry(QRect(40, 70, 93, 28))
         self.tSave.setText(u"Save")
         self.appsUseTheme = QCheckBox(self.themes)
         self.appsUseTheme.setObjectName(u"appsUseTheme")
@@ -243,6 +241,23 @@ class settingsWidget(QWidget):
         self.btnYL.setObjectName(u"btnYL")
         self.btnYL.setGeometry(QRect(80, 110, 81, 16))
         self.btnYL.setText(u"Y Spacing")
+        self.wallpaperGroup = QGroupBox(self.customization)
+        self.wallpaperGroup.setObjectName(u"wallpaperGroup")
+        self.wallpaperGroup.setGeometry(QRect(309, 250, 111, 121))
+        self.wallpaperGroup.setTitle(u"Wallpaper")
+        self.wpSelect = QPushButton(self.wallpaperGroup)
+        self.wpSelect.setObjectName(u"wpSelect")
+        self.wpSelect.setGeometry(QRect(9, 30, 91, 28))
+        self.wpSelect.setText(u"Select file...")
+        self.wpClear = QPushButton(self.wallpaperGroup)
+        self.wpClear.setObjectName(u"wpClear")
+        self.wpClear.setGeometry(QRect(20, 80, 71, 28))
+        self.wpClear.setText(u"Clear")
+        self.wpFileLabel = QLabel(self.wallpaperGroup)
+        self.wpFileLabel.setObjectName(u"wpFileLabel")
+        self.wpFileLabel.setGeometry(QRect(0, 60, 111, 20))
+        self.wpFileLabel.setText(u"None")
+        self.wpFileLabel.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(self.customization, "")
         self.tabs.setTabText(self.tabs.indexOf(self.customization), u"Customization")
         self.menubar = QWidget()
@@ -333,6 +348,17 @@ class settingsWidget(QWidget):
         QMetaObject.connectSlotsByName(self)
     # setupUi
 
+    def wallpaperAction(self,action):
+        global wallPaperPath
+        if action == "select":
+            sfile,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir(), "All files (*.*)")
+            if check:
+                wallPaperPath = sfile
+                self.wpFileLabel.setText(sfile.split("/")[-1])
+        elif action == "clear":
+            wallPaperPath = ""
+            self.wpFileLabel.setText("None")
+
     def resetAOS(self, andmodules = False):
         retval = msgBox(f"Are you sure you want to reset AOS to its default settings?","Reset AOS?",QMessageBox.Warning,QMessageBox.Yes|QMessageBox.No)
 
@@ -349,13 +375,16 @@ class settingsWidget(QWidget):
         self.tabs.setTabText(self.tabs.indexOf(self.customization), QCoreApplication.translate("settings", u"Customization", None))
         self.tabs.setTabText(self.tabs.indexOf(self.shortcuts), QCoreApplication.translate("settings", u"Shortcuts", None))
 
-        self.tApply.clicked.connect(self.applyTheme)
+        # self.tApply.clicked.connect(self.applyTheme)
         self.tSave.clicked.connect(self.saveTheme)
         self.eBg.clicked.connect(self.getmeout)
         self.eBc.clicked.connect(self.getmeout)
         self.eBs.clicked.connect(self.getmeout)
         self.eBm.clicked.connect(self.getmeout)
+        self.themeCB.currentIndexChanged.connect(self.applyTheme)
         self.rAOS.clicked.connect(self.resetAOS)
+        self.wpSelect.clicked.connect(lambda: self.wallpaperAction("select"))
+        self.wpClear.clicked.connect(lambda: self.wallpaperAction("clear"))
         self.getCurrentSettings()
 
     def eraseAllData(self):
@@ -365,7 +394,7 @@ class settingsWidget(QWidget):
         sdkFile.close()
 
         remove(cwd+"/files/system/data/user/data.aos")
-        remove(getcwd().replace("\\","/")+"/files/system/data/user/desktop.aos")
+        remove(cwd+"/files/system/data/user/desktop.aos")
         rmtree(cwd+"/files/home/")
         rmtree(cwd+"/files/apps/")
         sleep(2)
@@ -380,12 +409,14 @@ class settingsWidget(QWidget):
         f.close()
         f = open(cwd+"/files/system/data/user/menubar.aos","w+")
         f.close()
+        f = open(cwd+"/files/system/data/user/autorun.aos","w+")
+        f.close()
         msgBox("AOS has been factory reset.","Done.",QMessageBox.Information,QMessageBox.Ok)
         exit()
         
     # retranslateUi
     def getCurrentSettings(self):
-        global standardSegs
+        global standardSegs, wallPaperPath
 
         config = configparser.ConfigParser()
         config.read("files/system/data/user/data.aos")
@@ -451,6 +482,9 @@ class settingsWidget(QWidget):
         self.playStartupSound.setChecked(config.getboolean("startupSound","play"))
         self.appsUseTheme.setChecked(config.getboolean("inAppTheme","use"))
 
+        wallPaperPath = config["wallpaper"]["path"]
+        self.wpFileLabel.setText(wallPaperPath.split("/")[-1])
+
         f = open("files/system/data/user/menubar.aos","r")
         menubarSegs = f.read()
 
@@ -513,6 +547,8 @@ class settingsWidget(QWidget):
         self.getCurrentSettings()
 
     def getmeout(self):
+        global wallPaperPath
+
         retval = 0
 
         themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -572,6 +608,8 @@ class settingsWidget(QWidget):
         config["buttonDims"]["y"] = str(self.btnY.value())
         config["startupSound"]["play"] = str(self.playStartupSound.isChecked())
         config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
+
+        config["wallpaper"]["path"] = wallPaperPath
 
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)

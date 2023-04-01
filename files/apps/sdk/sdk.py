@@ -61,6 +61,7 @@ def openApplication(app, path="files/apps/", silentFail=False):
         else:
             modulePrgm = importlib.import_module(path.replace("/",".")+app)
             importlib.reload(modulePrgm)
+            # TODO: make it so aos default apps can be run
         f.close()
         return 1
     except ModuleNotFoundError:
@@ -86,7 +87,7 @@ def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessage
     return retval
 
 def getPalette():
-    theme = userTheme()
+    theme = getTheme()
 
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(theme[6]))
@@ -105,18 +106,18 @@ def getPalette():
 
     return palette
 
-def aosVersion():
+def getVersion():
     return version
 
-def userSettings():
-    f = open("files/system/data/user/data.aos","r")
-    content = f.read()
-    content = content.split("\n")
-    f.close()
+def getSettings():
+    config = configparser.ConfigParser()
+    config.read("files/system/data/user/data.aos")
+
+    content = config
 
     return content
 
-def userTheme():
+def getTheme():
     config = configparser.ConfigParser()
     config.read("files/system/data/user/data.aos")
 
@@ -134,7 +135,7 @@ def userTheme():
     return themeColors
 
 def toBool(str):
-     if str == "True":
-          return True
-     else:
-          return False
+    if str == "True":
+        return True
+    else:
+        return False

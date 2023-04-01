@@ -17,6 +17,7 @@
 1. Open your terminal emulator
 2. Navigate to the folder where AOS-GUI is located using `cd (folder)`
 3. Type `python3 -B aos-gui.py` and press enter (the -B is to disable pycache creation, so if you really want to have pycache directories you can remove the -B).
+    - alternatively, you can `chmod` `aos-gui.py` so you can run it like an application.
 4. Wait for AOS-GUI to finish installing required modules
 5. When prompted, customize AOS however you like
 6. Enjoy AOS!

@@ -6,13 +6,15 @@ from os import listdir,getcwd,path
 import sys
 import configparser
 
-from files.apps.sdk.sdk import msgBox
+from files.apps.sdk.sdk import msgBox,getAOSdir
 
 titleText = u"welcome to AOS-GUI!"
 endButtonText = u"Setup AOS-GUI"
 
 config = configparser.ConfigParser()
 config.read("files/system/data/user/data.aos")
+
+wallPaperPath = ""
 
 class installform(QMainWindow):
     def __init__(self):
@@ -129,15 +131,11 @@ class installform(QMainWindow):
         self.themes.setTitle(u"Color Theme")
         self.themeCB = QComboBox(self.themes)
         self.themeCB.setObjectName(u"themeCB")
-        self.themeCB.setGeometry(QRect(20, 20, 131, 22))
+        self.themeCB.setGeometry(QRect(20, 40, 131, 22))
         self.themeCB.setCurrentText(u"")
-        self.tApply = QPushButton(self.themes)
-        self.tApply.setObjectName(u"tApply")
-        self.tApply.setGeometry(QRect(40, 50, 93, 28))
-        self.tApply.setText(u"Apply")
         self.tSave = QPushButton(self.themes)
         self.tSave.setObjectName(u"tSave")
-        self.tSave.setGeometry(QRect(40, 80, 93, 28))
+        self.tSave.setGeometry(QRect(40, 70, 93, 28))
         self.tSave.setText(u"Save")
         self.appsUseTheme = QCheckBox(self.themes)
         self.appsUseTheme.setObjectName(u"appsUseTheme")
@@ -245,6 +243,23 @@ class installform(QMainWindow):
         self.btnYL.setObjectName(u"btnYL")
         self.btnYL.setGeometry(QRect(80, 110, 81, 16))
         self.btnYL.setText(u"Y Spacing")
+        self.wallpaperGroup = QGroupBox(self.customization)
+        self.wallpaperGroup.setObjectName(u"wallpaperGroup")
+        self.wallpaperGroup.setGeometry(QRect(309, 250, 111, 121))
+        self.wallpaperGroup.setTitle(u"Wallpaper")
+        self.wpSelect = QPushButton(self.wallpaperGroup)
+        self.wpSelect.setObjectName(u"wpSelect")
+        self.wpSelect.setGeometry(QRect(9, 30, 91, 28))
+        self.wpSelect.setText(u"Select file...")
+        self.wpClear = QPushButton(self.wallpaperGroup)
+        self.wpClear.setObjectName(u"wpClear")
+        self.wpClear.setGeometry(QRect(20, 80, 71, 28))
+        self.wpClear.setText(u"Clear")
+        self.wpFileLabel = QLabel(self.wallpaperGroup)
+        self.wpFileLabel.setObjectName(u"wpFileLabel")
+        self.wpFileLabel.setGeometry(QRect(0, 60, 111, 20))
+        self.wpFileLabel.setText(u"None")
+        self.wpFileLabel.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(self.customization, "")
         self.tabs.setTabText(self.tabs.indexOf(self.customization), u"Customization")
         self.menubar = QWidget()
@@ -328,6 +343,17 @@ class installform(QMainWindow):
         QMetaObject.connectSlotsByName(self)
     # setupUi
 
+    def wallpaperAction(self,action):
+        global wallPaperPath
+        if action == "select":
+            sfile,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir(), "All files (*.*)") # this isnt working for some reason, fix please!
+            if check:
+                wallPaperPath = sfile
+                self.wpFileLabel.setText(sfile.split("/")[-1])
+        elif action == "clear":
+            wallPaperPath = ""
+            self.wpFileLabel.setText("None")
+
     def showWelcomeMessage(self):
         msgBox("Before you start using AOS, please configure it to your liking. (You can always change these settings later!)","Welcome to AOS-GUI!",QMessageBox.Information,QMessageBox.Ok)
 
@@ -336,17 +362,20 @@ class installform(QMainWindow):
         self.tabs.setTabText(self.tabs.indexOf(self.customization), QCoreApplication.translate("settings", u"Customization", None))
         self.tabs.setTabText(self.tabs.indexOf(self.shortcuts), QCoreApplication.translate("settings", u"Shortcuts", None))
 
-        self.tApply.clicked.connect(self.applyTheme)
+        # self.tApply.clicked.connect(self.applyTheme)
         self.tSave.clicked.connect(self.saveTheme)
         self.eBg.clicked.connect(self.getmeout)
         self.eBc.clicked.connect(self.getmeout)
         self.eBs.clicked.connect(self.getmeout)
         self.eBm.clicked.connect(self.getmeout)
+        self.themeCB.currentIndexChanged.connect(self.applyTheme)
+        self.wpSelect.clicked.connect(lambda: self.wallpaperAction("select"))
+        self.wpClear.clicked.connect(lambda: self.wallpaperAction("clear"))
         self.getCurrentSettings()
         self.showWelcomeMessage()
     # retranslateUi
     def getCurrentSettings(self):
-        # pass
+        global wallPaperPath
         themeText = open("files/system/data/user/themes/default-dark.theme","r")
         themeText = themeText.read()
         themeColors = themeText.split("\n")
@@ -369,13 +398,15 @@ class installform(QMainWindow):
             if i != "windowsvista":
                 self.guiThemeCB.addItem(i)
 
-        self.btnW.setValue(100)
+        self.btnW.setValue(90)
         self.btnH.setValue(50)
         self.btnX.setValue(20)
         self.btnY.setValue(25)
         self.playStartupSound.setChecked(True)
         self.segments.addItems(["Clock","Battery","CPU Usage","Available Memory"])
         self.appsUseTheme.setChecked(True)
+        self.wpFileLabel.setText("aosgui-default.png")
+        wallPaperPath = getAOSdir()+"/system/data/user/wallpapers/aosgui-default.png"
 
     def applyTheme(self):
         tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
@@ -404,6 +435,7 @@ class installform(QMainWindow):
             themeFile.close()
 
     def getmeout(self):
+        global wallPaperPath
         if not path.exists("files/system/data/user/data.aos"):
             config.write(open("files/system/data/user/data.aos", 'w'))
 
@@ -418,6 +450,7 @@ class installform(QMainWindow):
         config["buttonDims"] = {"w":"","h":"","x":"","y":""}
         config["startupSound"] = {"play":""}
         config["inAppTheme"] = {"use":""}
+        config["wallpaper"] = {"path":""}
 
 
         retval = 0
@@ -479,7 +512,8 @@ class installform(QMainWindow):
         config["buttonDims"]["y"] = str(self.btnY.value())
         config["startupSound"]["play"] = str(self.playStartupSound.isChecked())
         config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
-
+        config["wallpaper"]["path"] = str(wallPaperPath)
+        
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)
 
