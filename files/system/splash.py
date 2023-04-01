@@ -73,4 +73,4 @@ class splashScreen(QWidget):
         config["splash"]["show"] = str(self.dontshowagain.isChecked())
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)
-        self.close()
+        self.hide()

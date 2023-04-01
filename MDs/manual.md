@@ -7,15 +7,14 @@ Welcome to the USER MANUAL!
 
 ### AOS-GUI differences between host OSs
 
-### Windows
+- Windows
+    - AOS-GUI was designed on Windows, so it looks the best there. All features listed in every update are fully supported on Windows.
 
-AOS-GUI was designed on Windows, so it looks the best there. All features listed in every update are fully supported on Windows.
+- Mac OS
+    - On Mac OS, the menubar is only available when you move the mouse to the top of the screen, and many but not all features will be supported on Mac OS. Mac OS will have better support in later versions.
 
-### Mac OS
-On Mac OS, the menubar is only available when you move the mouse to the top of the screen, and many but not all features will be supported on Mac OS. Mac OS will have better support in later versions.
-
-### Linux
-AOS-GUI functions correctly on Linux, and fully supports AOS.
+- Linux
+    - AOS-GUI functions correctly on Linux, and fully supports AOS.
 
 ### the menubar
 
@@ -87,14 +86,14 @@ The table here can either contain a list of apps or a notification that you don'
 
 ### editor
 
-AOS editor. Here you can edit text files.
+AOS text file editor. There is python syntax highlighting, so you can use it as an IDE if you want.
 
-| Button | Action|
-|------|------------|
-|New| Create a new file|
-|Open|Opens a file|
-|Save|Saves the file|
-|Save as...|Saves the file as a new file|
+| Button |Hotkey| Action|
+|------|-----|------------|
+|New|Ctrl+N| Create a new file|
+|Open|Ctrl+O|Opens a file|
+|Save|Ctrl+S|Saves the file|
+|Save as...|Ctrl+Shift+S|Saves the file as a new file|
 
 ### fs (filesystem)
 
@@ -114,23 +113,7 @@ AOS terminal. Commands are listed in-app by typing `help` and pressing enter.
 `.aos` files contain data used in AOS frequently. Below is information on how each of these files are formatted.
 
 - `data.aos`
-    - each value in `data.aos` is separated by a newline
-    - corresponding keys (by line)
-        1. username
-        2. password
-        3. color theme
-        4. font size
-        5. shortcut to run...
-        6. shortcut to terminal
-        7. shortcut to settings
-        8. shortcut to help
-        9. system apps shown on desktop, separated by pipes
-        10. show splash screen
-        11. gui theme
-        12. clock mode (true = 24 hour)
-        13. button dimensions
-        14. play startup sound
-        15. use color theme within apps
+    - is formatted like a config.ini. all of the categories, keys, and values are pretty self-explainatory (I think anyway haha)
 - `desktop.aos`
     - stores desktop shortcuts. each shortcut is separated by a pipe.
 - `menubar.aos`
@@ -141,7 +124,7 @@ AOS terminal. Commands are listed in-app by typing `help` and pressing enter.
 ### `.theme` files
 `.theme` files contain information about color themes in AOS. every value is separated by a newline.
 
-corresponding keys (by line)
+corresponding values (by line)
 1. text color
 2. desktop background color
 3. taskbar text color

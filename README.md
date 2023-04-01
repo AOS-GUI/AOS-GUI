@@ -1,6 +1,10 @@
 
 <p align="center">
-    <img src="MDs/resources/images/aosgui-black.png">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="MDs/resources/images/aosgui-white.png">
+        <source media="(prefers-color-scheme: light)" srcset="MDs/resources/images/aosgui-dark.png">
+        <img src="MDs/resources/images/aosgui-dark.png">
+    </picture>
 </p>
 <p align="center">
     <i>the definitive version of AOS, now in open beta!</i>
@@ -19,10 +23,9 @@
 <h1 align="center">FAQ</h1>
 
 <h2 align="center"> What is AOS? </h2>
-<h4 align="center">AOS is my hobby "operating system", written in Python. AOS-GUI is the latest version and is the first to have a desktop and graphical applications.</h4>
-<h4 align="center">AOS is also designed to be incredibly easy to develop for (it only takes a few lines of PyQt6 code to make an app!)</h4>
+<h4 align="center">AOS is my hobby "operating system", written in Python. AOS-GUI is the (hopefully) final version, which uses PyQt5 to create a desktop interface and graphical applications.</h4>
 <h2 align="center"> Why? </h2>
-<h4 align="center">For a long time I've been trying to create an OS that is easy to modify and hack. This is that OS! Because it is written in Python, even people who are new to programming can try to change some aspects of AOS (at the cost of performance).
+<h4 align="center">For a long time I've been trying to create an OS that is easy to modify and hack. This is that OS! Because it is written in Python, even people who are new to programming can try to change some aspects of AOS if they so choose.
 <h2 align="center">I found a bug, how do I report it?</h2>
 <h4 align="center">Head into the GitHub issues tab and create an issue, or if you're up for it you can make a pull request and fix it yourself!</h4>
 <br>
@@ -31,14 +34,16 @@
 <h3 align="center">Cross-platform (ish)</h3>
 <h3 align="center">Easy to modify</h3>
 <h3 align="center">(Hopefully) long lifespan</h3>
-<h3 align="center">Graphical user interface (WOW!)</h3> <!-- align all dis -->
+<h3 align="center">Graphical user interface (WOW!)</h3>
 <h3 align="center">Easy to make apps (NO WAY!)</h3>
 <h3 align="center">Tons of customization (NEVER-SEEN-BEFORE FEATURE!)</h3>
 <p>
 <h4 align="center"><i>all of this is yours for the low, low price of </i>NOTHING!</h4>
 <br>
 <h1 align="center">Screenshots</h1>
-<img src="MDs/resources/images/usage.png">
+<img src="MDs/resources/images/screenshots/main.png">
+<img src="MDs/resources/images/screenshots/dev-script.png">
+<img src="MDs/resources/images/screenshots/dev-app.png">
 
 <br>
 <h1 align="center">License?</h1>

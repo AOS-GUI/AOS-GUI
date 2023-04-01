@@ -28,5 +28,8 @@ Contains user data such as themes and settings.
 ## /system/data/user/themes/
 Contains AOS theme files.
 
+## /system/data/user/wallpapers/
+Contains AOS wallpapers.
+
 ## /system/setup/
 Contains files used in setup.

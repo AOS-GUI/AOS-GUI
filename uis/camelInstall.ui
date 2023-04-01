@@ -136,19 +136,6 @@
       <string notr="true">Install</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="viewSource">
-     <property name="geometry">
-      <rect>
-       <x>462</x>
-       <y>110</y>
-       <width>131</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string notr="true">View Source</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="search">
      <property name="geometry">
       <rect>
@@ -183,6 +170,19 @@
      </property>
      <property name="text">
       <string>Refresh</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>110</y>
+       <width>201</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">Create shortcut when finished</string>
      </property>
     </widget>
    </widget>

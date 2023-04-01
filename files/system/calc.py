@@ -37,7 +37,7 @@ class calculator(QWidget):
         top_btn_layout = QHBoxLayout()
 
         top_btn_layout.addWidget(QPushButton('Clear', clicked=self.ans.clear))
-        top_btn_layout.addWidget(QPushButton('Del', clicked=self.ans.backspace))
+        top_btn_layout.addWidget(QPushButton('Del', clicked=self.nanHandle))
         
         self.layout().addLayout(top_btn_layout)
 
@@ -109,6 +109,8 @@ class calculator(QWidget):
         ans = self.ans
 
         def inner(*args, **kwargs):
+            if ans.text() == "NaN":
+                ans.setText("")
             ans.setText(ans.text() + text)
 
         return inner
@@ -122,6 +124,11 @@ class calculator(QWidget):
             # TODO: Report the error in a log message, that the OS will handle.
             self.ans.setText("NaN")
 
+    def nanHandle(self):
+        if self.ans.text() == "NaN":
+            self.ans.setText("")
+        self.ans.backspace()
+
     def keyPressEvent(self, event):
         """Handle key events on the Calculator."""
         special_cases = {
@@ -134,7 +141,10 @@ class calculator(QWidget):
 
         # Redirect execution flow for special characters...
         if special_cases.get(event.key(), None):
-            special_cases[event.key()]()
+            if event.key() == Qt.Key.Key_Backspace:
+                self.nanHandle()
+            else:
+                special_cases[event.key()]()
         # Only digits and operators ara vaild inputs...
         elif event.text() in string.digits + '+-*/':
             self.ans.setText(
