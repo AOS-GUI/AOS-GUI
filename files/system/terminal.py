@@ -511,8 +511,8 @@ class aterm(QWidget):
                                          "install <package name> - install package",
                                          "info <package name> - package information",
                                          "list [-i / --installed] - lists all packages on the server (if -i is found, lists local packages)",
-                                         "search <package name or description> - searches for the specified package or package matching the description in the database"
-                                         "uninstall <package name> - uninstall package",
+                                         "search <package name or description> - searches for the specified package or package matching the description in the database",
+                                         "uninstall <package name> - uninstall package"
                                          ]:
                                 self.echo("[CAMEL] "+n)
                 elif lowcommand.startswith("dl"):
