@@ -30,7 +30,7 @@
 <h4 align="center">Head into the GitHub issues tab and create an issue, or if you're up for it you can make a pull request and fix it yourself!</h4>
 <br>
 <h1 align="center">Features</h1>
-<h3 align="center">Low footprint (not including modules, takes up 1MB. modules take up ~50MB)</h3>
+<h3 align="center">Low footprint</h3>
 <h3 align="center">Cross-platform (ish)</h3>
 <h3 align="center">Easy to modify</h3>
 <h3 align="center">(Hopefully) long lifespan</h3>
