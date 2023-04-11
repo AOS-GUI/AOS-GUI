@@ -17,7 +17,7 @@ inVarName = False
 updatedCamel = False
 
 dir = "/home"
-terminalVer = 1.6
+terminalVer = 1.7
 helpText = {"help":"aos help (syntax: help {command})",
             "clear":"clears the screen (syntax: clear)",
             "echo":"echoes text (syntax: echo [text] {| [color]}). if a variable name is surrounded by graves (`), the variable's contents will be echoed.",
