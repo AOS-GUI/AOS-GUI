@@ -120,12 +120,13 @@ class calculator(QWidget):
             self.ans.setText(
                 str(eval(self.ans.text()))
             )
-        except:
+        except Exception as e:
             # TODO: Report the error in a log message, that the OS will handle.
             self.ans.setText("NaN")
+            print("Err in calc.py: "+str(e))
 
     def nanHandle(self):
-        if self.ans.text() == "NaN":
+        if self.ans.text().startswith("NaN"):
             self.ans.setText("")
         self.ans.backspace()
 

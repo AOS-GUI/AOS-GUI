@@ -1,7 +1,7 @@
-<a href="MDs/help.md">back</a>
+<a href="docs/help.md">back</a>
 # AOS-GUI user manual
 
-Welcome to the USER MANUAL!
+Welcome to the user manual!
 
 ## UI
 
@@ -22,10 +22,10 @@ The menubar is located at the top of your screen.
 
 Contained within it is the main menu, which you can access by clicking on `AOS - (username)`. Inside of this menu are the actions `Run...`, `Settings`, `Restart`, and `Exit`. Alongside this is the extras menu, and the menubar widgets that you have chosen to add to the menubar in settings (clock, cpu usage, etc.).
 
-### menubar actions
+**main menu actions**
 
-| Action | Description|
-|------|------------|
+| Action | Description |
+|--------|-------------|
 |Run...|Run a program. This can be a system or a custom app (custom apps are recognized in (AOS)/files/apps/|
 |Settings|Accesses settings|
 |Restart|Restarts AOS|
@@ -56,7 +56,7 @@ Displays help on AOS-GUI. Note that the help text is taken straight from a markd
 
 ### appLauncher
 
-This app launches external apps that you have downloaded via camelInstall.
+This app launches external apps that you have downloaded via camelInstall, or have created yourself and moved to the `/apps/` folder.
 
 | Button | Action|
 |------|------------|
@@ -86,7 +86,7 @@ The table here can either contain a list of apps or a notification that you don'
 
 ### editor
 
-AOS text file editor. There is python syntax highlighting, so you can use it as an IDE if you want.
+AOS text file editor.
 
 | Button |Hotkey| Action|
 |------|-----|------------|
@@ -94,6 +94,8 @@ AOS text file editor. There is python syntax highlighting, so you can use it as 
 |Open|Ctrl+O|Opens a file|
 |Save|Ctrl+S|Saves the file|
 |Save as...|Ctrl+Shift+S|Saves the file as a new file|
+
+> note: the AOS editor has a built-in developer mode with Python, AOScript, and Markdown support! Simply open a file with the proper extension, and syntax highlighting should automatically apply. When coding in Python, a "development" menu bar tab should appear, where you can run your app straight from the editor.
 
 ### fs (filesystem)
 
@@ -106,6 +108,29 @@ AOS settings. Here you can change all of AOS's settings (surprising, I know).
 ### terminal
 
 AOS terminal. Commands are listed in-app by typing `help` and pressing enter.
+
+Optionally, you can create a file in `/system/data/user/` called `terminal.aos` containing commands that will be executed automatically on terminal startup.
+
+> tip: for a bash-like environment, add this line to your `terminal.aos` file: `alias ls dir`
+
+**terminal environment variables (\* = `set`able)**
+- `%COLOR` (bool) - allow color, defaults to True
+- `%DIR` (str) - current directory
+- `%DIRSTACK` (list) - directory stack (for debugging, mostly)
+- `%ECHO`\* (bool) - allow echoing, defaults to True
+- `%MAXLINES`\* (int) - maximum lines allowed in the terminal
+- `%SPLASH` (str) - random splash text
+- `%VARS` (dict) - returns all variables and their values (except for `%VARS`, of course)
+
+**terminal color codes**
+
+- red - error
+- yellow - warning
+- cyan - verbose / debug
+- white - none, plain text
+
+**scripting tips**
+- you can disable all command output in a script by adding the line `set %ECHO True` at the top and `set %ECHO False` at the end
 
 ## other useful information
 
@@ -132,3 +157,5 @@ corresponding values (by line)
 5. button text color
 6. button background color
 7. window background color
+
+<a href="docs/help.md">back</a> | <a href="#AOS-GUI-user-manual">top</a>

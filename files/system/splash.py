@@ -2,17 +2,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from random import choice
+from files.apps.sdk.sdk import *
 
 import configparser
-
-f = open("files/system/data/splashes")
-splashTexts = f.readlines()
-f.close()
-
-f = open("files/system/data/version","r")
-version = f.read()
-f.close()
 
 config = configparser.ConfigParser()
 config.read("files/system/data/user/data.aos")
@@ -35,6 +27,7 @@ class splashScreen(QWidget):
         self.aosgui.setObjectName(u"aosgui")
         self.aosgui.setGeometry(QRect(-2, 10, 450, 91))
         self.aosgui.setText(u"<html><head/><body><p align=\"center\"><span style=\" font-size:48pt;\">AOS-GUI</span></p></body></html>")
+        #self.aosgui.setText(u"<html><head/><body><p align=\"center\"><img src='docs/resources/images/aosgui-black.png' style='width: 10px;height: auto;'></img></p></body></html>")
         self.aosgui.setTextFormat(Qt.RichText)
         self.aidensos = QLabel(self)
         self.aidensos.setObjectName(u"aidensos")
@@ -52,7 +45,7 @@ class splashScreen(QWidget):
         self.version = QLabel(self)
         self.version.setObjectName(u"version")
         self.version.setGeometry(QRect(-78, 290, 211, 20))
-        self.version.setText(u"<html><head/><body><p align=\"center\">"+version+" <span style=\" color:#ff0000;\">beta</span></p></body></html>")
+        self.version.setText(u"<html><head/><body><p align=\"center\">"+getVersion()+" <span style=\" color:#ff0000;\">beta</span></p></body></html>")
         self.createdby = QLabel(self)
         self.createdby.setObjectName(u"createdby")
         self.createdby.setGeometry(QRect(126, 120, 211, 20))
@@ -65,12 +58,14 @@ class splashScreen(QWidget):
         self.splashTextLabel = QLabel(self)
         self.splashTextLabel.setObjectName(u"splashTextLabel")
         self.splashTextLabel.setGeometry(QRect(0, 160, 462, 41))
-        self.splashTextLabel.setText(u"<html><head/><body><p align=\"center\"><span style=\" font-size:11pt;\">"+choice(splashTexts)+"</span></p></body></html>")
+        self.splashTextLabel.setText(u"<html><head/><body><p align=\"center\"><span style=\" font-size:11pt;\">"+getSplashText(True)+"</span></p></body></html>")
 
         QMetaObject.connectSlotsByName(self)
-    
+
     def letsgo(self):
-        config["splash"]["show"] = str(self.dontshowagain.isChecked())
-        with open('files/system/data/user/data.aos', 'w') as configfile:
-            config.write(configfile)
+        chked = self.dontshowagain.isChecked()
+        if chked == True:
+            config["splash"]["show"] = "True"
+            with open('files/system/data/user/data.aos', 'w') as configfile:
+                config.write(configfile)
         self.hide()
