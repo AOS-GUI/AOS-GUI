@@ -2,7 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from os.path import exists
-from os import listdir,getcwd,path
+from os import listdir,getcwd,path,mkdir
 import sys
 import configparser
 
@@ -546,8 +546,13 @@ class installform(QMainWindow):
         with open('files/system/data/user/autorun.aos', 'w') as autorun:
             autorun.write("updater")
 
-        with open(CWD+"files/system/data/user/terminal.aos","w+") as t:
+        with open(getAOSdir()+"/system/data/user/terminal.aos","w+") as t:
             t.write("note: hello! this is terminal.aos. everything here is run as a script when you first start up the terminal.")
+
+        try:
+            mkdir("files/home/")
+        except Exception:
+            pass
 
         with open("files/home/welcome.txt","w+") as f:
             f.write("** Welcome to AOS-GUI, "+config["userinfo"]["name"]+"! **\n\nThanks for giving this shell a shot!\n\nSince it's supposed to be more of a 'make it what you want' type deal, I recommend you check out the documentation in AOSHelp (if you don't have it on your desktop, go to the username menu, click run and type in 'aoshelp'). I'm terrible at writing documentation but hopefully it's enough to give you an idea of what AOS-GUI is and its functions.\n\nHave fun! :D\n\n- nanobot567")
