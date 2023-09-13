@@ -1,8 +1,9 @@
-<a href="MDs/help.md">back</a>
+<a href="docs/help.md">back</a>
 # plans for the future
 
 - AOS-GUI will run smoothly on every major operating system, including Windows, Mac OS and Linux
     - No differences between host operating systems
+- AOS-GUI will have a [Tkinter](https://docs.python.org/3/library/tk.html) counterpart
 - It will have file encryption and compression services
 - You will be able to install it without any DE or host OS
     - Executables from Windows, Mac OS, and Linux will be runnable using `wine`, (maybe) `sosumi` and `box86`
@@ -14,5 +15,5 @@
     - with full `nanolang` libraries for this purpose as well
 - File manager will be overhauled
 - You will be able to access the machine's hardware components easily
-- [These rules](MDs/personal/reqs.md) will always be followed
+- [These rules](docs/personal/reqs.md) will always be followed
 - There will be video and image editors

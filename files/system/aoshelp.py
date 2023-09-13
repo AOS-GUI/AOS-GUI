@@ -22,7 +22,7 @@ class aoshelp(QWidget):
     
     def reset(self):
         self.resize(350, 400)
-        f = open("MDs/help.md")
+        f = open("docs/help.md")
         text = f.read()
         f.close()
 

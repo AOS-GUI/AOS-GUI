@@ -20,7 +20,11 @@ class launcher(QWidget):
         self.launchButton.setObjectName(u"launchButton")
         self.launchButton.setGeometry(QRect(100, 270, 81, 23))
         self.launchButton.setText(u"Launch App")
-        self.launchButton.clicked.connect(lambda: openApplication(self.appList.currentItem().text().split(".py")[0]))
+        def errRoutine():
+            ret, err = openApplication(self.appList.currentItem().text().split(".py")[0])
+            if err:
+                msgBox("Error in "+prgm+": "+str(err),"AOS-GUI/execRoutine")
+        self.launchButton.clicked.connect(errRoutine)
         self.refreshButton = QPushButton(self)
         self.refreshButton.setObjectName(u"refreshButton")
         self.refreshButton.setGeometry(QRect(220, 270, 75, 23))

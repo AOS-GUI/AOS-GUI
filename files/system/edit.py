@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 
 import re
 
-from sys import path,argv,exit
+from sys import path,argv,exit,executable
 from os import getcwd
 path.append(getcwd())
 
@@ -16,6 +16,8 @@ currentlyOpenFileName = "Untitled"
 originalText = ""
 
 fontsize = 0.0
+
+allowHighlighting = True
 
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
@@ -41,9 +43,13 @@ class Highlighter(QSyntaxHighlighter):
 class editApp(QMainWindow):
     def updateStatus(self):
         global fontsize
-        self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}*")
+
+        if currentlyOpenFile != "Untitled":
+            with open(currentlyOpenFile,"r",encoding="utf-8") as f:
+                if self.textEdit.toPlainText() != f.read():
+                    self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}*")
         self.textEdit.setFontPointSize(fontsize)
-        self.textEdit.setFontFamily("Courier New")
+        self.textEdit.setFontFamily("Consolas")
 
     def updateText(self):
         if self.formatBox.currentText() == "Plaintext":
@@ -59,7 +65,8 @@ class editApp(QMainWindow):
             self.textEdit.setHtml(self.textEdit.toHtml())
 
     def setupUi(self, editApp):
-        global fontsize
+        global fontsize, allowHighlighting
+
         self.setObjectName("editApp")
         self.resize(500, 400)
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
@@ -80,6 +87,7 @@ class editApp(QMainWindow):
         self.menuFile.setObjectName("menuFile")
         self.menuSettings = QMenu(self.menubar)
         self.menuSettings.setObjectName("menuSettings")
+        self.menuDev = QMenu(self.menubar)
         self.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
@@ -88,29 +96,76 @@ class editApp(QMainWindow):
         self.actionWordWrap.setObjectName("actionPreferences")
         self.actionNew = QAction(self)
         self.actionNew.setObjectName("actionNew")
+        self.actionNewWindow = QAction(self)
         self.actionOpen = QAction(self)
         self.actionOpen.setObjectName("actionOpen")
         self.actionSave = QAction(self)
         self.actionSave.setObjectName("actionSave")
-        self.actionSave_As = QAction(self)
-        self.actionSave_As.setObjectName("actionSave_As")
+        self.actionSaveAs = QAction(self)
+        self.actionSaveAs.setObjectName("actionSaveAs")
+        self.actionExit = QAction(self)
+        self.actionExit.setObjectName("actionExit")
         self.actionFontSize = QAction(self)
         self.actionFontSize.setObjectName("actionFontSize")
+        self.actionHighlighting = QAction(self)
+        self.actionHighlighting.setObjectName("actionHighlighting")
+        self.actionRun = QAction(self)
         self.menuFile.addAction(self.actionNew)
+        self.menuFile.addAction(self.actionNewWindow)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
-        self.menuFile.addAction(self.actionSave_As)
+        self.menuFile.addAction(self.actionSaveAs)
+        self.menuFile.addAction(self.actionExit)
         self.menuSettings.addAction(self.actionWordWrap)
         self.menuSettings.addAction(self.actionFontSize)
+        self.menuSettings.addAction(self.actionHighlighting)
+        self.menuDev.addAction(self.actionRun)
         self.menubar.addAction(self.menuFile.menuAction())
+        #self.menubar.addAction(self.menuDev.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
 
         self.actionNew.triggered.connect(self.newFile)
+        self.actionNewWindow.triggered.connect(lambda: QProcess.startDetached(executable, ["files/system/edit.py"]))
         self.actionOpen.triggered.connect(self.openFile)
         self.actionSave.triggered.connect(self.saveFile)
-        self.actionSave_As.triggered.connect(self.saveAsFile)
+        self.actionSaveAs.triggered.connect(self.saveAsFile)
+
+        def escape():
+            global currentlyOpenFile
+            goodToQuit = False
+            text = self.textEdit.toPlainText()
+
+            try:
+                with open(currentlyOpenFile,"r",encoding="utf-8") as fl:
+                    if text != fl.read():
+                        ret = msgBox("Would you like to save your current file?", "Save?", QMessageBox.Information, QMessageBox.Yes|QMessageBox.No)
+                        if ret == QMessageBox.Yes:
+                            if self.saveFile() == 0:
+                                goodToQuit = True
+                        else:
+                            goodToQuit = True
+                    else:
+                        goodToQuit = True
+            except FileNotFoundError:
+                if not (text.isspace() or text == ""):
+                    ret = msgBox("Would you like to save your current file?", "Save?", QMessageBox.Information, QMessageBox.Yes|QMessageBox.No)
+                    if ret == QMessageBox.Yes:
+                        if self.saveFile() == 0:
+                            goodToQuit = True
+                    else:
+                        goodToQuit = True
+                else:
+                    goodToQuit = True
+
+            if goodToQuit:
+                raise SystemExit
+
+        self.actionExit.triggered.connect(escape)
         self.actionWordWrap.triggered.connect(lambda: self.textEdit.setWordWrapMode(not self.textEdit.wordWrapMode()))
         self.actionWordWrap.setCheckable(True)
+        self.actionHighlighting.triggered.connect(lambda: self.changeAllowHighlighting(self.actionHighlighting.isChecked()))
+        self.actionHighlighting.setCheckable(True)
+        self.actionHighlighting.setChecked(True)
         self.actionFontSize.triggered.connect(self.setNewFontSize)
 
         self.retranslateUi()
@@ -119,7 +174,7 @@ class editApp(QMainWindow):
         fontsize = float(getSettings()["fontsize"]["size"])
 
         self.textEdit.setFontPointSize(fontsize)
-        self.textEdit.setFontFamily("Courier New")
+        self.textEdit.setFontFamily("Consolas")
         self.textEdit.textChanged.connect(self.updateStatus)
 
         self.saveSC = QShortcut(QKeySequence("Ctrl+S"), self)
@@ -130,6 +185,12 @@ class editApp(QMainWindow):
         self.openSC.activated.connect(self.openFile)
         self.newSC = QShortcut(QKeySequence("Ctrl+N"), self)
         self.newSC.activated.connect(self.newFile)
+        self.newWindowSC = QShortcut(QKeySequence("Ctrl+Shift+N"), self)
+        self.newWindowSC.activated.connect(lambda: QProcess.startDetached(executable, ["files/system/edit.py"]))
+        self.escSC = QShortcut(QKeySequence("Ctrl+Q"), self)
+        self.escSC.activated.connect(escape)
+        self.runSC = QShortcut(QKeySequence("F5"), self)
+        self.runSC.activated.connect(self.execFile)
 
         self.highlight = Highlighter()
 
@@ -138,12 +199,24 @@ class editApp(QMainWindow):
         self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
         self.menuFile.setTitle(_translate("editApp", "File"))
         self.menuSettings.setTitle(_translate("editApp", "Settings"))
+        self.menuDev.setTitle("Development")
+        self.actionRun.setText("Run...")
         self.actionWordWrap.setText(_translate("editApp", "Word Wrap"))
         self.actionNew.setText(_translate("editApp", "New"))
         self.actionOpen.setText(_translate("editApp", "Open..."))
         self.actionSave.setText(_translate("editApp", "Save"))
-        self.actionSave_As.setText(_translate("editApp", "Save As..."))
+        self.actionSaveAs.setText(_translate("editApp", "Save As..."))
         self.actionFontSize.setText(_translate("editApp", "Font Size..."))
+        self.actionNewWindow.setText("New Window...")
+        self.actionHighlighting.setText("Syntax Highlighting")
+        self.actionExit.setText("Exit")
+
+    def execFile(self):
+        global currentlyOpenFileName,currentlyOpenFile
+        directory = "/".join(currentlyOpenFile.split("/")[-3:-1])+"/"
+        ret, err = openApplication(currentlyOpenFileName, directory)
+        if err:
+            msgBox("Error in "+currentlyOpenFileName+": "+str(err),"AOS-GUI/execRoutine")
 
     def newFile(self):
         ret = msgBox("Would you like to save your current file?", "Save?", QMessageBox.Information, QMessageBox.Yes|QMessageBox.No)
@@ -153,73 +226,136 @@ class editApp(QMainWindow):
         self.textEdit.setText("")
         self.formatBox.setCurrentText("Plaintext")
 
-        # global currentlyOpenFile,currentlyOpenFileName
-        # file,check = QFileDialog.getSaveFileName(None, "New File", directory=getcwd().replace("\\","/")+"/files/")
-        # if check:
-        #     text = open(file,"w")
-        #     text.close()
-        #     currentlyOpenFile = file
-        #     currentlyOpenFileName = currentlyOpenFile.split("/")
-        #     currentlyOpenFileName = currentlyOpenFileName[-1]
-        #     self.setWindowTitle(f"AOS-GUI/editor - {currentlyOpenFileName}")
-
-    def openFile(self):
-        file,check = QFileDialog.getOpenFileName(None, "Open a file", getcwd().replace("\\","/")+"/files/", "All Files (*)")
+    def openFile(self, f=""):
+        global currentlyOpenFile,currentlyOpenFileName
+        passall = False
+        if not f:
+            file,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir()+"/", "All Files (*)")
+        else:
+            check = True
+            file = f
         if check:
-            text = open(file,"r")
-            self.textEdit.setPlainText(text.read())
-            text.close()
+            try:
+                with open(currentlyOpenFile,"r",encoding="utf-8") as fl:
+                    if self.textEdit.toPlainText() != fl.read():
+                        ret = msgBox("Would you like to save your current file?", "Save?", QMessageBox.Information, QMessageBox.Yes|QMessageBox.No)
+                        if ret == QMessageBox.Yes:
+                            self.saveFile()
+                        else:
+                            passall = True
+            except FileNotFoundError:
+                if f:
+                    try:
+                        open(f,"r",encoding="utf-8")
+                    except FileNotFoundError:
+                        self.saveFile(f)
+            if passall == False:
+                text = open(file,"r",encoding="utf-8")
+                self.textEdit.setPlainText(text.read())
+                text.close()
 
-            global currentlyOpenFile,currentlyOpenFileName
-            currentlyOpenFile = file
+                currentlyOpenFile = file
+                currentlyOpenFileName = currentlyOpenFile.split("/")
+                currentlyOpenFileName = currentlyOpenFileName[-1]
+                self.setupHighlighting()
+                self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
+
+                if currentlyOpenFileName.endswith(".py"):
+                    self.menubar.removeAction(self.menuSettings.menuAction())
+                    self.menubar.addAction(self.menuDev.menuAction())
+                    self.menubar.addAction(self.menuSettings.menuAction())
+                    self.actionRun.triggered.connect(self.execFile)
+                else:
+                    self.menubar.removeAction(self.menuDev.menuAction())
+    
+    def saveFile(self, path=""):
+        global currentlyOpenFile,currentlyOpenFileName
+
+        if path:
+            text = open(path, "w",encoding="utf-8")
+            text.write(self.textEdit.toPlainText())
+            text.close()
+            currentlyOpenFile = path
             currentlyOpenFileName = currentlyOpenFile.split("/")
             currentlyOpenFileName = currentlyOpenFileName[-1]
             self.setupHighlighting()
-            self.updateStatus()
             self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
-    
-    def saveFile(self):
-        global currentlyOpenFile,currentlyOpenFileName
-
-        if currentlyOpenFileName == "Untitled":
-            self.saveAsFile()
         else:
-            text = open(currentlyOpenFile,"w")
-            text.write(self.textEdit.toPlainText())
-            text.close()
-            self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
+            if currentlyOpenFileName == "Untitled":
+                return self.saveAsFile()
+            else:
+                text = open(currentlyOpenFile,"w",encoding="utf-8")
+                text.write(self.textEdit.toPlainText())
+                text.close()
+                self.setupHighlighting()
+                self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
+        return 0
     
     def saveAsFile(self):
         global currentlyOpenFile,currentlyOpenFileName
 
         file,check = QFileDialog.getSaveFileName(None, "Save", directory=getAOSdir())
         if check:
-            text = open(file,"w")
+            text = open(file,"w",encoding="utf-8")
             text.write(self.textEdit.toPlainText())
             text.close()
             currentlyOpenFile = file
             currentlyOpenFileName = currentlyOpenFile.split("/")
             currentlyOpenFileName = currentlyOpenFileName[-1]
+        self.setupHighlighting()
         self.setWindowTitle(f"AOS-GUI/edit - {currentlyOpenFileName}")
+
+        if currentlyOpenFileName.endswith(".py"):
+            self.menubar.removeAction(self.menuSettings.menuAction())
+            self.menubar.addAction(self.menuDev.menuAction())
+            self.menubar.addAction(self.menuSettings.menuAction())
+            self.actionRun.triggered.connect(self.execFile)
+        else:
+            self.menubar.removeAction(self.menuDev.menuAction())
+
+        if not check:
+            return -1
+        else:
+            return 0
+
+    def changeAllowHighlighting(self, allow):
+        global allowHighlighting
+
+        allowHighlighting = allow
+        self.setupHighlighting()
 
     def setNewFontSize(self):
         global fontsize
         fontsize, done = QInputDialog.getDouble(self, "Font Size", "Enter the new font size: ",fontsize)
+        self.textEdit.setFontPointSize(fontsize) # fix so all text is made that size
 
     def setupHighlighting(self):
+        global allowHighlighting
+        blueFormat = QTextCharFormat()
+        blueFormat.setForeground(QColor("blue"))
+        orangeFormat = QTextCharFormat()
+        orangeFormat.setForeground(QColor("orange"))
+        redFormat = QTextCharFormat()
+        redFormat.setForeground(QColor("red"))
+        
         pyKeywords = [
-        "and", "assert", "break", "class", "continue", "def",
+        "and", "as", "assert", "break", "class", "continue", "def",
         "del", "elif", "else", "except", "exec", "finally",
         "for", "from", "global", "if", "import", "in",
         "is", "lambda", "not", "or", "pass", "print",
-        "raise", "return", "try", "while", "yield",
+        "raise", "return", "try", "while", "with", "yield",
         "None", "True", "False", "match", "case"
         ]
 
         aoshKeywords = [
             "help","clear","echo","rm","dir","read","script",
             "ver","term","beep","mkdir","exec","restart","mkfile",
-            "set","py","camel","dl"
+            "set","py","camel","dl","alias","cd","note","color",
+            "edit"
+        ]
+
+        aoshEnvVars = [
+            "%DIR","%DIRSTACK","%ECHO","%COLOR","%MAXLINES","%VARS"
         ]
 
         operators = [
@@ -237,7 +373,8 @@ class editApp(QMainWindow):
 
         if currentlyOpenFileName.lower().endswith(".py"):
             keywordFormat = QTextCharFormat()
-            keywordFormat.setForeground(Qt.blue)
+            theme, err = getTheme()
+            keywordFormat.setForeground(QColor(theme[4]))
             keywordFormat.setFontWeight(QFont.Bold)
 
             defclassFormat = QTextCharFormat()
@@ -252,11 +389,11 @@ class editApp(QMainWindow):
             self.highlight.addMapping(r'\bclass\b\s*(\w+)', defclassFormat)
             self.highlight.addMapping(r'\bself\b', keywordFormat)
 
-            # operatorFormat = QTextCharFormat()
-            # operatorFormat.setForeground(Qt.green)
+            operatorFormat = QTextCharFormat()
+            operatorFormat.setForeground(Qt.yellow)
 
-            # for i in operators:
-            #     self.highlight.addMapping(fr'{i}', operatorFormat)
+            for i in operators:
+                self.highlight.addMapping(fr'{i}', operatorFormat)
 
             braceFormat = QTextCharFormat()
             braceFormat.setForeground(Qt.yellow)
@@ -283,13 +420,6 @@ class editApp(QMainWindow):
 
             pattern = r"#.*$"
         elif currentlyOpenFileName.lower().endswith("md"):
-            blueFormat = QTextCharFormat()
-            blueFormat.setForeground(QColor("blue"))
-            orangeFormat = QTextCharFormat()
-            orangeFormat.setForeground(QColor("orange"))
-            redFormat = QTextCharFormat()
-            redFormat.setForeground(QColor("red"))
-
             for i in range(1,7):
                 self.highlight.addMapping(r"(#{"+str(i)+"}\s)(.*)", blueFormat) # header
 
@@ -299,26 +429,36 @@ class editApp(QMainWindow):
             self.highlight.addMapping("(^(\s+)?(\W{1})(\s)(?:$)?)+", blueFormat) # ul
             self.highlight.addMapping("(^(\s+)?(\d+\.)(\s)(?:$)?)+", blueFormat) # ol
             self.highlight.addMapping("((^(\>{1})(\s)(.*)(?:$)?))+", orangeFormat) # block quote
-            self.highlight.addMapping("(\\`{1})(.*)(\\`{1})", orangeFormat) # inline code
+            self.highlight.addMapping("\`([^\`].*?)\`", orangeFormat) # inline code
             self.highlight.addMapping("(\\`{3}\\n+)(.*)(\\n+\\`{3})", orangeFormat) # code block
             self.highlight.addMapping("(\={3}|\-{3}|\*{3})", redFormat) # horizontal line
             self.highlight.addMapping("(\<{1})(\S+@\S+)(\>{1})", blueFormat) #email
-            self.highlight.addMapping("(((\|)([a-zA-Z\d+\s#!@'\"():;\\\/.\[\]\^<={$}>?(?!-))]+))+(\|))(?:\n)?((\|)(-+))+(\|)(\n)((\|)(\W+|\w+|\S+))+(\|$)", blueFormat) #table
-        elif currentlyOpenFileName.lower().endswith("script") or currentlyOpenFileName.lower().endswith("aosh"):
+            self.highlight.addMapping("|(?:([^\r\n|]*)\|)+\r?\n\|(?:(:?-+:?)\|)+\r?\n(\|(?:([^\r\n|]*)\|)+\r?\n)+", blueFormat) #table
+        elif currentlyOpenFileName.lower().endswith("script") or currentlyOpenFileName.lower().endswith("aosh") or currentlyOpenFile == getAOSdir()+"system/data/user/terminal.aos":
             blueFormat = QTextCharFormat()
-            blueFormat.setForeground(QColor("blue"))
+            theme, err = getTheme()
+            blueFormat.setForeground(QColor(theme[4]))
+            orangeFormat = QTextCharFormat()
+            orangeFormat.setForeground(QColor("orange"))
 
             for i in aoshKeywords:
-                pattern = fr"((?<=\s)|\A)({i}*?)(?=(\s|\:))"
+                pattern = fr"((?<=\s)|\A|(?<=;))({i}*?)(?=(\s|\:|;))"
                 self.highlight.addMapping(pattern, blueFormat)
+            for i in aoshEnvVars:
+                pattern = fr"((?<=\s)|\A|(?<=;))({i}*?)(?=(\s|\:|;))"
+                self.highlight.addMapping(pattern, orangeFormat)
+            self.highlight.addMapping("(?<=);",redFormat)
         else:
+            self.highlight.clearMapping()
+
+        if not allowHighlighting:
             self.highlight.clearMapping()
 
         self.highlight.setDocument(self.textEdit.document())
 
 
 if __name__ == "__main__":
-    app = QApplication(argv)
+    app = QApplication([])
     edit = editApp()
     edit.setupUi(editApp)
 
@@ -326,4 +466,9 @@ if __name__ == "__main__":
         app.setPalette(getPalette())
 
     edit.show()
+
+    try:
+        edit.openFile(argv[1])
+    except:
+        pass
     exit(app.exec_())

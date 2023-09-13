@@ -1,4 +1,4 @@
-<a href="MDs/help.md">back</a>
+<a href="docs/help.md">back</a>
 
 # features
 
@@ -6,7 +6,7 @@
 - cross-platform (ish)
 - easy to modify
 - built-in terminal, with scripting language
-- built-in text editor with syntax highlighting
+- built-in text editor with syntax highlighting and developer tools
 - package manager
 - lots of settings
 - SDK and documentation

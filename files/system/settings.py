@@ -9,7 +9,7 @@ import configparser
 
 from files.apps.sdk.sdk import *
 
-standardSegs = ["Clock","Battery","CPU Usage","Available Memory"]
+standardSegs = ["Clock","Battery","CPU Usage (Total)","CPU Usage (Per CPU)","Available Memory"]
 
 config = configparser.ConfigParser()
 config.read("files/system/data/user/data.aos")
@@ -63,7 +63,7 @@ class settingsWidget(QWidget):
         self.clockMode.setText(u"24 hour clock")
         self.startup = QGroupBox(self.general)
         self.startup.setObjectName(u"startup")
-        self.startup.setGeometry(QRect(10, 80, 261, 51))
+        self.startup.setGeometry(QRect(10, 80, 261, 81))
         self.startup.setTitle(u"Startup")
         self.playStartupSound = QCheckBox(self.startup)
         self.playStartupSound.setObjectName(u"playStartupSound")
@@ -73,6 +73,10 @@ class settingsWidget(QWidget):
         self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
         self.showSplashOnStartup.setGeometry(QRect(110, 20, 161, 20))
         self.showSplashOnStartup.setText(u"Show splash window")
+        self.showQSplashOnStartup = QCheckBox(self.startup)
+        self.showQSplashOnStartup.setObjectName(u"showSplashOnStartup")
+        self.showQSplashOnStartup.setGeometry(QRect(10, 50, 141, 20))
+        self.showQSplashOnStartup.setText(u"Show QSplash")
         self.tabs.addTab(self.general, "")
         self.tabs.setTabText(self.tabs.indexOf(self.general), u"General")
         self.customization = QWidget()
@@ -100,7 +104,7 @@ class settingsWidget(QWidget):
         self.cL_5 = QLabel(self.colors)
         self.cL_5.setObjectName(u"cL_5")
         self.cL_5.setGeometry(QRect(10, 150, 121, 16))
-        self.cL_5.setText(u"Button Color:")
+        self.cL_5.setText(u"Button / Highlight Color:")
         self.cL_6 = QLabel(self.colors)
         self.cL_6.setObjectName(u"cL_6")
         self.cL_6.setGeometry(QRect(10, 180, 121, 16))
@@ -286,6 +290,18 @@ class settingsWidget(QWidget):
         self.eBm.setObjectName(u"eBm")
         self.eBm.setGeometry(QRect(170, 460, 81, 28))
         self.eBm.setText(u"Ok")
+        self.refreshRateSpin = QSpinBox(self.menubar)
+        self.refreshRateSpin.setObjectName(u"refreshRateSpin")
+        self.refreshRateSpin.setGeometry(QRect(210, 390, 91, 31))
+        self.refreshRateSpin.setSuffix(u"ms")
+        self.refreshRateSpin.setMaximum(10000)
+        self.refreshRateSpin.setSingleStep(500)
+        self.refreshRateSpin.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.labelRefresh = QLabel(self.menubar)
+        self.labelRefresh.setObjectName(u"labelRefresh")
+        self.labelRefresh.setGeometry(QRect(120, 390, 91, 31))
+        self.labelRefresh.setText(u"Refresh rate")
+        self.labelRefresh.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(self.menubar, "")
         self.tabs.setTabText(self.tabs.indexOf(self.menubar), u"Menu Bar")
         self.shortcuts = QWidget()
@@ -382,6 +398,13 @@ class settingsWidget(QWidget):
         self.eBs.clicked.connect(self.getmeout)
         self.eBm.clicked.connect(self.getmeout)
         self.themeCB.currentIndexChanged.connect(self.applyTheme)
+        self.cLE.textChanged.connect(self.previewTheme)
+        self.cLE_2.textChanged.connect(self.previewTheme)
+        self.cLE_3.textChanged.connect(self.previewTheme)
+        self.cLE_4.textChanged.connect(self.previewTheme)
+        self.cLE_5.textChanged.connect(self.previewTheme)
+        self.cLE_6.textChanged.connect(self.previewTheme)
+        self.cLE_7.textChanged.connect(self.previewTheme)
         self.rAOS.clicked.connect(self.resetAOS)
         self.wpSelect.clicked.connect(lambda: self.wallpaperAction("select"))
         self.wpClear.clicked.connect(lambda: self.wallpaperAction("clear"))
@@ -428,10 +451,12 @@ class settingsWidget(QWidget):
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 
+        self.themeCB.currentIndexChanged.disconnect()
+
         self.guiThemeCB.clear()
         self.themeCB.clear()
 
-        for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
+        for _ in listdir(getAOSdir()+"/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
         self.uLE.setText(config["userinfo"]["name"])
@@ -450,6 +475,8 @@ class settingsWidget(QWidget):
         self.KS_3.setKeySequence(config["shortcuts"]["settings"])
         self.KS_4.setKeySequence(config["shortcuts"]["help"])
 
+        self.themeCB.currentIndexChanged.connect(self.applyTheme)
+
         desktopCheckmarkVals = []
 
         for i in config["desktopApps"].values():
@@ -464,7 +491,8 @@ class settingsWidget(QWidget):
         self.dCHB_7.setChecked(toBool(desktopCheckmarkVals[6]))
         self.dCHB_8.setChecked(toBool(desktopCheckmarkVals[7]))
 
-        self.showSplashOnStartup.setChecked(not toBool(config["splash"]["show"]))
+        self.showSplashOnStartup.setChecked(toBool(config["splash"]["show"]))
+        self.showQSplashOnStartup.setChecked(toBool(config["qsplash"]["show"]))
         
         for i in QStyleFactory.keys():
             if i != "windowsvista":
@@ -491,7 +519,9 @@ class settingsWidget(QWidget):
         if menubarSegs == "":
             self.segments.addItems(standardSegs)
         else:
-            for i in menubarSegs.split("|"):
+            segs = menubarSegs.split("|")
+            segs = list(dict.fromkeys(segs))
+            for i in segs:
                 if i != "":
                     self.menubarSegments.addItem(i)
 
@@ -501,18 +531,10 @@ class settingsWidget(QWidget):
 
         f.close()
 
-    def applyTheme(self):
-        tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
-        colors = tFile.read()
-        themeColors = colors.split("\n")
+        self.refreshRateSpin.setValue(int(config["menubar"]["refreshRate"]))
 
-        self.cLE.setText(themeColors[0])
-        self.cLE_2.setText(themeColors[1])
-        self.cLE_3.setText(themeColors[2])
-        self.cLE_4.setText(themeColors[3])
-        self.cLE_5.setText(themeColors[4])
-        self.cLE_6.setText(themeColors[5])
-        self.cLE_7.setText(themeColors[6])
+    def previewTheme(self):
+        themeColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
         if self.appsUseTheme.isChecked():
             palette = QPalette()
@@ -531,11 +553,29 @@ class settingsWidget(QWidget):
             palette.setColor(QPalette.HighlightedText, QColor(themeColors[0]))
             QGuiApplication.setPalette(palette)
 
+    def applyTheme(self):
+        tFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
+        colors = tFile.read()
+        themeColors = colors.split("\n")
+
+        try:
+            self.cLE.setText(themeColors[0])
+            self.cLE_2.setText(themeColors[1])
+            self.cLE_3.setText(themeColors[2])
+            self.cLE_4.setText(themeColors[3])
+            self.cLE_5.setText(themeColors[4])
+            self.cLE_6.setText(themeColors[5])
+            self.cLE_7.setText(themeColors[6])
+
+            self.previewTheme()
+        except IndexError:
+            msgBox("Invalid theme","AOS-GUI/settings",QMessageBox.Critical)
+
 
     def saveTheme(self):
-        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()] # edit all others with new color
+        currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
-        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
+        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getAOSdir()+"/system/data/user/themes/", "AOS theme (*.theme)")
         if check:
             themeFile = open(tFile,"w")
 
@@ -545,6 +585,12 @@ class settingsWidget(QWidget):
 
             themeFile.close()
         self.getCurrentSettings()
+        if check:
+            tFile = tFile.split("/")
+            tFile = tFile[len(tFile)-1].split(".")
+            tFile = tFile[0]
+            self.themeCB.setCurrentText(tFile)
+
 
     def getmeout(self):
         global wallPaperPath
@@ -552,19 +598,19 @@ class settingsWidget(QWidget):
         retval = 0
 
         themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
-        tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
+        tFile = getAOSdir()+"/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
         tFsplit = themeFile.read().split("\n")
 
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
         if currentColors != tFsplit:
-            tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
+            tFile = getAOSdir()+"/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
             retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384: # yes value
-                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
+                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getAOSdir()+"/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
                     themeFile = open(tFile,"w")
@@ -599,7 +645,8 @@ class settingsWidget(QWidget):
         config["desktopApps"]["terminal"] = str(self.dCHB_7.isChecked())
         config["desktopApps"]["calc"] = str(self.dCHB_8.isChecked())
 
-        config["splash"]["show"] = str(not self.showSplashOnStartup.isChecked())
+        config["splash"]["show"] = str(self.showSplashOnStartup.isChecked())
+        config["qsplash"]["show"] = str(self.showQSplashOnStartup.isChecked())
         config["guitheme"]["theme"] = self.guiThemeCB.currentText()
         config["24hrclock"]["24hour"] = str(self.clockMode.isChecked())
         config["buttonDims"]["w"] = str(self.btnW.value())
@@ -611,12 +658,20 @@ class settingsWidget(QWidget):
 
         config["wallpaper"]["path"] = wallPaperPath
 
+        config["menubar"]["refreshRate"] = str(self.refreshRateSpin.value())
+
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)
 
+        items = []
+        for x in range(self.menubarSegments.count()):
+            items.append(self.menubarSegments.item(x).text())
+
+        items = list(dict.fromkeys(items))
+
         f = open("files/system/data/user/menubar.aos","w")
-        for i in range(self.menubarSegments.count()):
-            f.write(self.menubarSegments.item(i).text()+"|")
+        for i in items:
+            f.write(i+"|")
         f.close()
 
         msgBox("Your settings have been applied! Please restart AOS-GUI to see your changes to the desktop.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)

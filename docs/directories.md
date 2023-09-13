@@ -1,4 +1,4 @@
-<a href="MDs/help.md">back</a>
+<a href="docs/help.md">back</a>
 # directory explanations
 
 ## /files/
@@ -11,7 +11,7 @@ Contains external applications installed using camelInstall.
 Contains assets used within external applications.
 
 ## /apps/sdk/
-Contains files in the <a href="MDs/dev.md#sdk">AOS SDK</a>.
+Contains the <a href="docs/dev.md#sdk">AOS SDK</a>.
 
 ## /home/
 Contains files created by the user.
@@ -33,3 +33,5 @@ Contains AOS wallpapers.
 
 ## /system/setup/
 Contains files used in setup.
+
+<a href="docs/help.md">back</a> | <a href="#directory-explanations">top</a>
