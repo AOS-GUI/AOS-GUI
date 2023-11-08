@@ -218,9 +218,20 @@ class camelInstall(QWidget):
 
     def searchForApp(self):
         try:
+            results = []
             for i in range(self.dbTable.rowCount()):
                 if self.searchEdit.text() in self.dbTable.item(i,0).text() or self.searchEdit.text() in self.dbTable.item(i,1).text():
-                    self.dbTable.selectRow(i)
+                    results.append(i)
+            # self.dbTable.selectRow(i)
+            model = self.dbTable.model()  # get data model for indexes.
+            selection = QItemSelection()
+            for i in results:
+                self.dbTable.selectRow(i)
+                model_index = model.index(i, 0)
+                selection.select(model_index, model_index)
+            mode = QItemSelectionModel.Select | QItemSelectionModel.Rows
+            self.resultselection = self.dbTable.selectionModel()
+            self.resultselection.select(selection, mode)
         except AttributeError:
             pass
 

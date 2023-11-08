@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 class aoshelp(QWidget):
     def __init__(self):
         super(aoshelp, self).__init__()
-        self.resize(350, 400)
+        self.resize(500, 400)
         self.setWindowTitle("AOS-GUI/help")
         self.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
         self.helpText = QTextBrowser(self)
@@ -21,10 +21,10 @@ class aoshelp(QWidget):
         return super().eventFilter(obj, event)
     
     def reset(self):
-        self.resize(350, 400)
+        self.resize(500, 400)
         f = open("docs/help.md")
         text = f.read()
         f.close()
 
         self.helpText.setMarkdown(text)
-        self.helpText.setGeometry(QRect(0, 0, 350, 400))
+        self.helpText.setGeometry(QRect(0, 0, 500, 400))

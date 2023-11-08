@@ -61,6 +61,14 @@ class settingsWidget(QWidget):
         self.clockMode.setObjectName(u"clockMode")
         self.clockMode.setGeometry(QRect(10, 20, 131, 17))
         self.clockMode.setText(u"24 hour clock")
+        self.desktopBox = QGroupBox(self.general)
+        self.desktopBox.setObjectName(u"desktopBox")
+        self.desktopBox.setGeometry(QRect(280, 55, 141, 51))
+        self.desktopBox.setTitle(u"Desktop buttons")
+        self.buttonMode = QComboBox(self.desktopBox)
+        self.buttonMode.setObjectName(u"buttonMode")
+        self.buttonMode.setGeometry(QRect(10, 20, 120, 25))
+        self.buttonMode.addItems(["Text","Text, Icon","Icon"])
         self.startup = QGroupBox(self.general)
         self.startup.setObjectName(u"startup")
         self.startup.setGeometry(QRect(10, 80, 261, 81))
@@ -532,6 +540,7 @@ class settingsWidget(QWidget):
         f.close()
 
         self.refreshRateSpin.setValue(int(config["menubar"]["refreshRate"]))
+        self.buttonMode.setCurrentText(str(config["buttonStyle"]["style"]))
 
     def previewTheme(self):
         themeColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
@@ -659,6 +668,8 @@ class settingsWidget(QWidget):
         config["wallpaper"]["path"] = wallPaperPath
 
         config["menubar"]["refreshRate"] = str(self.refreshRateSpin.value())
+
+        config["buttonStyle"]["style"] = str(self.buttonMode.currentText())
 
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)

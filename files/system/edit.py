@@ -18,6 +18,7 @@ originalText = ""
 fontsize = 0.0
 
 allowHighlighting = True
+tabsAreSpaces = True
 
 class Highlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
@@ -39,6 +40,17 @@ class Highlighter(QSyntaxHighlighter):
             for match in re.finditer(pattern, text):
                 start, end = match.span()
                 self.setFormat(start, end-start, fmt)
+
+class PyEdit(QTextEdit):
+    def __init__(self,parent=None):
+        super(PyEdit,self).__init__(parent=None)
+    def keyPressEvent(self,event):
+        global tabsAreSpaces
+        if event.key() == Qt.Key_Tab and tabsAreSpaces:
+            tc = self.textCursor()
+            tc.insertText("    ")
+            return
+        return QTextEdit.keyPressEvent(self,event)
 
 class editApp(QMainWindow):
     def updateStatus(self):
@@ -74,7 +86,7 @@ class editApp(QMainWindow):
         self.centralwidget.setObjectName("centralwidget")
         self.formLayout_2 = QFormLayout(self.centralwidget)
         self.formLayout_2.setObjectName("formLayout_2")
-        self.textEdit = QTextEdit(self.centralwidget)
+        self.textEdit = PyEdit(self.centralwidget)
         self.textEdit.setEnabled(True)
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setWordWrapMode(False)
@@ -83,6 +95,35 @@ class editApp(QMainWindow):
         self.menubar = QMenuBar(self)
         self.menubar.setGeometry(QRect(0, 0, 500, 23))
         self.menubar.setObjectName("menubar")
+        self.menubar.setStyleSheet(
+            """
+            QMenuBar
+            {
+                background-color: #fff;
+                color: #000;
+            }
+            QMenuBar::item
+            {
+                background-color: #fff;
+                color: #000;
+            }
+            QMenuBar::item::selected
+            {
+                background-color: #3399cc;
+                color: #fff;
+            }
+            QMenu
+            {
+                background-color: #fff;
+                color: #000;
+            }
+            QMenu::item::selected
+            {
+                background-color: #333399;
+                color: #999;
+            }
+            """
+        )
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         self.menuSettings = QMenu(self.menubar)
@@ -110,6 +151,7 @@ class editApp(QMainWindow):
         self.actionHighlighting = QAction(self)
         self.actionHighlighting.setObjectName("actionHighlighting")
         self.actionRun = QAction(self)
+        self.actionTabsSpaces = QAction(self)
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionNewWindow)
         self.menuFile.addAction(self.actionOpen)
@@ -119,6 +161,7 @@ class editApp(QMainWindow):
         self.menuSettings.addAction(self.actionWordWrap)
         self.menuSettings.addAction(self.actionFontSize)
         self.menuSettings.addAction(self.actionHighlighting)
+        self.menuSettings.addAction(self.actionTabsSpaces)
         self.menuDev.addAction(self.actionRun)
         self.menubar.addAction(self.menuFile.menuAction())
         #self.menubar.addAction(self.menuDev.menuAction())
@@ -167,11 +210,14 @@ class editApp(QMainWindow):
         self.actionHighlighting.setCheckable(True)
         self.actionHighlighting.setChecked(True)
         self.actionFontSize.triggered.connect(self.setNewFontSize)
+        self.actionTabsSpaces.triggered.connect(lambda: self.setTabsSpaces(self.actionTabsSpaces.isChecked()))
+        self.actionTabsSpaces.setCheckable(True)
+        self.actionTabsSpaces.setChecked(True)
 
         self.retranslateUi()
         QMetaObject.connectSlotsByName(self)
 
-        fontsize = float(getSettings()["fontsize"]["size"])
+        fontsize = 10.0
 
         self.textEdit.setFontPointSize(fontsize)
         self.textEdit.setFontFamily("Consolas")
@@ -210,10 +256,23 @@ class editApp(QMainWindow):
         self.actionNewWindow.setText("New Window...")
         self.actionHighlighting.setText("Syntax Highlighting")
         self.actionExit.setText("Exit")
+        self.actionTabsSpaces.setText("Replace tabs with 4 spaces")
+
+    def setTabsSpaces(self, spaces):
+        global tabsAreSpaces
+        tabsAreSpaces = spaces
 
     def execFile(self):
         global currentlyOpenFileName,currentlyOpenFile
-        directory = "/".join(currentlyOpenFile.split("/")[-3:-1])+"/"
+        index = 0
+        finalindex = 0
+        filepath = currentlyOpenFile.split("/")
+        for i in filepath:
+            index += 1
+            if i == "files":
+                finalindex = index-1
+        directory = "/".join(currentlyOpenFile.split("/")[finalindex:-1])+"/"
+        # msgBox(directory)
         ret, err = openApplication(currentlyOpenFileName, directory)
         if err:
             msgBox("Error in "+currentlyOpenFileName+": "+str(err),"AOS-GUI/execRoutine")
@@ -224,7 +283,7 @@ class editApp(QMainWindow):
             self.saveAsFile()
 
         self.textEdit.setText("")
-        self.formatBox.setCurrentText("Plaintext")
+        # self.formatBox.setCurrentText("Plaintext")
 
     def openFile(self, f=""):
         global currentlyOpenFile,currentlyOpenFileName
