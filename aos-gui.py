@@ -8,6 +8,8 @@
 # ╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═════╝  ╚═════╝ ╚═╝
 # by nanobot567 ( and contributors :) )
 
+windowed = False
+
 from sys import argv
 
 if len(argv) > 1:
@@ -18,8 +20,10 @@ if len(argv) > 1:
     elif argv[1] == "--help":
         print("Usage: aos-gui.py [OPTION]")
         print("Aiden's operating system.")
-        print("\nOptions:\n  --classic,-c   use aos classic\n  --help         show this help screen\n")
+        print("\nOptions:\n  --classic,-c   use aos classic\n  --help         show this help screen\n  --windowed,-w  start AOS in windowed mode\n")
         raise SystemExit # apparently this is much better than quit()
+    elif argv[1] == "--windowed" or argv[1] == "-w":
+        windowed = True
 
 try:
     from pip import main as pipmain
@@ -34,26 +38,22 @@ try:
     from playsound import playsound
     import threading
 except ModuleNotFoundError:
-    print("Installing AOS-GUI requirements...")
-    pipmain(["install", "PyQt5"])
-    pipmain(["install", "requests"])
-    pipmain(["install", "playsound==1.2.2"])
-    pipmain(["install", "psutil"])
-    print("Done! Starting up...")
-    from files.apps.sdk.sdk import restart
-    
-    restart()
+    if input("Some AOS-GUI requirements are missing, would you like to download them now? (~70MB max) [y/n] ").lower() == "y":
+        print("Installing AOS-GUI requirements...")
+        pipmain(["install", "PyQt5"])
+        pipmain(["install", "requests"])
+        pipmain(["install", "playsound==1.2.2"])
+        pipmain(["install", "psutil"])
+        print("Done! Please rerun aos-gui.py.")
 
 from files.system import aoshelp, calc, cinstall, edit, fs, launcher, settings, splash, terminal, updater
 from files.system.setup import setupAOS
 from files.apps.sdk.sdk import *
 
-from time import sleep, strftime
-import importlib
+from time import strftime
 import sys
-import os
 import configparser
-import platform
+import os
 
 fontSize = 11
 buttonFontSize = f"font-size:{fontSize}px"
@@ -95,7 +95,7 @@ class AOS(QMainWindow):
 
         global textcolor, bgcolor, ttextcolor, tbgcolor, btextcolor, bbgcolor, windowcolor, buttonsShown, \
         theme, username, password, kSeqs, fontSize, buttonFontSize, guiTheme, clockMode, buttonWidth, \
-        buttonHeight, buttonSpaceX, buttonSpaceY, qsplash
+        buttonHeight, buttonSpaceX, buttonSpaceY, qsplash, windowed
 
         themeColors,ret = getTheme()
         if ret == -1:
@@ -165,8 +165,10 @@ class AOS(QMainWindow):
             bgimgLabel.setGeometry(0, 0, size.width(), size.height())
 
         self.setWindowTitle("AOS-GUI")
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setGeometry(0, 0, size.width(), size.height())
+        if windowed == False:
+            print("windowed")
+            self.setWindowFlag(Qt.FramelessWindowHint)
+            self.setGeometry(0, 0, size.width(), size.height())
         self.setStyleSheet(stylesheet)
 
         print("Finalizing desktop", end="")
@@ -239,11 +241,39 @@ class AOS(QMainWindow):
             globals()["sc" + str(numShortcuts)].setGeometry(buttonX, buttonY, buttonWidth, buttonHeight)
             globals()["sc" + str(numShortcuts)].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
             globals()["sc" + str(numShortcuts)].setCursor(Qt.CursorShape.PointingHandCursor)
-            globals()["sc" + str(numShortcuts)].setText(prgm)
+
+            if "Text" in config["buttonStyle"]["style"]:
+                globals()["sc" + str(numShortcuts)].setText(prgm)
+
+            if "Icon" in config["buttonStyle"]["style"]:
+                iconsize = None
+                if config["buttonStyle"]["style"] == "Icon":
+                    iconsize = QSize(int(buttonWidth/2),int(buttonWidth/2))
+                else:
+                    iconsize = QSize(int(buttonWidth/4),int(buttonWidth/4))
+
+                iconok = False
+                try:
+                    for i in os.listdir(getAOSdir()+"apps/assets/"+prgm):
+                        if "icon." in i:
+                            icon = QIcon(QPixmap(getAOSdir()+"apps/assets/"+prgm+"/"+i))
+                            globals()["sc" + str(numShortcuts)].setIcon(icon)
+                            globals()["sc" + str(numShortcuts)].setIconSize(iconsize)
+                            iconok = True
+                    
+                except Exception as e:
+                    pass
+
+                if iconok == False:
+                    icon = QIcon(QPixmap(getAOSdir()+"system/data/icons/no.ico"))
+                    globals()["sc" + str(numShortcuts)].setIcon(icon)
+                    globals()["sc" + str(numShortcuts)].setIconSize(iconsize)
+
             def execRoutine(prgm):
                 ret, err = openApplication(prgm)
                 if err:
                     msgBox("Error in "+prgm+": "+str(err),"AOS-GUI/execRoutine")
+                    
             globals()["sc" + str(numShortcuts)].clicked.connect(lambda: execRoutine(prgm))
             globals()["sc" + str(numShortcuts)].show()
 
@@ -261,7 +291,7 @@ class AOS(QMainWindow):
             self.updateDesktopFile()
 
     def setupButtons(self):
-        global buttonX, buttonY, buttonSpaceX, buttonSpaceY
+        global buttonX, buttonY, buttonSpaceX, buttonSpaceY, config
 
         btnName = 0
 
@@ -269,6 +299,8 @@ class AOS(QMainWindow):
 
         for i in buttonsShown:
             if i != "False":
+                text = ""
+                icon = None
                 globals()[btnName] = DraggableButton(self)
                 globals()[btnName].setGeometry(buttonX, buttonY, buttonWidth, buttonHeight)
                 globals()[btnName].setStyleSheet(f"{buttonFontSize}; background-color: {bbgcolor}; color: {btextcolor};")
@@ -276,38 +308,51 @@ class AOS(QMainWindow):
 
                 match btnName:
                     case 0:
-                        globals()[btnName].setText("Settings")
+                        text = "Settings"
                         globals()[btnName].clicked.connect(self.settingsWindow.showNormal)
                         globals()[btnName].clicked.connect(self.settingsWindow.activateWindow)
                     case 1:
-                        globals()[btnName].setText("Launcher")
+                        text = "Launcher"
                         globals()[btnName].clicked.connect(self.aLaunchWindow.showNormal)
                         globals()[btnName].clicked.connect(self.aLaunchWindow.activateWindow)
                     case 2:
-                        globals()[btnName].setText("Filesystem")
+                        text = "Filesystem"
                         globals()[btnName].clicked.connect(self.fsWindow.showNormal)
                         globals()[btnName].clicked.connect(self.fsWindow.activateWindow)
                     case 3:
-                        globals()[btnName].setText("camelInstall")
+                        text = "camelInstall"
                         globals()[btnName].clicked.connect(self.cInstWindow.showNormal)
                         globals()[btnName].clicked.connect(self.cInstWindow.activateWindow)
                     case 4:
-                        globals()[btnName].setText("Editor")
+                        text = "Editor"
                         globals()[btnName].clicked.connect(lambda: QProcess.startDetached(sys.executable, ["files/system/edit.py"]))
                         # globals()[btnName].clicked.connect(self.editWindow.activateWindow)
                     case 5:
-                        globals()[btnName].setText("AOSHelp")
+                        text = "AOSHelp"
                         globals()[btnName].clicked.connect(self.helpWindow.showNormal)
                         globals()[btnName].clicked.connect(self.helpWindow.activateWindow)
                         globals()[btnName].clicked.connect(self.helpWindow.reset)
                     case 6:
-                        globals()[btnName].setText("Terminal")
+                        text = "Terminal"
                         globals()[btnName].clicked.connect(self.atermWindow.showNormal)
                         globals()[btnName].clicked.connect(self.atermWindow.activateWindow)
                     case 7:
-                        globals()[btnName].setText("Calculator")
+                        text = "Calculator"
                         globals()[btnName].clicked.connect(self.calcWindow.showNormal)
                         globals()[btnName].clicked.connect(self.calcWindow.activateWindow)
+
+                if "Text" in config["buttonStyle"]["style"]:
+                    globals()[btnName].setText(text)
+
+                if "Icon" in config["buttonStyle"]["style"]:
+                    iconsize = None
+                    if config["buttonStyle"]["style"] == "Icon":
+                        iconsize = QSize(int(buttonWidth),int(buttonWidth))
+                    else:
+                        iconsize = QSize(int(buttonWidth/3.5),int(buttonWidth/3.5))
+                    globals()[btnName].setIcon(QIcon(getAOSdir()+"system/data/icons/"+text+".ico"))
+                    globals()[btnName].setIconSize(iconsize)
+                    
                 buttonX += buttonWidth + buttonSpaceX
 
             btnName += 1
@@ -361,21 +406,17 @@ class AOS(QMainWindow):
         memoryMenu.setEnabled(False)
 
         for i in menubarSegs:
+            menuBar.addMenu("|").setEnabled(False)
             match i:
                 case "Clock":
-                    menuBar.addMenu("|").setEnabled(False)
                     menuBar.addMenu(timeMenu)
                 case "Battery":
-                    menuBar.addMenu("|").setEnabled(False)
                     menuBar.addMenu(batteryMenu)
                 case "CPU Usage (Total)":
-                    menuBar.addMenu("|").setEnabled(False)
                     menuBar.addMenu(cpuUsageMenu)
                 case "CPU Usage (Per CPU)":
-                    menuBar.addMenu("|").setEnabled(False)
                     menuBar.addMenu(cpuUsagePerMenu)
                 case "Available Memory":
-                    menuBar.addMenu("|").setEnabled(False)
                     menuBar.addMenu(memoryMenu)
 
         f.close()
@@ -441,7 +482,7 @@ class AOS(QMainWindow):
         self.setSC.activated.connect(self.settingsWindow.show)
         self.helpSC.activated.connect(self.helpWindow.show)
 
-    def showEvent(self, event):
+    def showAutorunStuff(self):
         f = open("files/system/data/user/autorun.aos", "r")
         for i in f.read().split("|"):
             if i:
@@ -466,6 +507,11 @@ class AOS(QMainWindow):
                             self.atermWindow.show()
                         case "updater":
                             self.updater = updater.updater()
+
+    def showEvent(self, event):
+        if config["userinfo"]["pass"] == "":
+            self.showAutorunStuff()
+        
         super().showEvent(event)
 
 if __name__ == "__main__":
@@ -478,7 +524,10 @@ if __name__ == "__main__":
             qsplash = QSplashScreen(pixmap)
             qsplash.show()
         window = AOS()
-        window.showFullScreen()
+        if windowed == False:
+            window.showFullScreen()
+        else:
+            window.show()
 
         try:
             if config["startupSound"]["play"] == "True":
@@ -496,6 +545,7 @@ if __name__ == "__main__":
             passwordInput = ""
             while passwordInput != config["userinfo"]["pass"]:
                 passwordInput, z = QInputDialog.getText(window, "Password", "Please enter your password.", QLineEdit.Normal, "")
+            window.showAutorunStuff()
 
         if config["splash"]["show"] == "True" or config["splash"]["show"] == "":
             splashscreen = splash.splashScreen()
@@ -521,11 +571,11 @@ if __name__ == "__main__":
                     timer.timeout.connect(lambda: cpuUsageMenu.setTitle("CPU: " + str(psutil.cpu_percent()) + "%"))
                 case "CPU Usage (Per CPU)":
                     def calc():
-                        percpu = psutil.cpu_percent(percpu=True);
-                        percpu = [str(e)+"%" for e in percpu];
-                        percpuText = " / ".join(percpu);
+                        percpu = psutil.cpu_percent(percpu=True)
+                        percpu = [str(e)+"%" for e in percpu]
+                        percpuText = " / ".join(percpu)
 
-                        cpuUsagePerMenu.setTitle("CPU (per): " + percpuText)
+                        cpuUsagePerMenu.setTitle("CPU (per core): " + percpuText)
 
                     timer.timeout.connect(calc)
                 case "Available Memory":
@@ -550,7 +600,12 @@ if __name__ == "__main__":
             pass
 
     # app.setWindowIcon(QIcon(QPixmap("/".join(getAOSdir().split("/")[:-2])+"/docs/resources/images/aosgui-black.png").scaled(100,100,1))) # when you have a good icon, go for it!
-    
+
+    cursor_pix = QPixmap(getAOSdir()+'system/data/icons/win.cur')
+    cursor_pix = cursor_pix.scaled(QSize(32, 32), Qt.KeepAspectRatio)
+    current_cursor = QCursor(cursor_pix, 0, 0)
+    window.setCursor(current_cursor)
+
     # TODO: create an AOS cursor
 
     if config["qsplash"]["show"] == "True":

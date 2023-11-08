@@ -192,6 +192,7 @@ def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessage
     msg = QMessageBox()
     msg.setIcon(icon)
     msg.setText(str(text))
+    msg.setStyleSheet("color:black;")
     msg.setWindowTitle(title)
     msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
     msg.setStandardButtons(buttons)

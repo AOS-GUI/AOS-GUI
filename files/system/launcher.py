@@ -21,7 +21,8 @@ class launcher(QWidget):
         self.launchButton.setGeometry(QRect(100, 270, 81, 23))
         self.launchButton.setText(u"Launch App")
         def errRoutine():
-            ret, err = openApplication(self.appList.currentItem().text().split(".py")[0])
+            prgm = self.appList.currentItem().text().split(".py")[0]
+            ret, err = openApplication(prgm)
             if err:
                 msgBox("Error in "+prgm+": "+str(err),"AOS-GUI/execRoutine")
         self.launchButton.clicked.connect(errRoutine)

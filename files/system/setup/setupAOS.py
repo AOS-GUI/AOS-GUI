@@ -63,6 +63,14 @@ class installform(QMainWindow):
         self.clockMode.setObjectName(u"clockMode")
         self.clockMode.setGeometry(QRect(10, 20, 131, 17))
         self.clockMode.setText(u"24 hour clock")
+        self.desktopBox = QGroupBox(self.general)
+        self.desktopBox.setObjectName(u"desktopBox")
+        self.desktopBox.setGeometry(QRect(280, 55, 141, 51))
+        self.desktopBox.setTitle(u"Desktop buttons")
+        self.buttonMode = QComboBox(self.desktopBox)
+        self.buttonMode.setObjectName(u"buttonMode")
+        self.buttonMode.setGeometry(QRect(10, 20, 120, 25))
+        self.buttonMode.addItems(["Text","Text, Icon","Icon"])
         self.startup = QGroupBox(self.general)
         self.startup.setObjectName(u"startup")
         self.startup.setGeometry(QRect(10, 80, 261, 81))
@@ -470,6 +478,7 @@ class installform(QMainWindow):
         config["inAppTheme"] = {"use":""}
         config["wallpaper"] = {"path":""}
         config["menubar"] = {"refreshRate":""}
+        config["buttonStyle"] = {"style":""}
 
 
         retval = 0
@@ -534,6 +543,7 @@ class installform(QMainWindow):
         config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
         config["wallpaper"]["path"] = str(wallPaperPath)
         config["menubar"]["refreshRate"] = str(self.refreshRateSpin.value())
+        config["buttonStyle"]["style"] = str(self.buttonMode.currentText())
         
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)
