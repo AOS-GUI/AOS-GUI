@@ -11,6 +11,8 @@ import requests
 
 from files.apps.sdk.sdk import *
 
+camel = Camel() # instantiate Camel() class
+
 class camelInstall(QWidget):
     def __init__(self):
         super(camelInstall, self).__init__()
@@ -45,6 +47,11 @@ class camelInstall(QWidget):
         self.uninstall.setGeometry(QRect(450, 80, 141, 28))
         self.uninstall.setText(u"Uninstall...")
         self.uninstall.clicked.connect(self.areYouSure)
+        self.refreshBtn = QPushButton(self.installed)
+        self.refreshBtn.setObjectName(u"refreshBtn")
+        self.refreshBtn.setGeometry(QRect(490, 380, 75, 23))
+        self.refreshBtn.setText(u"Refresh")
+        self.refreshBtn.clicked.connect(self.refreshApps)
         self.runBtn = QPushButton(self.installed)
         self.runBtn.setObjectName(u"runBtn")
         self.runBtn.setGeometry(QRect(470, 120, 93, 28))
@@ -80,6 +87,11 @@ class camelInstall(QWidget):
         self.searchEdit = QLineEdit(self.database)
         self.searchEdit.setObjectName(u"searchEdit")
         self.searchEdit.setGeometry(QRect(420, 220, 141, 28))
+        self.refreshButton = QPushButton(self.database)
+        self.refreshButton.setObjectName(u"refreshButton")
+        self.refreshButton.setGeometry(QRect(490, 380, 75, 23))
+        self.refreshButton.setText(u"Refresh")
+        self.refreshButton.clicked.connect(self.refreshApps)
         self.tabWidget.addTab(self.database, "")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.database), u"app database")
 
@@ -144,50 +156,43 @@ class camelInstall(QWidget):
                 row += 1
             f.close()
         
+        ret, err = camel.update()
 
-        try:
-            r = requests.get("https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/appList.txt",timeout=5)
-            filesOnline = r.text.splitlines(False)
-        except:
-            print("[WARN] It seems like you aren't connected to the internet, not gathering camelInstall list for now.")
+        if ret == -1: # try to update, and if that fails throw error
+            print("\n[camelInstall] WARN: It seems like you aren't connected to the internet, not gathering camelInstall list for now.\n")
             filesOnline = ["No internet!|No internet!|No internet!|No internet!"]
-        filesOnlineNames = []
-        filesOnlineDescs = []
-        filesOnlineVers = []
-        filesOnlineUrls = []
-        i = 0
+        else:
+            # get all information from repo
+            filesOnlineNames = camel.getNames()
+            filesOnlineDescs = camel.getDescs()
+            filesOnlineVers = camel.getVersions()
+            filesOnlineUrls = camel.getURLs()
 
-        for files in filesOnline:
-            filesOnlineNames.append(filesOnline[i].split("|")[0])
-            filesOnlineDescs.append(filesOnline[i].split("|")[1])
-            filesOnlineVers.append(filesOnline[i].split("|")[2])
-            filesOnlineUrls.append(filesOnline[i].split("|")[3])
-            i+=1
+            self.dbTable.setRowCount(len(filesOnlineNames))
+            i = 0
 
-
-        self.dbTable.setRowCount(len(filesOnlineNames))
-        i = 0
-
-        for name in filesOnlineNames:
-            self.dbTable.setItem(i, 0, QTableWidgetItem(name))
-            i += 1
-        i = 0
-        for desc in filesOnlineDescs:
-            self.dbTable.setItem(i, 1, QTableWidgetItem(desc))
-            i += 1
-        i = 0
-        for ver in filesOnlineVers:
-            self.dbTable.setItem(i, 2, QTableWidgetItem(ver))
-            i += 1
-        i = 0
-        for url in filesOnlineUrls:
-            self.dbTable.setItem(i, 3, QTableWidgetItem(url))
-            i += 1
-        i = 0
+            for name in filesOnlineNames:
+                self.dbTable.setItem(i, 0, QTableWidgetItem(name))
+                i += 1
+            i = 0
+            for desc in filesOnlineDescs:
+                self.dbTable.setItem(i, 1, QTableWidgetItem(desc))
+                i += 1
+            i = 0
+            for ver in filesOnlineVers:
+                self.dbTable.setItem(i, 2, QTableWidgetItem(ver))
+                i += 1
+            i = 0
+            for url in filesOnlineUrls:
+                self.dbTable.setItem(i, 3, QTableWidgetItem(url))
+                i += 1
+            i = 0
 
     def runApp(self):
         prgm = self.tableWidget.item(self.tableWidget.currentRow(),0).text().split(".py")[0]
-        openApplication(prgm)
+        ret, err = openApplication(prgm)
+        if err:
+            msgBox("Error in "+prgm+": "+str(err),"AOS-GUI/execRoutine")
 
     def openWriteDirs(self,dir,openmode):
         makedirs(path.dirname(dir), exist_ok=True)
@@ -199,62 +204,34 @@ class camelInstall(QWidget):
             text = self.dbTable.item(self.dbTable.currentRow(),0).text()
             ret = msgBox("Are you sure you want to install \""+text+"\"?","Install?",QMessageBox.Question,QMessageBox.Yes|QMessageBox.No)
             if ret == 16384:
-                urls = self.dbTable.item(self.dbTable.currentRow(),3).text()
-                for url in urls.split(";"):
-                    self.status.setText("download: "+url.split("/")[-1])
-                    self.update()
-                    self.repaint()
+                ret,err = camel.install(text) # install app
+                if ret != -1:
+                    self.status.setText("installed: "+self.dbTable.item(self.dbTable.currentRow(),0).text())
+                    msgBox(f"Installed \"{self.dbTable.item(self.dbTable.currentRow(),0).text()}\"!","Installed!",QMessageBox.Information,QMessageBox.Ok)
+                    self.refreshApps()
+                else:
+                    msgBox("Err: "+err)
 
-                    newUrl = ""
-                    if url.startswith("db/"):
-                        url = url.split("db/")[1]
-                        url = "https://aos-gui.github.io/cInstall/dl/"+url
-
-                        r = requests.get(url)
-                        url = url.split("/")[5:]
-
-                        for x in url:
-                            newUrl += "/"+x
-
-                    elif url.startswith("assets/"):
-                        url = url.split("assets/")[1]
-                        url = "https://aos-gui.github.io/cInstall/dl/assets/"+self.dbTable.item(self.dbTable.currentRow(),0).text().split(".py")[0]+"/"+url
-
-                        r = requests.get(url)
-                        url = url.split("/")[5:]
-
-                        for x in url:
-                            newUrl += "/"+x
-                    else:
-                        newUrl = url
-                        print(url)
-                        try:
-                            r = requests.get(url)
-                        except requests.exceptions.MissingSchema:
-                            pass
-                    
-                    if newUrl != "":
-                        f = self.openWriteDirs(getcwd().replace("\\","/")+"/files/apps/"+newUrl,"wb")
-                    
-                        f.write(r.content)
-                        f.close()
-
-                    self.status.setText("downloaded: "+newUrl.split("/")[-1])
-                    self.update()
-                    self.repaint()
-                
-                self.status.setText("installed: "+self.dbTable.item(self.dbTable.currentRow(),0).text())
-                msgBox(f"Installed \"{self.dbTable.item(self.dbTable.currentRow(),0).text()}\"!","Installed!",QMessageBox.Information,QMessageBox.Ok)
-                self.refreshApps()
             self.status.setText("")
         except AttributeError:
             pass
 
     def searchForApp(self):
         try:
+            results = []
             for i in range(self.dbTable.rowCount()):
                 if self.searchEdit.text() in self.dbTable.item(i,0).text() or self.searchEdit.text() in self.dbTable.item(i,1).text():
-                    self.dbTable.selectRow(i)
+                    results.append(i)
+            # self.dbTable.selectRow(i)
+            model = self.dbTable.model()  # get data model for indexes.
+            selection = QItemSelection()
+            for i in results:
+                self.dbTable.selectRow(i)
+                model_index = model.index(i, 0)
+                selection.select(model_index, model_index)
+            mode = QItemSelectionModel.Select | QItemSelectionModel.Rows
+            self.resultselection = self.dbTable.selectionModel()
+            self.resultselection.select(selection, mode)
         except AttributeError:
             pass
 
@@ -263,7 +240,7 @@ class camelInstall(QWidget):
             url = self.dbTable.item(self.dbTable.currentRow(),3).text()
             if url.startswith("db/"):
                 url = url.split("db/")[1]
-                url = "https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/"+url
+                url = "https://raw.githubusercontent.com/AOS-GUI/camel/main/dl/"+url
             r = requests.get(url)
             msgBox(r.text,"Source")
         except AttributeError:
@@ -280,16 +257,7 @@ class camelInstall(QWidget):
 
     def doneUninstalling(self):
         item = self.tableWidget.item(self.tableWidget.currentRow(),0).text()
-        if not item.endswith(".py"):
-            item = item+".py"
-        remove(getcwd().replace("\\","/")+"/files/apps/"+item)
-
-        item = item.split(".py")[0]
-
-        try:
-            rmtree(getcwd().replace("\\","/")+"/files/apps/assets/"+item+"/")
-        except Exception as e:
-            print(e)
+        camel.uninstall(item) # uninstall app
 
         msgBox(f"Uninstalled '{item}'!","Uninstalled!",QMessageBox.Information,QMessageBox.Ok)
         self.refreshApps()
