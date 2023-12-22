@@ -57,46 +57,8 @@ window = userapp()
 window.show()
 ```
 
-## sdk
-
-If you would like some shorthand functions for actions in AOS, add the line `from sdk.sdk import *` to the top of the file (if your app is a QWidget, use `files.apps.sdk.sdk` instead). All functions within this "SDK" are documented below.
-
-| Function | Action |
-|----------|--------|
-| `compareVersion(v1, v2) -> int` | Compares two version numbers. If `v1` is smaller than `v2`, returns -1 and vice versa. 0 is returned if they are the same. |
-| `DraggableButton(QPushButton) -> DraggableButton` | Creates a new QPushButton object, but the button is draggable. |
-| `getAOSdir() -> str` | Returns the current working AOS directory. |
-| `getPalette() -> QPalette` | Returns the current QPalette. |
-| `getSettings() -> ConfigParser`| Returns a configparser object with the contents of data.aos loaded. |
-| `getSplashText(withHTML=False) -> str` | Returns a random splash text from `/system/data/splashes`.|
-| `getTheme() -> list, int` | Returns the current theme colors. On success returns 0, -1 otherwise.|
-| `getVersion() -> str` | Returns the current AOS version. |
-| `msgBox(text, title="AOS-GUI", icon=..., buttons=OK, x=None, y=None) -> int` | Creates a message box. Refer to Qt5 manual to see what each return int stands for. |
-| `promptBox(text, title="AOS-GUI", parent=None, x=None, y=None, mode="text", args=None) -> Union[int, str]` | Creates a prompt box. `mode` should be one of four options: `text`, `int`, `double`, or `item`. If `item` is `mode`, then the `args` argument should be set to your list of items. Returns -1 on fail and the input on success. |
-| `openApplication(app, path="files/apps/") -> int, Union[None, Exception]` | Opens an external application. By default checks in files/apps/ for the app. Returns -1 and the exception on fail and 0 on success.|
-| `restart() -> None` | Restarts AOS-GUI. |
-| `toBool(str="") -> bool` | converts a string to a boolean. Returns `True` if string is "True", false otherwise.|
-
-
-### `Camel()` class
-
-The `Camel` class contains functions that help with managing packages.
-
-> NOTE: please call `update()` after instantiating the class, as the package list is not gathered automatically.
-
-| Function | Action |
-|----------|--------|
-|`update() -> int, Union[list, str]`| Updates the stored package list. Returns 0 on success with a list containing the gathered app names, descriptions, versions, and URLs. Returns -1 on fail with a string containing the error message.|
-|`install(package) -> int, Union[None, str]`| Installs the specified package. Returns 0 on success, -1 with error message on fail.|
-|`uninstall(package) -> int, Union[None, str]`| Uninstalls the specified package. Returns 0 on success, -1 with error message on fail.|
-|`getNames() -> list`| Returns the list of package names.|
-|`getDescs() -> list`| Returns the list of package descriptions.|
-|`getVersions() -> list`| Returns the list of package versions.|
-|`getURLs() -> list`| Returns the list of package URLs.|
-|`getAppInfo() -> list, list, list, list`| Convenience function. Returns package names, descriptions, versions, and URLs in that order.|
-|`isUpdated() -> bool`| Returns `True` if the package list has been updated, false otherwise.|
-
-> if you need help with the `Camel()` class, feel free to look at `/system/cinstall.py`!
+## aos sdk
+AOS-GUI provides some functions and classes to aid with software development in AOS. These are documented [here]("/docs/sdk.md").
 
 ## storing user data
 If you would like to store user data in your app, the recommended directory is `/apps/assets/(APPNAME)`, but you can store it anywhere you like.
@@ -117,5 +79,54 @@ Example: (`Test|testing|1.0|/dl/test.py;assets/functions.py`).
 When adding extra assets, any path towards any file must be a direct path to the file, starting from the `AOS-GUI/` directory. For example, `/assets/myapp/image.png` becomes `/files/apps/assets/myapp/image.png`.
 
 The format of each line in appList.txt is `(NAME)|(DESCRIPTION)|(VERSION)|(URL)`.
+
+### app icon
+
+Since AOS-GUI version 0.9 beta, apps can have an icon, which is displayed in the shortcut button if it is on the desktop.
+
+Example of an icon in a shortcut:
+
+<img src="docs/resources/images/icon-example.png"></img>
+
+For apps installed from camelInstall, the app's icon must be located in `/files/apps/assets/(app)/icon.(any)`. This icon can be any size, but the recommended size is 64 x 64.
+
+## known quirks and fixes
+
+### QFileDialogs do not stay on top in Linux
+
+Add the option `QFileDialog.DontUseNativeDialog` when initializing the dialog. For example:
+
+`file,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir()+"/", "All Files (*)", options=QFileDialog.Options() | QFileDialog.DontUseNativeDialog)`
+
+### Menu bars are not the correct color on Windows
+
+Here was my fix for this:
+
+```python
+
+if os.name == "nt":
+    self.menuBar().setStyleSheet("""
+        QMenuBar {
+            background-color: #fff;
+                color: #000;
+        }
+        QMenuBar::item {
+            background-color: #fff;
+            color: #000;
+        }
+        QMenuBar::item::selected {
+            background-color: #3399cc;
+            color: #fff;
+        }
+        QMenu {
+            background-color: #fff;
+            color: #000;
+        }
+        QMenu::item::selected {
+            background-color: #333399;
+            color: #999;
+        }""")
+
+```
 
 <a href="docs/help.md">back</a> | <a href="#app-development-guide">top</a>

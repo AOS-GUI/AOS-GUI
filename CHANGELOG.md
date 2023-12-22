@@ -73,3 +73,4 @@
 [changed] `MDs` folder to `docs`
 [removed] unused .rndr code
 [fixed] autorun apps running before password was entered
+[fixed] message box colors not being set to the current theme

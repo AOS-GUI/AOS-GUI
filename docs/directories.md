@@ -11,7 +11,7 @@ Contains external applications installed using camelInstall.
 Contains assets used within external applications.
 
 ## /apps/sdk/
-Contains the <a href="docs/dev.md#sdk">AOS SDK</a>.
+Contains the <a href="docs/sdk.md">AOS SDK</a>.
 
 ## /home/
 Contains files created by the user.

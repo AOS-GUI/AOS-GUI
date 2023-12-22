@@ -5,8 +5,8 @@ from PyQt5.QtCore import *
 import re
 
 from sys import path,argv,exit,executable
-from os import getcwd
-path.append(getcwd())
+import os
+path.append(os.getcwd())
 
 from files.apps.sdk.sdk import *
 
@@ -95,35 +95,36 @@ class editApp(QMainWindow):
         self.menubar = QMenuBar(self)
         self.menubar.setGeometry(QRect(0, 0, 500, 23))
         self.menubar.setObjectName("menubar")
-        self.menubar.setStyleSheet(
-            """
-            QMenuBar
-            {
-                background-color: #fff;
-                color: #000;
-            }
-            QMenuBar::item
-            {
-                background-color: #fff;
-                color: #000;
-            }
-            QMenuBar::item::selected
-            {
-                background-color: #3399cc;
-                color: #fff;
-            }
-            QMenu
-            {
-                background-color: #fff;
-                color: #000;
-            }
-            QMenu::item::selected
-            {
-                background-color: #333399;
-                color: #999;
-            }
-            """
-        )
+        if os.name == "nt":
+            self.menubar.setStyleSheet(
+                """
+                QMenuBar
+                {
+                    background-color: #fff;
+                    color: #000;
+                }
+                QMenuBar::item
+                {
+                    background-color: #fff;
+                    color: #000;
+                }
+                QMenuBar::item::selected
+                {
+                    background-color: #3399cc;
+                    color: #fff;
+                }
+                QMenu
+                {
+                    background-color: #fff;
+                    color: #000;
+                }
+                QMenu::item::selected
+                {
+                    background-color: #333399;
+                    color: #999;
+                }
+                """
+            )
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         self.menuSettings = QMenu(self.menubar)
@@ -289,7 +290,7 @@ class editApp(QMainWindow):
         global currentlyOpenFile,currentlyOpenFileName
         passall = False
         if not f:
-            file,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir()+"/", "All Files (*)")
+            file,check = QFileDialog.getOpenFileName(None, "Open a file", getAOSdir()+"/", "All Files (*)", options=QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
         else:
             check = True
             file = f
@@ -353,7 +354,7 @@ class editApp(QMainWindow):
     def saveAsFile(self):
         global currentlyOpenFile,currentlyOpenFileName
 
-        file,check = QFileDialog.getSaveFileName(None, "Save", directory=getAOSdir())
+        file,check = QFileDialog.getSaveFileName(None, "Save", directory=getAOSdir(), options=QFileDialog.Options() | QFileDialog.DontUseNativeDialog)
         if check:
             text = open(file,"w",encoding="utf-8")
             text.write(self.textEdit.toPlainText())
@@ -467,7 +468,7 @@ class editApp(QMainWindow):
             self.highlight.addMapping(r"'[^'\\]*(\\.[^'\\]*)*'", stringFormat)
 
             numberFormat = QTextCharFormat()
-            numberFormat.setForeground(QColor("blue"))
+            numberFormat.setForeground(QColor("cyan"))
             self.highlight.addMapping(r'\b[+-]?[0-9]+[lL]?\b', numberFormat)
             self.highlight.addMapping(r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', numberFormat)
             self.highlight.addMapping(r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', numberFormat)
