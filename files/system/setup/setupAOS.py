@@ -564,9 +564,6 @@ class installform(QMainWindow):
         except Exception:
             pass
 
-        with open("files/home/welcome.txt","w+") as f:
-            f.write("** Welcome to AOS-GUI, "+config["userinfo"]["name"]+"! **\n\nThanks for giving this shell a shot!\n\nSince it's supposed to be more of a 'make it what you want' type deal, I recommend you check out the documentation in AOSHelp (if you don't have it on your desktop, go to the username menu, click run and type in 'aoshelp'). I'm terrible at writing documentation but hopefully it's enough to give you an idea of what AOS-GUI is and its functions.\n\nHave fun! :D\n\n- nanobot567")
-
         msgBox("Your settings have been applied! Restarting AOS-GUI...", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         QCoreApplication.quit()
         QProcess.startDetached(sys.executable, sys.argv)

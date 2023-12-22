@@ -240,7 +240,7 @@ class camelInstall(QWidget):
             url = self.dbTable.item(self.dbTable.currentRow(),3).text()
             if url.startswith("db/"):
                 url = url.split("db/")[1]
-                url = "https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/"+url
+                url = "https://raw.githubusercontent.com/AOS-GUI/camel/main/dl/"+url
             r = requests.get(url)
             msgBox(r.text,"Source")
         except AttributeError:

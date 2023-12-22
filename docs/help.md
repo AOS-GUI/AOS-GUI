@@ -1,6 +1,7 @@
 # AOS help home page
 ## <a href="docs/manual.md">manual</a>
 ## <a href="docs/dev.md">development</a>
+## <a href="docs/sdk.md">sdk</a>
 ## <a href="docs/directories.md">directory information</a>
 ---
 ## <a href="docs/features.md">features</a>

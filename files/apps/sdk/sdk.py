@@ -1,7 +1,8 @@
+import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from os import getcwd,remove,makedirs,path
+from os import getcwd,remove,makedirs,path,name
 from sys import executable,argv,modules
 from shutil import rmtree
 import importlib
@@ -32,7 +33,7 @@ class Camel():
         self.pkgurls = []
 
         try:
-            r = requests.get("https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/appList.txt",timeout=5)
+            r = requests.get("https://raw.githubusercontent.com/AOS-GUI/camel/main/dl/appList.txt",timeout=5)
             filesOnline = r.text.splitlines(False)
             i = 0
 
@@ -57,7 +58,7 @@ class Camel():
                 newUrl = ""
                 if url.startswith("db/"):
                     url = url.split("db/")[1]
-                    url = "https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/"+url
+                    url = "https://raw.githubusercontent.com/AOS-GUI/camel/main/dl/"+url
 
                     r = requests.get(url)
                     url = url.split("/")[7:]
@@ -67,7 +68,7 @@ class Camel():
 
                 elif url.startswith("assets/"):
                     url = url.split("assets/")[1]
-                    url = "https://raw.githubusercontent.com/AOS-GUI/cInstall/main/dl/assets/"+package.split(".py")[0]+"/"+url
+                    url = "https://raw.githubusercontent.com/AOS-GUI/camel/main/dl/assets/"+package.split(".py")[0]+"/"+url
 
                     r = requests.get(url)
                     url = url.split("/")[7:]
@@ -162,7 +163,6 @@ def restart():
     QProcess.startDetached(executable, argv)
 
 def openApplication(app, path="files/apps/"):
-    global importedModules
     if app.endswith(".py"):
         app = app.split(".py")[0]
         
@@ -171,28 +171,47 @@ def openApplication(app, path="files/apps/"):
         if f.read().find("QMainWindow") != -1:
             QProcess.startDetached(executable, [path+app+".py"])
         else:
-            if path.replace("/",".")+app in importedModules:
-                importlib.reload(importedModules[path.replace("/",".")+app])
+            if path.replace("/",".")+app in sys.modules:
+                importlib.reload(sys.modules[path.replace("/",".")+app])
             else:
-                modulePrgm = importlib.import_module(path.replace("/",".")+app)
-                importedModules[path.replace("/",".")+app] = modulePrgm
+                modulePrgm = importlib.import_module(path.replace("/",".")+app) #TODO: fix palette issue
             # TODO: make it so aos default apps can be run
         f.close()
         return 0,None
-    except ModuleNotFoundError as err: # TODO: change so instead of msgBox it's the str
-        # if silentFail == False:
-        #     msgBox(f"No app called \"{app}\" found in {path}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
+    except ModuleNotFoundError as err:
         return -1,err
     except Exception as err:
-        # if silentFail == False:
-        #     msgBox(f"Critical error in app \"{app}\": {err}","ERROR!",QMessageBox.Critical,QMessageBox.Ok)
         return -1,err
+
+def getPalette():
+    theme,ret = getTheme()
+
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(theme[6]))
+    palette.setColor(QPalette.Background, QColor(theme[6]))
+    palette.setColor(QPalette.WindowText, QColor(theme[0]))
+    palette.setColor(QPalette.Base, QColor(theme[1]))
+    palette.setColor(QPalette.AlternateBase, QColor(theme[6]))
+    palette.setColor(QPalette.ToolTipBase, QColor(theme[1]))
+    palette.setColor(QPalette.ToolTipText, QColor(theme[0]))
+    palette.setColor(QPalette.Text, QColor(theme[0]))
+    palette.setColor(QPalette.Button, QColor(theme[1]))
+    palette.setColor(QPalette.ButtonText, QColor(theme[5]))
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    palette.setColor(QPalette.Highlight, QColor(theme[4]))
+    palette.setColor(QPalette.HighlightedText, QColor(theme[0]))
+
+    return palette
 
 def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessageBox.Ok, x=None,y=None):
     msg = QMessageBox()
     msg.setIcon(icon)
+    if name == "nt":
+        msg.setStyleSheet("color:black;")
+
+    msg.setPalette(QPalette())
     msg.setText(str(text))
-    msg.setStyleSheet("color:black;")
     msg.setWindowTitle(title)
     msg.setWindowFlags(Qt.Window | Qt.WindowStaysOnTopHint)
     msg.setStandardButtons(buttons)
@@ -205,6 +224,8 @@ def msgBox(text, title="AOS-GUI", icon=QMessageBox.Information, buttons=QMessage
 def promptBox(text, title="AOS-GUI", parent=None, x=None, y=None, mode="text", args=None):
     dialog = QInputDialog()
     dialog.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Popup)
+
+    dialog.setPalette(getPalette())
 
     if x != None and y != None:
         dialog.move(x,y)
@@ -223,26 +244,6 @@ def promptBox(text, title="AOS-GUI", parent=None, x=None, y=None, mode="text", a
     if done:
         return output
     return -1
-
-def getPalette():
-    theme,ret = getTheme()
-
-    palette = QPalette()
-    palette.setColor(QPalette.Window, QColor(theme[6]))
-    palette.setColor(QPalette.WindowText, QColor(theme[0]))
-    palette.setColor(QPalette.Base, QColor(theme[1]))
-    palette.setColor(QPalette.AlternateBase, QColor(theme[6]))
-    palette.setColor(QPalette.ToolTipBase, QColor(theme[1]))
-    palette.setColor(QPalette.ToolTipText, QColor(theme[0]))
-    palette.setColor(QPalette.Text, QColor(theme[0]))
-    palette.setColor(QPalette.Button, QColor(theme[1]))
-    palette.setColor(QPalette.ButtonText, QColor(theme[5]))
-    palette.setColor(QPalette.BrightText, Qt.red)
-    palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    palette.setColor(QPalette.Highlight, QColor(theme[4]))
-    palette.setColor(QPalette.HighlightedText, QColor(theme[0]))
-
-    return palette
 
 def getVersion():
     return version

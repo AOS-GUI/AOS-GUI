@@ -15,6 +15,18 @@ if ans.lower()=="y":
     shutil.rmtree(CWD+"/.AOSGUI-PKG/files/home/")
     os.mkdir(CWD+"/.AOSGUI-PKG/files/home/")
 
+    with open(CWD+"/.AOSGUI-PKG/files/home/welcome.md","w+") as f:
+        f.write("""# Welcome to AOS-GUI!
+
+Thanks for giving this shell a shot!
+
+Since it's supposed to be more of a 'make it what you want' type deal, I recommend you check out the documentation in AOSHelp (if you don't have it on your desktop, go to the username menu, click run and type in 'aoshelp'). I'm terrible at writing documentation but hopefully it's enough to give you an idea of what AOS-GUI is and its functions.
+
+Have fun! :D
+
+nanobot567
+        """)
+
     for f in os.listdir(CWD+"/.AOSGUI-PKG/files/apps/"):
         if f.endswith(".py"):
             os.remove(CWD+"/.AOSGUI-PKG/files/apps/"+f)

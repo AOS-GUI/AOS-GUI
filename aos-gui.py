@@ -166,7 +166,6 @@ class AOS(QMainWindow):
 
         self.setWindowTitle("AOS-GUI")
         if windowed == False:
-            print("windowed")
             self.setWindowFlag(Qt.FramelessWindowHint)
             self.setGeometry(0, 0, size.width(), size.height())
         self.setStyleSheet(stylesheet)
