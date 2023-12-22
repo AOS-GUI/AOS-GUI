@@ -21,8 +21,8 @@ class FsWindow(QWidget):
         self.treeView.setAcceptDrops(True)
         self.treeView.setDropIndicatorShown(True)
 
-        # self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.treeView.customContextMenuRequested.connect(self.menuContextTree)
+        #self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
+        #self.treeView.customContextMenuRequested.connect(self.menuContextTree)
 
     def dragEnterEvent(self, event):
         m = event.mimeData()
@@ -63,12 +63,12 @@ class FsWindow(QWidget):
                 if accepted:
                     event.acceptProposedAction()
 
-    # def createFolder(self):
-    #     index = self.treeView.currentIndex()
-    #     if not self.model().isDir(index):
-    #         index = index.parent()
-    #     pathDir = self.model().filePath(index)
-    #     mkdir(pathDir+"/New Folder")
+    #def createFolder(self):
+    #    index = self.treeView.currentIndex()
+    #    if not self.model().isDir(index):
+    #        index = index.parent()
+    #    pathDir = self.model().filePath(index)
+    #    mkdir(pathDir+"/New Folder")
 
     def menuContextTree(self, point):
         index = self.treeView.indexAt(point)
@@ -83,7 +83,9 @@ class FsWindow(QWidget):
         action = menu.addAction(name)
         menu.addSeparator()
         action_1 = menu.addAction("Delete")
+        #action_2 = QAction()
         action_2 = menu.addAction("New Folder")
         action_3 = menu.addAction("3")
+        action_2.triggered.connect(self.createFolder)
 
         menu.exec_(self.treeView.mapToGlobal(point))

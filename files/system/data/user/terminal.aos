@@ -1,0 +1,8 @@
+note: hello! this is terminal.aos. everything here is run as a script when you first start up the terminal.
+
+set %ECHO False
+
+alias ls dir -n
+alias l dir
+
+set %ECHO True

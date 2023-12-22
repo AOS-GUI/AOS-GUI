@@ -2,7 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from os.path import exists
-from os import listdir,getcwd,path
+from os import listdir,getcwd,path,mkdir
 import sys
 import configparser
 
@@ -63,9 +63,17 @@ class installform(QMainWindow):
         self.clockMode.setObjectName(u"clockMode")
         self.clockMode.setGeometry(QRect(10, 20, 131, 17))
         self.clockMode.setText(u"24 hour clock")
+        self.desktopBox = QGroupBox(self.general)
+        self.desktopBox.setObjectName(u"desktopBox")
+        self.desktopBox.setGeometry(QRect(280, 55, 141, 51))
+        self.desktopBox.setTitle(u"Desktop buttons")
+        self.buttonMode = QComboBox(self.desktopBox)
+        self.buttonMode.setObjectName(u"buttonMode")
+        self.buttonMode.setGeometry(QRect(10, 20, 120, 25))
+        self.buttonMode.addItems(["Text","Text, Icon","Icon"])
         self.startup = QGroupBox(self.general)
         self.startup.setObjectName(u"startup")
-        self.startup.setGeometry(QRect(10, 80, 261, 51))
+        self.startup.setGeometry(QRect(10, 80, 261, 81))
         self.startup.setTitle(u"Startup")
         self.playStartupSound = QCheckBox(self.startup)
         self.playStartupSound.setObjectName(u"playStartupSound")
@@ -75,6 +83,10 @@ class installform(QMainWindow):
         self.showSplashOnStartup.setObjectName(u"showSplashOnStartup")
         self.showSplashOnStartup.setGeometry(QRect(110, 20, 161, 20))
         self.showSplashOnStartup.setText(u"Show splash window")
+        self.showQSplashOnStartup = QCheckBox(self.startup)
+        self.showQSplashOnStartup.setObjectName(u"showSplashOnStartup")
+        self.showQSplashOnStartup.setGeometry(QRect(10, 50, 141, 20))
+        self.showQSplashOnStartup.setText(u"Show QSplash")
         self.tabs.addTab(self.general, "")
         self.tabs.setTabText(self.tabs.indexOf(self.general), u"General")
         self.customization = QWidget()
@@ -288,6 +300,18 @@ class installform(QMainWindow):
         self.eBm.setObjectName(u"eBm")
         self.eBm.setGeometry(QRect(170, 460, 81, 28))
         self.eBm.setText(u"Ok")
+        self.refreshRateSpin = QSpinBox(self.menubar)
+        self.refreshRateSpin.setObjectName(u"refreshRateSpin")
+        self.refreshRateSpin.setGeometry(QRect(210, 390, 91, 31))
+        self.refreshRateSpin.setSuffix(u"ms")
+        self.refreshRateSpin.setMaximum(10000)
+        self.refreshRateSpin.setSingleStep(500)
+        self.refreshRateSpin.setStepType(QAbstractSpinBox.AdaptiveDecimalStepType)
+        self.labelRefresh = QLabel(self.menubar)
+        self.labelRefresh.setObjectName(u"labelRefresh")
+        self.labelRefresh.setGeometry(QRect(120, 390, 91, 31))
+        self.labelRefresh.setText(u"Refresh rate")
+        self.labelRefresh.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(self.menubar, "")
         self.tabs.setTabText(self.tabs.indexOf(self.menubar), u"Menu Bar")
         self.shortcuts = QWidget()
@@ -380,7 +404,7 @@ class installform(QMainWindow):
         themeText = themeText.read()
         themeColors = themeText.split("\n")
 
-        for _ in listdir(getcwd().replace("\\","/")+"/files/system/data/user/themes/"):
+        for _ in listdir(getAOSdir()+"/system/data/user/themes/"):
             self.themeCB.addItem(_.split(".theme")[0])
 
         self.themeCB.setCurrentText("default-dark")
@@ -403,9 +427,10 @@ class installform(QMainWindow):
         self.btnX.setValue(20)
         self.btnY.setValue(25)
         self.playStartupSound.setChecked(True)
-        self.segments.addItems(["Clock","Battery","CPU Usage","Available Memory"])
+        self.segments.addItems(["Clock","Battery","CPU Usage (Total)","CPU Usage (Per CPU)","Available Memory"])
         self.appsUseTheme.setChecked(True)
         self.wpFileLabel.setText("aosgui-default.png")
+        self.refreshRateSpin.setValue(1000)
         wallPaperPath = getAOSdir()+"/system/data/user/wallpapers/aosgui-default.png"
 
     def applyTheme(self):
@@ -424,7 +449,7 @@ class installform(QMainWindow):
     def saveTheme(self):
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
-        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
+        tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getAOSdir()+"/system/data/user/themes/", "AOS theme (*.theme)")
         if check:
             themeFile = open(tFile,"w")
 
@@ -445,30 +470,33 @@ class installform(QMainWindow):
         config["shortcuts"] = {"run":"","terminal":"","settings":"","help":""}
         config["desktopApps"] = {"settings":"","launcher":"","fs":"","camel":"","edit":"","help":"","terminal":"","calc":""}
         config["splash"] = {"show":""}
+        config["qsplash"] = {"show":""}
         config["guitheme"] = {"theme":""}
         config["24hrclock"] = {"24hour":""}
         config["buttonDims"] = {"w":"","h":"","x":"","y":""}
         config["startupSound"] = {"play":""}
         config["inAppTheme"] = {"use":""}
         config["wallpaper"] = {"path":""}
+        config["menubar"] = {"refreshRate":""}
+        config["buttonStyle"] = {"style":""}
 
 
         retval = 0
 
         themeFile = open("files/system/data/user/themes/"+self.themeCB.currentText()+".theme","r")
-        tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
+        tFile = getAOSdir()+"/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
         tFsplit = themeFile.read().split("\n")
 
         currentColors = [self.cLE.text(),self.cLE_2.text(),self.cLE_3.text(),self.cLE_4.text(),self.cLE_5.text(),self.cLE_6.text(),self.cLE_7.text()]
 
         if currentColors != tFsplit:
-            tFile = getcwd().replace("\\","/")+"/files/system/data/user/themes/"+self.themeCB.currentText()+".theme"
+            tFile = getAOSdir()+"/system/data/user/themes/"+self.themeCB.currentText()+".theme"
 
             retval = msgBox(f"You have unsaved color changes. Would you like to save them to a new theme?", "Save changes to theme?", QMessageBox.Warning, QMessageBox.Yes|QMessageBox.No)
 
             if retval == 16384: # yes value
-                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getcwd().replace("\\","/")+"/files/system/data/user/themes/", "AOS theme (*.theme)")
+                tFile,check = QFileDialog.getSaveFileName(None, "Save to theme", getAOSdir()+"/system/data/user/themes/", "AOS theme (*.theme)")
                 if check:
                     themeFile.close()
                     themeFile = open(tFile,"w")
@@ -503,7 +531,8 @@ class installform(QMainWindow):
         config["desktopApps"]["terminal"] = str(self.dCHB_7.isChecked())
         config["desktopApps"]["calc"] = str(self.dCHB_8.isChecked())
 
-        config["splash"]["show"] = str(not self.showSplashOnStartup.isChecked())
+        config["splash"]["show"] = str(self.showSplashOnStartup.isChecked())
+        config["qsplash"]["show"] = str(self.showQSplashOnStartup.isChecked())
         config["guitheme"]["theme"] = self.guiThemeCB.currentText()
         config["24hrclock"]["24hour"] = str(self.clockMode.isChecked())
         config["buttonDims"]["w"] = str(self.btnW.value())
@@ -513,6 +542,8 @@ class installform(QMainWindow):
         config["startupSound"]["play"] = str(self.playStartupSound.isChecked())
         config["inAppTheme"]["use"] = str(self.appsUseTheme.isChecked())
         config["wallpaper"]["path"] = str(wallPaperPath)
+        config["menubar"]["refreshRate"] = str(self.refreshRateSpin.value())
+        config["buttonStyle"]["style"] = str(self.buttonMode.currentText())
         
         with open('files/system/data/user/data.aos', 'w') as configfile:
             config.write(configfile)
@@ -522,6 +553,17 @@ class installform(QMainWindow):
             f.write(self.menubarSegments.item(i).text()+"|")
         f.close()
 
-        msgBox("Your settings have been applied! Please restart AOS-GUI to see your changes to the desktop.", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
+        with open('files/system/data/user/autorun.aos', 'w') as autorun:
+            autorun.write("updater")
+
+        with open(getAOSdir()+"/system/data/user/terminal.aos","w+") as t:
+            t.write("note: hello! this is terminal.aos. everything here is run as a script when you first start up the terminal.")
+
+        try:
+            mkdir("files/home/")
+        except Exception:
+            pass
+
+        msgBox("Your settings have been applied! Restarting AOS-GUI...", "Settings set!", QMessageBox.Information, QMessageBox.Ok)
         QCoreApplication.quit()
         QProcess.startDetached(sys.executable, sys.argv)

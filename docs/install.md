@@ -8,8 +8,8 @@
 
 - The latest version of [Python](https://python.org/downloads/) or [Pypy](https://www.pypy.org/download.html). Pypy is recommended if you are concerned about CPU usage and/or speed.
 - The latest version of [pip](https://pip.pypa.io/en/stable/installation/)
-- The latest version of AOS-GUI
-- Any terminal emulator (for example, Terminal for Mac OS or Command Prompt for Windows)
+- The latest version of AOS-GUI (duh)
+- Any terminal emulator (for example, Terminal for Mac OS/Linux or Command Prompt for Windows)
 - At least 60 MB of space on your hard drive (this is for PyQt5 and other modules that are required)
 
 ## instructions
@@ -20,7 +20,7 @@
     - alternatively, you can `chmod` `aos-gui.py` so you can run it like an application.
 4. Wait for AOS-GUI to finish installing required modules
 5. When prompted, customize AOS however you like
-6. Enjoy AOS!
+6. Have fun!
 
 # Uninstalling AOS-GUI
 
